@@ -1,4 +1,4 @@
-package com.appspot.rsskit.utils;
+package com.rhcloud.igorbotian.rsskit.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
