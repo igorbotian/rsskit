@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -53,18 +55,49 @@ public class ProxyServlet extends HttpServlet {
         }
     }
 
-    private void processProxyRequest(HttpURLConnection src, HttpServletResponse dest) throws IOException {
+    private void processProxyRequest(HttpURLConnection src, HttpServletResponse dst) throws IOException {
         assert src != null;
-        assert dest != null;
+        assert dst != null;
 
-        dest.setContentType(src.getContentType());
-        dest.setContentLength(src.getContentLength());
-        dest.setStatus(src.getResponseCode());
+        transferHeaders(src, dst);
+        transferContents(src, dst);
+    }
+
+    private void transferHeaders(HttpURLConnection src, HttpServletResponse dst) throws IOException {
+        assert src != null;
+        assert dst != null;
+
+        dst.setContentType(src.getContentType());
+        dst.setContentLength(src.getContentLength());
+        dst.setStatus(src.getResponseCode());
 
         for (String header : src.getHeaderFields().keySet()) {
-            dest.addHeader(header, src.getHeaderField(header));
+            dst.addHeader(header, src.getHeaderField(header));
         }
+    }
 
-        IOUtils.copy(src.getInputStream(), dest.getOutputStream());
+    private void transferContents(HttpURLConnection src, HttpServletResponse dst) throws IOException {
+        assert src != null;
+        assert dst != null;
+
+        InputStream is = null;
+
+        try {
+            is = src.getInputStream();
+            OutputStream os = null;
+
+            try {
+                os = dst.getOutputStream();
+                IOUtils.copy(is, dst.getOutputStream());
+            } finally {
+                if(os != null) {
+                    os.close();
+                }
+            }
+        } finally {
+            if(is != null) {
+                is.close();
+            }
+        }
     }
 }
