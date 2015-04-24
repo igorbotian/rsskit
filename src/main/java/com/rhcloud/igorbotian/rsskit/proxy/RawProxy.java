@@ -1,6 +1,6 @@
 package com.rhcloud.igorbotian.rsskit.proxy;
 
-import com.rhcloud.igorbotian.rsskit.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.util.Objects;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-class RawProxy extends AbstractProxy {
+class RawProxy extends HttpProxy {
 
     @Override
     protected void transfer(HttpURLConnection src, HttpServletResponse dest) throws IOException {

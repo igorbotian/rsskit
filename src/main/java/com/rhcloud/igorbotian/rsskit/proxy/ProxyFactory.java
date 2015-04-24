@@ -14,4 +14,8 @@ public final class ProxyFactory {
     public static Proxy raw() {
         return raw;
     }
+
+    public static Proxy continuous(HttpLinkMapper mapper) {
+        return new ContinuousProxy(mapper);
+    }
 }
