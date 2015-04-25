@@ -1,13 +1,13 @@
 package com.rhcloud.igorbotian.rsskit.servlet;
 
+import com.rhcloud.igorbotian.rsskit.proxy.Mobilizers;
+
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
 public class InstapaperServlet extends MobilizerServlet {
 
-    private static final String SERVICE_URL = "https://www.instapaper.com/text?u=";
-
     public InstapaperServlet() {
-        super(SERVICE_URL);
+        super(Mobilizers.INSTAPAPER_SERVICE_URL);
     }
 }

@@ -26,7 +26,7 @@ import java.util.Objects;
 class ContinuousProxy extends HttpProxy {
 
     private static final String TEXT_HTML = "text/html";
-    private static final Charset UTF8 = StandardCharsets.UTF_8;
+    private static final Charset UTF_8 = StandardCharsets.UTF_8;
     private static final Map<String, String> DEFAULT_MAPPED_LINKS;
 
     static {
@@ -56,9 +56,9 @@ class ContinuousProxy extends HttpProxy {
         Objects.requireNonNull(src);
         Objects.requireNonNull(dest);
 
-        URL url = new URL(URLDecoder.decode(src.getURL().toExternalForm(), UTF8.name()));
+        URL url = new URL(URLDecoder.decode(src.getURL().toExternalForm(), UTF_8.name()));
         String contentType = src.getContentType();
-        Charset charset = UTF8;
+        Charset charset = UTF_8;
 
         if (contentType == null) {
             contentType = TEXT_HTML;
@@ -88,7 +88,7 @@ class ContinuousProxy extends HttpProxy {
             }
         }
 
-        return UTF8;
+        return UTF_8;
     }
 
     private String mapLinks(URL address, String html, Charset charset) throws UnsupportedEncodingException {
@@ -98,7 +98,7 @@ class ContinuousProxy extends HttpProxy {
 
         Document htmlDoc = Jsoup.parse(html, charset.name());
         htmlDoc.outputSettings().escapeMode(Entities.EscapeMode.base);
-        htmlDoc.outputSettings().charset(UTF8);
+        htmlDoc.outputSettings().charset(UTF_8);
 
         for(Map.Entry<String, String> link : mappedLinks.entrySet()) {
             mapLinks(address, htmlDoc, charset, link.getKey(), link.getValue());
@@ -174,17 +174,17 @@ class ContinuousProxy extends HttpProxy {
             }
         }
 
-        dest.setContentType(TEXT_HTML + "; charset=" + UTF8.name().toLowerCase());
-        dest.setContentLength(html.getBytes(UTF8).length);
+        dest.setContentType(TEXT_HTML + "; charset=" + UTF_8.name().toLowerCase());
+        dest.setContentLength(html.getBytes(UTF_8).length);
         dest.setStatus(src.getResponseCode());
-        dest.setCharacterEncoding(UTF8.name().toLowerCase());
+        dest.setCharacterEncoding(UTF_8.name().toLowerCase());
     }
 
     private void transferContents(String html, HttpServletResponse dest) throws IOException {
         assert html != null;
         assert dest != null;
 
-        try (InputStream is = new ByteArrayInputStream(html.getBytes(UTF8))) {
+        try (InputStream is = new ByteArrayInputStream(html.getBytes(UTF_8))) {
             try (OutputStream os = dest.getOutputStream()) {
                 IOUtils.copy(is, os);
             }

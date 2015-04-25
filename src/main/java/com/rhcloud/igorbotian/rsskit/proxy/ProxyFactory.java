@@ -8,6 +8,7 @@ import java.util.Map;
 public final class ProxyFactory {
 
     private static final Proxy raw = new RawProxy();
+    private static final Proxy rss = new RssProxy(10);
 
     private ProxyFactory() {
         //
@@ -27,5 +28,9 @@ public final class ProxyFactory {
 
     public static Proxy mobilizer(String serviceURL, HttpLinkMapper mapper) {
         return new MobilizerProxy(serviceURL, mapper);
+    }
+
+    public static Proxy rss() {
+        return rss;
     }
 }

@@ -3,11 +3,9 @@ package com.rhcloud.igorbotian.rsskit.servlet;
 import com.rhcloud.igorbotian.rsskit.proxy.HttpLinkMapper;
 import com.rhcloud.igorbotian.rsskit.proxy.Proxy;
 import com.rhcloud.igorbotian.rsskit.proxy.ProxyFactory;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -19,9 +17,8 @@ import java.util.Objects;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public abstract class MobilizerServlet extends HttpServlet {
+public abstract class MobilizerServlet extends RssKitServlet {
 
-    private static final String URL_PARAM = "url";
     private final String serviceURL;
     private Proxy proxy;
 
@@ -30,24 +27,14 @@ public abstract class MobilizerServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        processRequest(req, resp);
-    }
+    protected void processRequest(URL url, HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        processRequest(req, resp);
-    }
+        Objects.requireNonNull(url);
+        Objects.requireNonNull(request);
+        Objects.requireNonNull(response);
 
-    private void processRequest(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        assert req != null;
-        assert resp != null;
-
-        String url = req.getParameter(URL_PARAM);
-
-        if (StringUtils.isNotEmpty(url)) {
-            getProxy(req).transfer(new URL(url), resp);
-        }
+        getProxy(request).transfer(url, response);
     }
 
     private synchronized Proxy getProxy(HttpServletRequest request) throws MalformedURLException {

@@ -12,7 +12,7 @@ import java.util.Objects;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public class MobilizerProxy implements Proxy {
+class MobilizerProxy implements Proxy {
 
     private static final Map<String, String> MAPPED_LINKS;
 

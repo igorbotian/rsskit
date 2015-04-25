@@ -32,4 +32,13 @@
         <servlet-name>readability</servlet-name>
         <url-pattern>/readability</url-pattern>
     </servlet-mapping>-->
+
+    <servlet>
+        <servlet-name>rss</servlet-name>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.RssServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>rss</servlet-name>
+        <url-pattern>/rss</url-pattern>
+    </servlet-mapping>
 </web-app>
