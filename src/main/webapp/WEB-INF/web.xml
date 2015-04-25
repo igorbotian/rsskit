@@ -14,4 +14,22 @@
         <servlet-name>proxy</servlet-name>
         <url-pattern>/proxy</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>instapaper</servlet-name>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.InstapaperServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>instapaper</servlet-name>
+        <url-pattern>/instapaper</url-pattern>
+    </servlet-mapping>
+
+    <!--<servlet>
+        <servlet-name>readability</servlet-name>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.ReadabilityServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>readability</servlet-name>
+        <url-pattern>/readability</url-pattern>
+    </servlet-mapping>-->
 </web-app>

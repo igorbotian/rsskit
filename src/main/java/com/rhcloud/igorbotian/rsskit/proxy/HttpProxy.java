@@ -11,6 +11,7 @@ import java.util.Objects;
  */
 abstract class HttpProxy implements Proxy {
 
+    @Override
     public void transfer(URL src, HttpServletResponse dest) throws IOException {
         Objects.requireNonNull(src);
         Objects.requireNonNull(dest);

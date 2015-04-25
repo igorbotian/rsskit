@@ -15,6 +15,9 @@ import java.net.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -24,10 +27,28 @@ class ContinuousProxy extends HttpProxy {
 
     private static final String TEXT_HTML = "text/html";
     private static final Charset UTF8 = StandardCharsets.UTF_8;
+    private static final Map<String, String> DEFAULT_MAPPED_LINKS;
+
+    static {
+        Map<String, String> mappedLinks = new HashMap<>();
+        mappedLinks.put("a", "href");
+        mappedLinks.put("link", "href");
+        mappedLinks.put("img", "src");
+        mappedLinks.put("script", "src");
+
+        DEFAULT_MAPPED_LINKS = Collections.unmodifiableMap(mappedLinks);
+    }
+
     private final HttpLinkMapper linkMapper;
+    private final Map<String, String> mappedLinks;
 
     public ContinuousProxy(HttpLinkMapper mapper) {
+        this(mapper, DEFAULT_MAPPED_LINKS);
+    }
+
+    public ContinuousProxy(HttpLinkMapper mapper, Map<String, String> mappedLinks) {
         this.linkMapper = Objects.requireNonNull(mapper);
+        this.mappedLinks = Collections.unmodifiableMap(Objects.requireNonNull(mappedLinks));
     }
 
     @Override
@@ -79,10 +100,9 @@ class ContinuousProxy extends HttpProxy {
         htmlDoc.outputSettings().escapeMode(Entities.EscapeMode.base);
         htmlDoc.outputSettings().charset(UTF8);
 
-        mapLinks(address, htmlDoc, charset, "a", "href");
-        mapLinks(address, htmlDoc, charset, "link", "href");
-        mapLinks(address, htmlDoc, charset, "script", "src");
-        mapLinks(address, htmlDoc, charset, "img", "src");
+        for(Map.Entry<String, String> link : mappedLinks.entrySet()) {
+            mapLinks(address, htmlDoc, charset, link.getKey(), link.getValue());
+        }
 
         return StringEscapeUtils.unescapeHtml4(htmlDoc.outerHtml());
     }
@@ -112,24 +132,26 @@ class ContinuousProxy extends HttpProxy {
             String url = URLDecoder.decode(tag.attr(attrName), charset.name());
 
             if (!url.startsWith("http") && !url.startsWith("https")) {
-                if (url.startsWith("//")) {
-                    url = address.getProtocol() + ":" + url;
+                String prefix = address.getProtocol() + "://";
+
+                if(url.startsWith("//")) {
+                    url = prefix + url.substring(2); // without '//'
                 } else {
-                    String prefix = address.getProtocol() + "://" + address.getHost();
+                    prefix += address.getHost();
 
                     if (address.getPort() != -1) {
                         prefix += ":" + address.getPort();
                     }
 
-                    if (StringUtils.isNotEmpty(address.getPath())) {
-                        prefix += "/" + address.getPath();
+                    if(!url.startsWith("/")) {
+                        if (StringUtils.isNotEmpty(address.getPath())) {
+                            prefix += "/" + address.getPath();
+                        }
+
+                        prefix += "/";
                     }
 
-                    if (url.startsWith("/")) {
-                        url = prefix + url;
-                    } else {
-                        url = prefix + "/" + url;
-                    }
+                    url = prefix + url;
                 }
             }
 
