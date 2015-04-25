@@ -53,7 +53,7 @@ public class ProxyServlet extends HttpServlet {
 
         if(continuousProxy == null) {
             String host = request.getServerName();
-            int port = request.getLocalPort();
+            int port = request.getServerPort();
             String path = getServletContext().getContextPath();
             String name = getServletName();
             continuousProxy = ProxyFactory.continuous(new HttpLinkMapperImpl(new URL("http", host, port, path + "/" + name)));
