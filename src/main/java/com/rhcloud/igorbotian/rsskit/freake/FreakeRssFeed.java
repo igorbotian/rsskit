@@ -33,7 +33,7 @@ public class FreakeRssFeed {
         composeTopReleasesOfTheDay();
 
         TaskScheduler scheduler = new TaskScheduler();
-        scheduler.executeEveryNMinutes(1, new Runnable() {
+        scheduler.executeEveryNMinutes(30, new Runnable() {
 
             @Override
             public void run() {
