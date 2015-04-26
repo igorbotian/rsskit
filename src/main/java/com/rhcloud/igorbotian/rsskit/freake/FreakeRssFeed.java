@@ -1,7 +1,6 @@
 package com.rhcloud.igorbotian.rsskit.freake;
 
-import com.rometools.rome.feed.synd.SyndEntry;
-import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.feed.synd.*;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
@@ -10,6 +9,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -82,8 +82,46 @@ public class FreakeRssFeed {
     //-------------------------------------------------------------------------
 
     private void composeTopReleasesOfTheDay() throws IOException {
-        topReleasesFeed.setEntries(identifyTopReleasesOfTheDay());
+        List<SyndEntry> topReleases = identifyTopReleasesOfTheDay();
+        topReleasesFeed.setEntries(Collections.singletonList(combineTopReleasesToOneRssEntry(topReleases)));
         dayFeed.setEntries(Collections.<SyndEntry>emptyList());
+    }
+
+    private SyndEntry combineTopReleasesToOneRssEntry(List<SyndEntry> releases) {
+        assert releases != null;
+
+        StringBuilder content = new StringBuilder();
+        content.append("<table>");
+
+        for(SyndEntry release : releases) {
+            content.append("<tr>");
+            content.append("<td>");
+            content.append(release.getDescription().getValue());
+            content.append("</td>");
+            content.append("</tr>");
+
+            content.append("<tr><td>&nbsp;</td></tr>");
+            content.append("<tr><td>&nbsp;</td></tr>");
+            content.append("<tr><td>&nbsp;</td></tr>");
+        }
+
+        content.append("</table>");
+
+        SyndContent description = new SyndContentImpl();
+        description.setType("text/html");
+        description.setValue(content.toString());
+
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+
+        SyndEntry entry = new SyndEntryImpl();
+        entry.setAuthor("Freake.ru");
+        entry.setLink(freake.url().toString());
+        entry.setTitle("Релизы дня (" + format.format(new Date()) + ")");
+        entry.setUri(entry.getLink());
+        entry.setUpdatedDate(new Date());
+        entry.setDescription(description);
+
+        return entry;
     }
 
     private List<SyndEntry> identifyTopReleasesOfTheDay() throws IOException {
