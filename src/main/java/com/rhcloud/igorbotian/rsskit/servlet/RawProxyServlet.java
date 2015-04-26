@@ -17,14 +17,11 @@ import java.util.Objects;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public abstract class MobilizerServlet extends ProxyServlet {
+public class RawProxyServlet extends ProxyServlet {
 
-    private final String serviceURL;
-    private Proxy proxy;
-
-    public MobilizerServlet(String serviceURL) {
-        this.serviceURL = Objects.requireNonNull(serviceURL);
-    }
+    private static final String LINKS_PARAM = "links";
+    private static final Proxy rawProxy = ProxyFactory.raw();
+    private Proxy continuousProxy;
 
     @Override
     protected void processRequest(URL url, HttpServletRequest request, HttpServletResponse response)
@@ -34,34 +31,35 @@ public abstract class MobilizerServlet extends ProxyServlet {
         Objects.requireNonNull(request);
         Objects.requireNonNull(response);
 
-        getProxy(request).transfer(url, response);
+        Proxy proxy = Boolean.parseBoolean(request.getParameter(LINKS_PARAM)) ? getContinuousProxy(request) : rawProxy;
+        proxy.transfer(url, response);
     }
 
-    private synchronized Proxy getProxy(HttpServletRequest request) throws MalformedURLException {
+    private synchronized Proxy getContinuousProxy(HttpServletRequest request) throws MalformedURLException {
         assert request != null;
 
-        if(proxy == null) {
+        if(continuousProxy == null) {
             String host = request.getServerName();
             int port = request.getServerPort();
             String path = getServletContext().getContextPath();
             String name = getServletName();
-            proxy = ProxyFactory.mobilizer(
-                    serviceURL,
-                    new HttpLinkMapperImpl(new URL("http", host, port, path + "/" + name), name)
-            );
+            continuousProxy = ProxyFactory.continuous(new HttpLinkMapperImpl(new URL("http", host, port, path + "/" + name)));
         }
 
-        return proxy;
+        return continuousProxy;
+    }
+
+    @Override
+    protected void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
     }
 
     private class HttpLinkMapperImpl implements HttpLinkMapper {
 
         private final URL servletURL;
-        private final String servletName;
 
-        public HttpLinkMapperImpl(URL servletURL, String servletName) {
+        public HttpLinkMapperImpl(URL servletURL) {
             this.servletURL = Objects.requireNonNull(servletURL);
-            this.servletName = Objects.requireNonNull(servletName);
         }
 
         @Override
@@ -72,7 +70,8 @@ public abstract class MobilizerServlet extends ProxyServlet {
             builder.setScheme(servletURL.getProtocol());
             builder.setHost(servletURL.getHost());
             builder.setPort(servletURL.getPort());
-            builder.setPath(servletURL.getPath().replace(servletName, "proxy"));
+            builder.setPath(servletURL.getPath());
+            builder.addParameter(LINKS_PARAM, Boolean.TRUE.toString());
             builder.addParameter(URL_PARAM, url.toString());
 
             return builder.build().toURL();

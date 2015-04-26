@@ -8,7 +8,7 @@
 
     <servlet>
         <servlet-name>proxy</servlet-name>
-        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.ProxyServlet</servlet-class>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.RawProxyServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>proxy</servlet-name>
@@ -40,5 +40,14 @@
     <servlet-mapping>
         <servlet-name>rss</servlet-name>
         <url-pattern>/rss</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>freake</servlet-name>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.FreakeRssServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>freake</servlet-name>
+        <url-pattern>/freake</url-pattern>
     </servlet-mapping>
 </web-app>

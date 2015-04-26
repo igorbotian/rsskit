@@ -12,7 +12,7 @@ import java.util.Objects;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public class RssServlet extends RssKitServlet {
+public class RssServlet extends ProxyServlet {
 
     @Override
     protected void processRequest(URL url, HttpServletRequest request, HttpServletResponse response)
