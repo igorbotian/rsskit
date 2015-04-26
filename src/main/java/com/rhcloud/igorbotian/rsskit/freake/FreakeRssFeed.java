@@ -105,7 +105,11 @@ public class FreakeRssFeed {
         });
 
         for(SyndEntry entry : entries) {
-            positions.put(page.indexOf(entry.getTitle()), entry);
+            int pos = page.indexOf(entry.getTitle());
+
+            if(pos >= 0) {
+                positions.put(pos, entry);
+            }
         }
 
         return positions;
