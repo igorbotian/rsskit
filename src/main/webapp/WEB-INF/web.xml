@@ -50,4 +50,13 @@
         <servlet-name>freake</servlet-name>
         <url-pattern>/freake</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>championat</servlet-name>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.ChampionatServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>championat</servlet-name>
+        <url-pattern>/championat</url-pattern>
+    </servlet-mapping>
 </web-app>
