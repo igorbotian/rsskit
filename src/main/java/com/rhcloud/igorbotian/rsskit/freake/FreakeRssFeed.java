@@ -45,7 +45,7 @@ public class FreakeRssFeed {
             }
         });
 
-        scheduler.executeEveryDayAt(22, new Runnable() {
+        scheduler.executeEveryDayAt(18 /* 21 MSK (UTC-3) */, new Runnable() {
 
             @Override
             public void run() {

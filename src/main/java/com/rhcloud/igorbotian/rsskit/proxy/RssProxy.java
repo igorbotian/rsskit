@@ -1,5 +1,6 @@
 package com.rhcloud.igorbotian.rsskit.proxy;
 
+import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizers;
 import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndContentImpl;
 import com.rometools.rome.feed.synd.SyndEntry;

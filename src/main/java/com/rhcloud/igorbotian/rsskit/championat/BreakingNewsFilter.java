@@ -1,40 +1,36 @@
 package com.rhcloud.igorbotian.rsskit.championat;
 
+import com.rhcloud.igorbotian.rsskit.filter.RssFilter;
+import com.rhcloud.igorbotian.rsskit.utils.RssFeedUtils;
 import com.rometools.rome.feed.synd.SyndCategory;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
-import com.rometools.rome.io.FeedException;
-import com.rometools.rome.io.SyndFeedInput;
-import com.rometools.rome.io.XmlReader;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
- * @author Igor Botian <igor.botyan@alcatel-lucent.com>
+ * @author Igor Botian <igor.botian@gmail.com>
  */
-public class ChampionatRssFeed {
+class BreakingNewsFilter implements RssFilter {
 
-    private static final String RSS_URL = "http://www.championat.com/xml/rss_football.xml";
+    @Override
+    public SyndFeed apply(SyndFeed original) {
+        Objects.requireNonNull(original);
 
-    public SyndFeed getBreakingNews() throws IOException {
-        SyndFeed feed = downloadOriginalFeed();
-        feed.setEntries(filterBreakingNewsOnly(feed));
-        return feed;
-    }
-
-    private SyndFeed downloadOriginalFeed() throws IOException {
         try {
-            SyndFeedInput input = new SyndFeedInput();
-            return input.build(new XmlReader(new URL(RSS_URL)));
-        } catch (FeedException e) {
-            throw new IOException("Failed to download original RSS feed", e);
+            SyndFeed feed = RssFeedUtils.clone(original);
+            List<SyndEntry> breakingNews = getBreakingNews(feed);
+            feed.setEntries(breakingNews);
+            return feed;
+        } catch (IOException e) {
+            return original;
         }
     }
 
-    private List<SyndEntry> filterBreakingNewsOnly(SyndFeed feed) {
+    private List<SyndEntry> getBreakingNews(SyndFeed feed) {
         assert feed != null;
 
         List<SyndEntry> breakingNews = new ArrayList<>();
