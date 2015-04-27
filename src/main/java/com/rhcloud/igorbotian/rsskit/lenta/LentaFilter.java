@@ -70,7 +70,7 @@ public class LentaFilter implements RssFilter {
 
     private static class ByCategoriesFilter implements RssFilter {
 
-        private static final List<String> CATEGORIES = Arrays.asList("Экономика", "Бывший СССР", "Наука и техника");
+        private static final List<String> CATEGORIES = Arrays.asList("Экономика", "Бывший СССР");
 
         @Override
         public SyndFeed apply(SyndFeed feed) {
