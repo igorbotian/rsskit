@@ -59,4 +59,13 @@
         <servlet-name>championat</servlet-name>
         <url-pattern>/championat</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>lenta</servlet-name>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.LentaServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>lenta</servlet-name>
+        <url-pattern>/lenta</url-pattern>
+    </servlet-mapping>
 </web-app>
