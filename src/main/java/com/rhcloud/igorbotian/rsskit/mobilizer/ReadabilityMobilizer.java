@@ -2,6 +2,7 @@ package com.rhcloud.igorbotian.rsskit.mobilizer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rhcloud.igorbotian.rsskit.utils.Configuration;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.client.utils.URIBuilder;
@@ -11,8 +12,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.Objects;
 
 /**
@@ -20,10 +19,8 @@ import java.util.Objects;
  */
 public class ReadabilityMobilizer implements Mobilizer {
 
-    private static final String TOKEN = new String(
-            Base64.getDecoder().decode("OWU0ODVkZWEwYmNkMWYzMGVmOWM3YzY5YmE2ZTY4ODk4MjhjNTZjYw=="),
-            StandardCharsets.UTF_8
-    );
+    private static final String PARSER_API_KEY = "PARSER_API_KEY";
+    private static final String TOKEN = Configuration.getProperty(PARSER_API_KEY);
 
     private static final String PROTOCOL = "https";
     private static final String HOST = "www.readability.com";

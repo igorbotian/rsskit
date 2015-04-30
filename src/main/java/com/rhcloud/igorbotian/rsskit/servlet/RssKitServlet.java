@@ -1,5 +1,6 @@
 package com.rhcloud.igorbotian.rsskit.servlet;
 
+import com.rhcloud.igorbotian.rsskit.utils.Configuration;
 import org.apache.commons.io.IOUtils;
 
 import javax.servlet.ServletException;
@@ -16,6 +17,13 @@ import java.nio.charset.Charset;
  * @author Igor Botian <igor.botian@gmail.com>
  */
 public abstract class RssKitServlet extends HttpServlet {
+
+    @Override
+    public void init() throws ServletException {
+        if(!Configuration.isSuccessfullyLoaded()) {
+            throw new ServletException(Configuration.FILE + " configuration file is not found!");
+        }
+    }
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

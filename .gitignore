@@ -1,4 +1,5 @@
 push.sh
+rsskit.properties
 *.iml
 .idea/*
 target/*
