@@ -1,8 +1,8 @@
 package com.rhcloud.igorbotian.rsskit.servlet;
 
-import com.rhcloud.igorbotian.rsskit.rss.RssDescriptionExtender;
 import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizers;
-import com.rometools.rome.feed.synd.SyndEntry;
+import com.rhcloud.igorbotian.rsskit.rss.RssDescriptionExtender;
+import com.rhcloud.igorbotian.rsskit.rss.RssTruncater;
 import com.rometools.rome.feed.synd.SyndFeed;
 import org.apache.commons.lang3.StringUtils;
 
@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -29,6 +28,8 @@ public class RssDescriptionExtendingServlet extends AbstractRssServlet {
     private static final RssDescriptionExtender readabilityDescriptionExtender = new RssDescriptionExtender(
             Mobilizers.readability()
     );
+
+    private static final RssTruncater truncater = new RssTruncater(MAX_ENTRIES);
 
     @Override
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -54,17 +55,7 @@ public class RssDescriptionExtendingServlet extends AbstractRssServlet {
         assert response != null;
 
         SyndFeed feed = downloadRssFeed(url);
-        truncateToMaxEntriesAllowed(feed);
+        feed = truncater.apply(feed);
         respond(descriptionExtender.apply(feed), response);
-    }
-
-    private void truncateToMaxEntriesAllowed(SyndFeed feed) {
-        assert feed != null;
-
-        List<SyndEntry> entries = feed.getEntries();
-        int maxEntries = Math.max(MAX_ENTRIES, entries.size());
-        entries = entries.subList(0, maxEntries);
-
-        feed.setEntries(entries);
     }
 }

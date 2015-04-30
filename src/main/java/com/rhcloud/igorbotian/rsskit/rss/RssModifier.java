@@ -7,5 +7,5 @@ import com.rometools.rome.feed.synd.SyndFeed;
  */
 public interface RssModifier {
 
-    SyndFeed apply(SyndFeed feed);
+    SyndFeed apply(SyndFeed original);
 }

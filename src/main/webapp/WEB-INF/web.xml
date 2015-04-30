@@ -34,6 +34,15 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>readabilityrss</servlet-name>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.ReadabilityRssServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>readabilityrss</servlet-name>
+        <url-pattern>/readabilityrss</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>rss</servlet-name>
         <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.RssDescriptionExtendingServlet</servlet-class>
     </servlet>
