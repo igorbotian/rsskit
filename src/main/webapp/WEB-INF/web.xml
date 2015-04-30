@@ -24,14 +24,14 @@
         <url-pattern>/instapaper</url-pattern>
     </servlet-mapping>
 
-    <!--<servlet>
+    <servlet>
         <servlet-name>readability</servlet-name>
         <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.ReadabilityServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>readability</servlet-name>
         <url-pattern>/readability</url-pattern>
-    </servlet-mapping>-->
+    </servlet-mapping>
 
     <servlet>
         <servlet-name>rss</servlet-name>
