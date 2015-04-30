@@ -19,9 +19,15 @@ import java.util.Objects;
 public class RssDescriptionExtendingServlet extends AbstractRssServlet {
 
     private static final String URL_PARAM = "url";
+    private static final String SERVICE_PARAM = "service";
     private static final int MAX_ENTRIES = 10;
-    private static final RssDescriptionExtender descriptionExtender = new RssDescriptionExtender(
+
+    private static final RssDescriptionExtender instapaperDescriptionExtender = new RssDescriptionExtender(
             Mobilizers.instapaper()
+    );
+
+    private static final RssDescriptionExtender readabilityDescriptionExtender = new RssDescriptionExtender(
+            Mobilizers.readability()
     );
 
     @Override
@@ -32,12 +38,16 @@ public class RssDescriptionExtendingServlet extends AbstractRssServlet {
         String url = request.getParameter(URL_PARAM);
 
         if (StringUtils.isNotEmpty(url)) {
-            processRequest(new URL(url), request, response);
+            RssDescriptionExtender descriptionExtender =
+                    "readability".equals(request.getParameter(SERVICE_PARAM))
+                            ? readabilityDescriptionExtender
+                            : instapaperDescriptionExtender;
+            processRequest(new URL(url), descriptionExtender, request, response);
         }
     }
 
-    protected void processRequest(URL url, HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+    protected void processRequest(URL url, RssDescriptionExtender descriptionExtender,
+                                  HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         assert url != null;
         assert request != null;
