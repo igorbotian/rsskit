@@ -8,6 +8,6 @@ import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizers;
 public class ReadabilityServlet extends MobilizerServlet {
 
     public ReadabilityServlet() {
-        super(Mobilizers.INSTAPAPER_SERVICE_URL);
+        super(Mobilizers.readability());
     }
 }

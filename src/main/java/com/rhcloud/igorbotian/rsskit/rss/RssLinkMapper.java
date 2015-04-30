@@ -1,6 +1,5 @@
-package com.rhcloud.igorbotian.rsskit.filter;
+package com.rhcloud.igorbotian.rsskit.rss;
 
-import com.rhcloud.igorbotian.rsskit.proxy.HttpLinkMapper;
 import com.rhcloud.igorbotian.rsskit.utils.RssFeedUtils;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
@@ -13,11 +12,11 @@ import java.util.Objects;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public class RssLinkMapper implements RssFilter {
+public class RssLinkMapper implements RssModifier {
 
-    private final HttpLinkMapper mapper;
+    private final LinkMapper mapper;
 
-    public RssLinkMapper(HttpLinkMapper mapper) {
+    public RssLinkMapper(LinkMapper mapper) {
         this.mapper = Objects.requireNonNull(mapper);
     }
 
@@ -37,7 +36,7 @@ public class RssLinkMapper implements RssFilter {
     private void mapLinks(SyndFeed feed) {
         assert feed != null;
 
-        for(SyndEntry entry : feed.getEntries()) {
+        for (SyndEntry entry : feed.getEntries()) {
             try {
                 mapLink(entry);
             } catch (IOException | URISyntaxException e) {

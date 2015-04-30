@@ -35,6 +35,6 @@ public class FreakeRssServlet extends AbstractRssServlet {
         assert req != null;
         assert resp != null;
 
-        transfer(feed.get(), resp);
+        respond(feed.get(), resp);
     }
 }

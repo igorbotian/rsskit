@@ -1,6 +1,6 @@
-package com.rhcloud.igorbotian.rsskit.championat;
+package com.rhcloud.igorbotian.rsskit.rss.championat;
 
-import com.rhcloud.igorbotian.rsskit.filter.RssFilter;
+import com.rhcloud.igorbotian.rsskit.rss.RssModifier;
 import com.rhcloud.igorbotian.rsskit.utils.RssFeedUtils;
 import com.rometools.rome.feed.synd.SyndCategory;
 import com.rometools.rome.feed.synd.SyndEntry;
@@ -14,7 +14,7 @@ import java.util.Objects;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-class BreakingNewsFilter implements RssFilter {
+class BreakingNewsFilter implements RssModifier {
 
     @Override
     public SyndFeed apply(SyndFeed original) {

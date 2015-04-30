@@ -5,9 +5,8 @@ package com.rhcloud.igorbotian.rsskit.mobilizer;
  */
 public final class Mobilizers {
 
-    public static final String INSTAPAPER_SERVICE_URL = "https://www.instapaper.com/text?u=";
-
     private static final Mobilizer instapaper = new InstapaperMobilizer();
+    private static final Mobilizer readability = new ReadabilityMobilizer();
 
     private Mobilizers() {
         //
@@ -15,5 +14,9 @@ public final class Mobilizers {
 
     public static Mobilizer instapaper() {
         return instapaper;
+    }
+
+    public static Mobilizer readability() {
+        return readability;
     }
 }

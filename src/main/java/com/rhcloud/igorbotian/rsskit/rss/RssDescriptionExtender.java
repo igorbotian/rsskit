@@ -1,4 +1,4 @@
-package com.rhcloud.igorbotian.rsskit.filter;
+package com.rhcloud.igorbotian.rsskit.rss;
 
 import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizer;
 import com.rhcloud.igorbotian.rsskit.utils.RssFeedUtils;
@@ -14,7 +14,7 @@ import java.util.Objects;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public class RssDescriptionExtender implements RssFilter {
+public class RssDescriptionExtender implements RssModifier {
 
     protected static final String HTTP_MIME_TYPE = "text/html";
 

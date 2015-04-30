@@ -5,6 +5,7 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Entities;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.net.URL;
@@ -60,6 +61,21 @@ class InstapaperMobilizer implements Mobilizer {
         htmlDoc.outputSettings().charset(StandardCharsets.UTF_8);
         htmlDoc.outputSettings().escapeMode(Entities.EscapeMode.base);
 
-        return StringEscapeUtils.unescapeHtml4(htmlDoc.getElementsByTag("main").html());
+        Elements tags = htmlDoc.select("div[id=story]");
+        String html;
+
+        if(tags.size() > 0) {
+            html = tags.get(0).html();
+        } else {
+            tags = htmlDoc.getElementsByTag("main");
+
+            if(tags.size() > 0) {
+                html = tags.get(0).html();
+            } else {
+                html = htmlDoc.outerHtml();
+            }
+        }
+
+        return StringEscapeUtils.unescapeHtml4(html);
     }
 }

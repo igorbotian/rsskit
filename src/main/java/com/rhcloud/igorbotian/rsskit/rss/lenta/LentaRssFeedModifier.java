@@ -1,10 +1,10 @@
-package com.rhcloud.igorbotian.rsskit.lenta;
+package com.rhcloud.igorbotian.rsskit.rss.lenta;
 
-import com.rhcloud.igorbotian.rsskit.filter.RssDescriptionExtender;
-import com.rhcloud.igorbotian.rsskit.filter.RssFilter;
-import com.rhcloud.igorbotian.rsskit.filter.RssLinkMapper;
+import com.rhcloud.igorbotian.rsskit.rss.LinkMapper;
+import com.rhcloud.igorbotian.rsskit.rss.RssDescriptionExtender;
+import com.rhcloud.igorbotian.rsskit.rss.RssModifier;
+import com.rhcloud.igorbotian.rsskit.rss.RssLinkMapper;
 import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizers;
-import com.rhcloud.igorbotian.rsskit.proxy.HttpLinkMapper;
 import com.rhcloud.igorbotian.rsskit.utils.RssFeedUtils;
 import com.rometools.rome.feed.synd.SyndCategory;
 import com.rometools.rome.feed.synd.SyndEntry;
@@ -23,11 +23,11 @@ import java.util.Objects;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public class LentaFilter implements RssFilter {
+public class LentaRssFeedModifier implements RssModifier {
 
-    private static final RssFilter byCategoriesFilter = new ByCategoriesFilter();
-    private static final RssLinkMapper mobileVersionLinkMapper = new RssLinkMapper(new MobilerVersionLinkMapper());
-    private static final RssFilter descriptionExtender = new RssDescriptionExtender(Mobilizers.instapaper());
+    private static final RssModifier byCategoriesFilter = new ByCategoriesFilter();
+    private static final RssLinkMapper mobileVersionLinkMapper = new RssLinkMapper(new MobileVersionLinkMapper());
+    private static final RssModifier descriptionExtender = new RssDescriptionExtender(Mobilizers.instapaper());
 
     @Override
     public SyndFeed apply(SyndFeed original) {
@@ -46,7 +46,7 @@ public class LentaFilter implements RssFilter {
         }
     }
 
-    private static class MobilerVersionLinkMapper implements HttpLinkMapper {
+    private static class MobileVersionLinkMapper implements LinkMapper {
 
         private static final String MOBILE_VERSION_DOMAIN = "m.lenta.ru";
 
@@ -68,7 +68,7 @@ public class LentaFilter implements RssFilter {
         }
     }
 
-    private static class ByCategoriesFilter implements RssFilter {
+    private static class ByCategoriesFilter implements RssModifier {
 
         private static final List<String> CATEGORIES = Arrays.asList("Экономика", "Бывший СССР");
 

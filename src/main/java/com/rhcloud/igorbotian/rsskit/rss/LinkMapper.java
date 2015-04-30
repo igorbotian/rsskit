@@ -1,4 +1,4 @@
-package com.rhcloud.igorbotian.rsskit.proxy;
+package com.rhcloud.igorbotian.rsskit.rss;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -7,7 +7,7 @@ import java.net.URL;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public interface HttpLinkMapper {
+public interface LinkMapper {
 
-    URL map(URL url) throws URISyntaxException, MalformedURLException;
+    URL map(URL link) throws URISyntaxException, MalformedURLException;
 }

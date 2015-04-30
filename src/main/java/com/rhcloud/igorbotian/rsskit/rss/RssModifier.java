@@ -1,11 +1,11 @@
-package com.rhcloud.igorbotian.rsskit.filter;
+package com.rhcloud.igorbotian.rsskit.rss;
 
 import com.rometools.rome.feed.synd.SyndFeed;
 
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public interface RssFilter {
+public interface RssModifier {
 
     SyndFeed apply(SyndFeed feed);
 }

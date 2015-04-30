@@ -1,10 +1,10 @@
-package com.rhcloud.igorbotian.rsskit.championat;
+package com.rhcloud.igorbotian.rsskit.rss.championat;
 
-import com.rhcloud.igorbotian.rsskit.filter.RssDescriptionExtender;
-import com.rhcloud.igorbotian.rsskit.filter.RssFilter;
-import com.rhcloud.igorbotian.rsskit.filter.RssLinkMapper;
+import com.rhcloud.igorbotian.rsskit.rss.RssDescriptionExtender;
+import com.rhcloud.igorbotian.rsskit.rss.RssModifier;
+import com.rhcloud.igorbotian.rsskit.rss.RssLinkMapper;
 import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizers;
-import com.rhcloud.igorbotian.rsskit.proxy.HttpLinkMapper;
+import com.rhcloud.igorbotian.rsskit.rss.LinkMapper;
 import com.rhcloud.igorbotian.rsskit.utils.RssFeedUtils;
 import com.rometools.rome.feed.synd.SyndFeed;
 
@@ -19,11 +19,11 @@ import java.util.regex.Pattern;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public class ChampionatFilter implements RssFilter {
+public class ChampionatRssFeedModifier implements RssModifier {
 
-    private static final RssFilter breakingNewsFilter = new BreakingNewsFilter();
+    private static final RssModifier breakingNewsFilter = new BreakingNewsFilter();
     private static final RssLinkMapper mobileVersionLinkMapper = new RssLinkMapper(new MobileVersionLinkMapper());
-    private static final RssFilter descriptionExtender = new RssDescriptionExtender(Mobilizers.instapaper());
+    private static final RssModifier descriptionExtender = new RssDescriptionExtender(Mobilizers.instapaper());
 
     @Override
     public SyndFeed apply(SyndFeed original) {
@@ -42,7 +42,7 @@ public class ChampionatFilter implements RssFilter {
         }
     }
 
-    private static class MobileVersionLinkMapper implements HttpLinkMapper {
+    private static class MobileVersionLinkMapper implements LinkMapper {
 
         private static final Pattern DESKTOP_VERSION_NEWS_URL_FORMAT = Pattern.compile(".*\\.championat\\.com/.*/news-(\\d+)-.*");
         private static final String MOBILE_VERSION_NEWS_URL_PREFIX = "http://m.championat.com/news/sport/football/";
@@ -53,7 +53,7 @@ public class ChampionatFilter implements RssFilter {
 
             Matcher matcher = DESKTOP_VERSION_NEWS_URL_FORMAT.matcher(url.toString());
 
-            if(!matcher.matches() || matcher.groupCount() < 1) {
+            if (!matcher.matches() || matcher.groupCount() < 1) {
                 return url;
             }
 
