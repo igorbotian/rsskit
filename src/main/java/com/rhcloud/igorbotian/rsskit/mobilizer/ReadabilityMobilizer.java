@@ -19,7 +19,7 @@ import java.util.Objects;
  */
 public class ReadabilityMobilizer implements Mobilizer {
 
-    private static final String PARSER_API_KEY = "PARSER_API_KEY";
+    private static final String PARSER_API_KEY = "READABILITY_PARSER_API_KEY";
     private static final String TOKEN = Configuration.getProperty(PARSER_API_KEY);
 
     private static final String PROTOCOL = "https";
