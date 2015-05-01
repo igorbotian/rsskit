@@ -1,7 +1,6 @@
 package com.rhcloud.igorbotian.rsskit.rss;
 
 import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizer;
-import com.rhcloud.igorbotian.rsskit.utils.RssFeedUtils;
 import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndContentImpl;
 import com.rometools.rome.feed.synd.SyndEntry;
@@ -25,16 +24,9 @@ public class RssDescriptionExtender implements RssModifier {
     }
 
     @Override
-    public SyndFeed apply(SyndFeed original) {
-        Objects.requireNonNull(original);
-
-        try {
-            SyndFeed feed = RssFeedUtils.clone(original);
-            extendDescription(feed);
-            return feed;
-        } catch (IOException e) {
-            return original;
-        }
+    public void apply(SyndFeed feed) {
+        Objects.requireNonNull(feed);
+        extendDescription(feed);
     }
 
     private void extendDescription(SyndFeed feed) {

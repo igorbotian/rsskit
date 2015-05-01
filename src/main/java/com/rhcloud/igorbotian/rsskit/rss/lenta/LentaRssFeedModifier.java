@@ -1,17 +1,15 @@
 package com.rhcloud.igorbotian.rsskit.rss.lenta;
 
+import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizers;
 import com.rhcloud.igorbotian.rsskit.rss.LinkMapper;
 import com.rhcloud.igorbotian.rsskit.rss.RssDescriptionExtender;
-import com.rhcloud.igorbotian.rsskit.rss.RssModifier;
 import com.rhcloud.igorbotian.rsskit.rss.RssLinkMapper;
-import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizers;
-import com.rhcloud.igorbotian.rsskit.utils.RssFeedUtils;
+import com.rhcloud.igorbotian.rsskit.rss.RssModifier;
 import com.rometools.rome.feed.synd.SyndCategory;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import org.apache.http.client.utils.URIBuilder;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -30,20 +28,12 @@ public class LentaRssFeedModifier implements RssModifier {
     private static final RssModifier descriptionExtender = new RssDescriptionExtender(Mobilizers.instapaper());
 
     @Override
-    public SyndFeed apply(SyndFeed original) {
-        Objects.requireNonNull(original);
+    public void apply(SyndFeed feed) {
+        Objects.requireNonNull(feed);
 
-        try {
-            SyndFeed feed = RssFeedUtils.clone(original);
-
-            feed = byCategoriesFilter.apply(feed);
-            feed = mobileVersionLinkMapper.apply(feed);
-            feed = descriptionExtender.apply(feed);
-
-            return feed;
-        } catch (IOException e) {
-            return original;
-        }
+        byCategoriesFilter.apply(feed);
+        mobileVersionLinkMapper.apply(feed);
+        descriptionExtender.apply(feed);
     }
 
     private static class MobileVersionLinkMapper implements LinkMapper {
@@ -73,10 +63,9 @@ public class LentaRssFeedModifier implements RssModifier {
         private static final List<String> CATEGORIES = Arrays.asList("Экономика", "Бывший СССР");
 
         @Override
-        public SyndFeed apply(SyndFeed feed) {
+        public void apply(SyndFeed feed) {
             Objects.requireNonNull(feed);
             feed.setEntries(filteredEntries(feed));
-            return feed;
         }
 
         private List<SyndEntry> filteredEntries(SyndFeed feed) {

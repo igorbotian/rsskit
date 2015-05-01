@@ -28,7 +28,7 @@ public class ReadabilityRssServlet extends AbstractRssServlet {
 
         if(StringUtils.isNotEmpty(url)) {
             SyndFeed feed = downloadRssFeed(new URL(url));
-            feed = rssModifier.apply(feed);
+            rssModifier.apply(feed);
             respond(feed, resp);
         }
     }

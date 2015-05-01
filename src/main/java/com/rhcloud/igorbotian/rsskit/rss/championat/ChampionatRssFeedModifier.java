@@ -1,14 +1,12 @@
 package com.rhcloud.igorbotian.rsskit.rss.championat;
 
-import com.rhcloud.igorbotian.rsskit.rss.RssDescriptionExtender;
-import com.rhcloud.igorbotian.rsskit.rss.RssModifier;
-import com.rhcloud.igorbotian.rsskit.rss.RssLinkMapper;
 import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizers;
 import com.rhcloud.igorbotian.rsskit.rss.LinkMapper;
-import com.rhcloud.igorbotian.rsskit.utils.RssFeedUtils;
+import com.rhcloud.igorbotian.rsskit.rss.RssDescriptionExtender;
+import com.rhcloud.igorbotian.rsskit.rss.RssLinkMapper;
+import com.rhcloud.igorbotian.rsskit.rss.RssModifier;
 import com.rometools.rome.feed.synd.SyndFeed;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -26,20 +24,12 @@ public class ChampionatRssFeedModifier implements RssModifier {
     private static final RssModifier descriptionExtender = new RssDescriptionExtender(Mobilizers.instapaper());
 
     @Override
-    public SyndFeed apply(SyndFeed original) {
-        Objects.requireNonNull(original);
+    public void apply(SyndFeed feed) {
+        Objects.requireNonNull(feed);
 
-        try {
-            SyndFeed feed = RssFeedUtils.clone(original);
-
-            feed = breakingNewsFilter.apply(feed);
-            feed = mobileVersionLinkMapper.apply(feed);
-            feed = descriptionExtender.apply(feed);
-
-            return feed;
-        } catch (IOException e) {
-            return original;
-        }
+        breakingNewsFilter.apply(feed);
+        mobileVersionLinkMapper.apply(feed);
+        descriptionExtender.apply(feed);
     }
 
     private static class MobileVersionLinkMapper implements LinkMapper {

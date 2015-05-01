@@ -30,8 +30,8 @@ public class RssFilteringServlet extends AbstractRssServlet {
         assert request != null;
         assert response != null;
 
-        SyndFeed originalRss = downloadRssFeed(rssURL);
-        SyndFeed filteredRss = rssModifier.apply(originalRss);
-        respond(filteredRss, response);
+        SyndFeed feed = downloadRssFeed(rssURL);
+        rssModifier.apply(feed);
+        respond(feed, response);
     }
 }

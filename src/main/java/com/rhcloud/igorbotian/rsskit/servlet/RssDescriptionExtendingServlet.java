@@ -55,7 +55,8 @@ public class RssDescriptionExtendingServlet extends AbstractRssServlet {
         assert response != null;
 
         SyndFeed feed = downloadRssFeed(url);
-        feed = truncater.apply(feed);
-        respond(descriptionExtender.apply(feed), response);
+        truncater.apply(feed);
+        descriptionExtender.apply(feed);
+        respond(feed, response);
     }
 }

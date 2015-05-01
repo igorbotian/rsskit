@@ -1,6 +1,5 @@
 package com.rhcloud.igorbotian.rsskit.rss;
 
-import com.rhcloud.igorbotian.rsskit.utils.RssFeedUtils;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 
@@ -21,16 +20,9 @@ public class RssLinkMapper implements RssModifier {
     }
 
     @Override
-    public SyndFeed apply(SyndFeed original) {
-        Objects.requireNonNull(original);
-
-        try {
-            SyndFeed feed = RssFeedUtils.clone(original);
-            mapLinks(feed);
-            return feed;
-        } catch (IOException e) {
-            return original;
-        }
+    public void apply(SyndFeed feed) {
+        Objects.requireNonNull(feed);
+        mapLinks(feed);
     }
 
     private void mapLinks(SyndFeed feed) {

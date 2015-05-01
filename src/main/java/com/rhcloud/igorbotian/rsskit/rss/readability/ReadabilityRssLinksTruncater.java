@@ -20,8 +20,8 @@ public class ReadabilityRssLinksTruncater implements RssModifier, LinkMapper {
     private final RssLinkMapper mapper = new RssLinkMapper(this);
 
     @Override
-    public SyndFeed apply(SyndFeed original) {
-        return mapper.apply(original);
+    public void apply(SyndFeed feed) {
+        mapper.apply(feed);
     }
 
 

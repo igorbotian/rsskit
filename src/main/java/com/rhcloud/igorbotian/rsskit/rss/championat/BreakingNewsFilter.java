@@ -1,12 +1,10 @@
 package com.rhcloud.igorbotian.rsskit.rss.championat;
 
 import com.rhcloud.igorbotian.rsskit.rss.RssModifier;
-import com.rhcloud.igorbotian.rsskit.utils.RssFeedUtils;
 import com.rometools.rome.feed.synd.SyndCategory;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -17,17 +15,11 @@ import java.util.Objects;
 class BreakingNewsFilter implements RssModifier {
 
     @Override
-    public SyndFeed apply(SyndFeed original) {
-        Objects.requireNonNull(original);
+    public void apply(SyndFeed feed) {
+        Objects.requireNonNull(feed);
 
-        try {
-            SyndFeed feed = RssFeedUtils.clone(original);
-            List<SyndEntry> breakingNews = getBreakingNews(feed);
-            feed.setEntries(breakingNews);
-            return feed;
-        } catch (IOException e) {
-            return original;
-        }
+        List<SyndEntry> breakingNews = getBreakingNews(feed);
+        feed.setEntries(breakingNews);
     }
 
     private List<SyndEntry> getBreakingNews(SyndFeed feed) {

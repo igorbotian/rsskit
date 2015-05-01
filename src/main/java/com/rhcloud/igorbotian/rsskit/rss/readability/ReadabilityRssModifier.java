@@ -4,10 +4,8 @@ import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizers;
 import com.rhcloud.igorbotian.rsskit.rss.RssDescriptionExtender;
 import com.rhcloud.igorbotian.rsskit.rss.RssModifier;
 import com.rhcloud.igorbotian.rsskit.rss.RssTruncater;
-import com.rhcloud.igorbotian.rsskit.utils.RssFeedUtils;
 import com.rometools.rome.feed.synd.SyndFeed;
 
-import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -22,19 +20,11 @@ public class ReadabilityRssModifier implements RssModifier {
     private static final RssDescriptionExtender descriptionExtender = new RssDescriptionExtender(Mobilizers.instapaper());
 
     @Override
-    public SyndFeed apply(SyndFeed original) {
-        Objects.requireNonNull(original);
+    public void apply(SyndFeed feed) {
+        Objects.requireNonNull(feed);
 
-        try {
-            SyndFeed feed = RssFeedUtils.clone(original);
-
-            feed = feedTruncater.apply(feed);
-            feed = linkTruncater.apply(feed);
-            feed = descriptionExtender.apply(feed);
-
-            return feed;
-        } catch (IOException e) {
-            return original;
-        }
+        feedTruncater.apply(feed);
+        linkTruncater.apply(feed);
+        descriptionExtender.apply(feed);
     }
 }

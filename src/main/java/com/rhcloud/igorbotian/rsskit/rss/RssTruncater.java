@@ -1,10 +1,8 @@
 package com.rhcloud.igorbotian.rsskit.rss;
 
-import com.rhcloud.igorbotian.rsskit.utils.RssFeedUtils;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,16 +22,9 @@ public class RssTruncater implements RssModifier {
     }
 
     @Override
-    public SyndFeed apply(SyndFeed original) {
-        Objects.requireNonNull(original);
-
-        try {
-            SyndFeed feed = RssFeedUtils.clone(original);
-            truncate(feed);
-            return feed;
-        } catch (IOException e) {
-            return original; // skipping this feed
-        }
+    public void apply(SyndFeed feed) {
+        Objects.requireNonNull(feed);
+        truncate(feed);
     }
 
     private void truncate(SyndFeed feed) {
