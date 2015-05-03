@@ -77,4 +77,13 @@
         <servlet-name>lenta</servlet-name>
         <url-pattern>/lenta</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>buffer</servlet-name>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.BufferServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>buffer</servlet-name>
+        <url-pattern>/buffer</url-pattern>
+    </servlet-mapping>
 </web-app>

@@ -96,6 +96,7 @@
 	</dependencies>
 
 	<build>
+        <finalName>ROOT</finalName> <!-- corresponds to OpenShift app convention name -->
 		<plugins>
             <plugin>
                 <artifactId>maven-enforcer-plugin</artifactId>
