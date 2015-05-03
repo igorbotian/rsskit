@@ -6,7 +6,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -35,7 +34,7 @@ class ProfilesEndpoint extends RestGetEndpoint {
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("access_token", accessToken));
 
-        return makeRequest(new URL(ENDPOINT_URL), params);
+        return makeRequest(ENDPOINT_URL, params);
     }
 
     private List<String> parseProfileIds(JsonNode response) throws BufferException {

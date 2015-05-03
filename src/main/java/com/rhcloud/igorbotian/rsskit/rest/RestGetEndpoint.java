@@ -16,10 +16,11 @@ public class RestGetEndpoint extends AbstractRestEndpoint {
     private static final Requestor REQUESTOR = new Requestor() {
 
         @Override
-        public HttpURLConnection request(URL endpoint, List<NameValuePair> params) throws IOException {
-            URL url = URLUtils.makeURL(endpoint.toString(), params);
+        public HttpURLConnection request(String endpoint, List<NameValuePair> params) throws IOException {
+            URL url = URLUtils.makeURL(endpoint, params);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoInput(true);
+            connection.setRequestMethod("GET");
             connection.connect();
 
             return connection;

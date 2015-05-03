@@ -7,7 +7,6 @@ import org.apache.http.NameValuePair;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,7 +18,7 @@ public abstract class AbstractRestEndpoint implements RestEndpoint {
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
     @Override
-    public JsonNode makeRequest(URL endpoint, List<NameValuePair> params) throws IOException {
+    public JsonNode makeRequest(String endpoint, List<NameValuePair> params) throws IOException {
         Objects.requireNonNull(endpoint);
         Objects.requireNonNull(params);
 
@@ -41,6 +40,6 @@ public abstract class AbstractRestEndpoint implements RestEndpoint {
 
     protected interface Requestor {
 
-        HttpURLConnection request(URL endpoint, List<NameValuePair> params) throws IOException;
+        HttpURLConnection request(String endpoint, List<NameValuePair> params) throws IOException;
     }
 }

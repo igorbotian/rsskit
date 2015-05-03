@@ -6,7 +6,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.*;
 
 /**
@@ -44,7 +43,7 @@ class UpdatesEndpoint extends RestGetEndpoint {
         params.add(new BasicNameValuePair("access_token", accessToken));
         params.add(new BasicNameValuePair("count", Integer.toString(count)));
 
-        return makeRequest(new URL(String.format(ENDPOINT_URL, profileID)), params);
+        return makeRequest(String.format(ENDPOINT_URL, profileID), params);
     }
 
     private TreeMap<Date, NameValuePair> parsePendingUpdates(JsonNode response) throws BufferException {

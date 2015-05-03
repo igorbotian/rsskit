@@ -86,4 +86,13 @@
         <servlet-name>buffer</servlet-name>
         <url-pattern>/buffer</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>twitter</servlet-name>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.TwitterServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>twitter</servlet-name>
+        <url-pattern>/twitter</url-pattern>
+    </servlet-mapping>
 </web-app>

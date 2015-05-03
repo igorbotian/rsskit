@@ -48,7 +48,7 @@ class OAuthTokenEndpoint extends RestPostEndpoint {
         params.add(new BasicNameValuePair("code", authorizationCode));
         params.add(new BasicNameValuePair("grant_type", "authorization_code"));
 
-        return makeRequest(new URL(ENDPOINT_URL), params);
+        return makeRequest(ENDPOINT_URL, params);
     }
 
     private String parseAccessToken(JsonNode response) throws BufferException {

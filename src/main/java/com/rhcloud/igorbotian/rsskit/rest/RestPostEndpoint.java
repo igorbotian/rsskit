@@ -16,10 +16,11 @@ public class RestPostEndpoint extends AbstractRestEndpoint {
     private static final Requestor REQUESTOR = new Requestor() {
 
         @Override
-        public HttpURLConnection request(URL endpoint, List<NameValuePair> params) throws IOException {
-            HttpURLConnection connection = (HttpURLConnection) endpoint.openConnection();
+        public HttpURLConnection request(String endpoint, List<NameValuePair> params) throws IOException {
+            HttpURLConnection connection = (HttpURLConnection) new URL(endpoint).openConnection();
             connection.setDoInput(true);
             connection.setDoOutput(true);
+            connection.setRequestMethod("POST");
             connection.connect();
 
             new UrlEncodedFormEntity(params).writeTo(connection.getOutputStream());
