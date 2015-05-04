@@ -95,4 +95,13 @@
         <servlet-name>twitter</servlet-name>
         <url-pattern>/twitter</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>instagram</servlet-name>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.InstagramServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>instagram</servlet-name>
+        <url-pattern>/instagram</url-pattern>
+    </servlet-mapping>
 </web-app>
