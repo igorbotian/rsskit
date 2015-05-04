@@ -10,6 +10,7 @@ public class InstagramAPIImpl implements InstagramAPI {
 
     private final AuthenticationEndpoint authentication = new AuthenticationEndpoint();
     private final UsersEndpoints users = new UsersEndpoints();
+    private final MediaEndpoints media = new MediaEndpoints();
 
     @Override
     public URL getAuthorizationURL(String clientID, URL callbackURL) throws InstagramException {
@@ -36,5 +37,19 @@ public class InstagramAPIImpl implements InstagramAPI {
         Objects.requireNonNull(accessToken);
 
         return users.getSelfFeed(accessToken);
+    }
+
+    @Override
+    public boolean isShortenURL(URL url) {
+        Objects.requireNonNull(url);
+        return media.isShortenURL(url);
+    }
+
+    @Override
+    public URL unshortURL(URL url, String accessToken) throws InstagramException {
+        Objects.requireNonNull(url);
+        Objects.requireNonNull(accessToken);
+
+        return media.unshortURL(url, accessToken);
     }
 }

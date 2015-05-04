@@ -2,18 +2,14 @@ package com.rhcloud.igorbotian.rsskit.rss.twitter;
 
 import com.rhcloud.igorbotian.rsskit.rss.RssModifier;
 import com.rometools.rome.feed.synd.SyndEnclosure;
-import com.rometools.rome.feed.synd.SyndEnclosureImpl;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.*;
+import java.util.Objects;
 
 /**
  * @author Igor Botian <igor.botian@gmail.com>
@@ -32,50 +28,9 @@ public class TwitterRssDescriptionExtender implements RssModifier {
     private void extendDescription(SyndEntry entry) {
         assert entry != null;
 
-        List<SyndEnclosure> enclosures = new ArrayList<>(entry.getEnclosures());
-        entry.setEnclosures(Collections.<SyndEnclosure>emptyList());
+        StringBuilder builder = new StringBuilder(entry.getDescription().getValue());
 
-        NameValuePair titleAndLink = extractTitleAndLink(entry.getTitle());
-        String title = titleAndLink.getName();
-        String url = titleAndLink.getValue();
-
-        if(StringUtils.isNotEmpty(title)) {
-            entry.setTitle(title);
-        }
-
-        if(StringUtils.isNotEmpty(url)) {
-            SyndEnclosure enclosure = new SyndEnclosureImpl();
-            enclosure.setUrl(url);
-            enclosures.add(0, enclosure);
-        }
-
-        entry.getDescription().setType("text/html");
-        entry.getDescription().setValue(extendDescription(title, enclosures));
-    }
-
-    private NameValuePair extractTitleAndLink(String text) {
-        assert text != null;
-
-        String description = text;
-        String link = null;
-
-        int pos = text.indexOf("http");
-
-        if (pos >= 0) {
-            description = text.substring(0, pos);
-            link = (String) new StringTokenizer(text.substring(pos), " ").nextElement();
-        }
-
-        return new BasicNameValuePair(description, link);
-    }
-
-    private String extendDescription(String text, List<SyndEnclosure> enclosures) {
-        assert text != null;
-        assert enclosures != null;
-
-        StringBuilder builder = new StringBuilder(text);
-
-        for (SyndEnclosure enclosure : enclosures) {
+        for (SyndEnclosure enclosure : entry.getEnclosures()) {
             if (builder.length() > 0) {
                 builder.append("<br/><br/>");
             }
@@ -83,7 +38,7 @@ public class TwitterRssDescriptionExtender implements RssModifier {
             builder.append(parseAttachment(enclosure.getUrl()));
         }
 
-        return StringEscapeUtils.unescapeHtml4(builder.toString());
+        entry.getDescription().setValue(StringEscapeUtils.unescapeHtml4(builder.toString()));
     }
 
     private String parseAttachment(String url) {

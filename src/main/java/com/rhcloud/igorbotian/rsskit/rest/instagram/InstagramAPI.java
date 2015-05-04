@@ -13,4 +13,8 @@ public interface InstagramAPI {
             throws InstagramException;
 
     InstagramFeed getSelfFeed(String accessToken) throws InstagramException;
+
+    boolean isShortenURL(URL url);
+
+    URL unshortURL(URL shortenURL, String accessToken) throws InstagramException;
 }

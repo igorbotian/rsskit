@@ -3,7 +3,9 @@ package com.rhcloud.igorbotian.rsskit.rss.twitter;
 import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterException;
 import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterTimeline;
 import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterTweet;
+import com.rhcloud.igorbotian.rsskit.rss.instagram.InstagramEnclosureExpander;
 import com.rometools.rome.feed.synd.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,6 +21,18 @@ public class TwitterRssGenerator {
     private static final String LINK_FORMAT = "https://twitter.com/%s/status/%s";
 
     private static final TwitterRssDescriptionExtender descriptionExtender = new TwitterRssDescriptionExtender();
+    private static final TwitterRssLinkExtractor linkExtractor = new TwitterRssLinkExtractor();
+    private static final TwitterRssLinkUnshorter linkUnshorter = new TwitterRssLinkUnshorter();
+    private final InstagramEnclosureExpander instagramEnclosureExpander;
+
+    public TwitterRssGenerator() {
+        this(null);
+    }
+
+    public TwitterRssGenerator(String instagramAccessToken) {
+        this.instagramEnclosureExpander = StringUtils.isNotEmpty(instagramAccessToken)
+                ? new InstagramEnclosureExpander(instagramAccessToken) : null;
+    }
 
     public SyndFeed generate(TwitterTimeline timeline) throws TwitterException {
         Objects.requireNonNull(timeline);
@@ -31,6 +45,13 @@ public class TwitterRssGenerator {
         feed.setFeedType("rss_2.0");
 
         feed.setEntries(generateEntries(timeline.tweets));
+
+        linkExtractor.apply(feed);
+        linkUnshorter.apply(feed);
+
+        if(instagramEnclosureExpander != null) {
+            instagramEnclosureExpander.apply(feed);
+        }
 
         descriptionExtender.apply(feed);
 
