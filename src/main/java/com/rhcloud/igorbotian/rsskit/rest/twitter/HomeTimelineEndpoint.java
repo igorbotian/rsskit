@@ -19,7 +19,7 @@ import java.util.List;
 class HomeTimelineEndpoint extends OAuth10RestGetEndpoint {
 
     private static final String ENDPOINT_URL = "https://api.twitter.com/1.1/statuses/home_timeline.json";
-    private static final int MAX_ENTRIES = 50;
+    private static final int MAX_ENTRIES = 100;
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy");
 
     HomeTimelineEndpoint(OAuth10Credentials credentials) {

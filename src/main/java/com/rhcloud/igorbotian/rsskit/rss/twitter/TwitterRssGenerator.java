@@ -60,7 +60,7 @@ public class TwitterRssGenerator {
         String title = titleAndLink.getName();
         String url = titleAndLink.getValue();
 
-        if(url != null) {
+        if (url != null) {
             attachments.add(0, url);
         }
 
@@ -106,19 +106,14 @@ public class TwitterRssGenerator {
         assert author != null;
         assert attachments != null;
 
-        StringBuilder builder = new StringBuilder(String.format("<font size=small><i>%s</i></font><br/><br/>", author));
-        builder.append(text);
+        StringBuilder builder = new StringBuilder(text);
 
-        if(StringUtils.isNotEmpty(text) && !attachments.isEmpty()) {
-            builder.append("<br/><br/>");
-        }
-
-        for(int i = 0; i < attachments.size(); i++) {
-            if(i > 0) {
+        for (String attachment : attachments) {
+            if (builder.length() > 0) {
                 builder.append("<br/><br/>");
             }
 
-            builder.append(parseAttachment(attachments.get(i)));
+            builder.append(parseAttachment(attachment));
         }
 
         return StringEscapeUtils.unescapeHtml4(builder.toString());
@@ -132,7 +127,7 @@ public class TwitterRssGenerator {
 
         int pos = text.indexOf("http");
 
-        if(pos >= 0) {
+        if (pos >= 0) {
             description = text.substring(0, pos);
             link = (String) new StringTokenizer(text.substring(pos), " ").nextElement();
         }
@@ -144,18 +139,18 @@ public class TwitterRssGenerator {
         assert url != null;
 
         String originalURL = url;
-        boolean picture = false;
+        boolean image = false;
 
         try {
             HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
             conn.connect();
             originalURL = getOriginalURL(conn);
-            picture = isImage(conn);
+            image = isImage(conn);
         } catch (IOException e) {
             // skipping this attachment
         }
 
-        if(picture) {
+        if (image) {
             return String.format("<img src='%s'/>", originalURL);
         }
 
@@ -165,8 +160,8 @@ public class TwitterRssGenerator {
     private String getOriginalURL(HttpURLConnection conn) {
         assert conn != null;
 
-        for(String header : conn.getHeaderFields().keySet()) {
-            if("Location".equals(header)) {
+        for (String header : conn.getHeaderFields().keySet()) {
+            if ("Location".equals(header)) {
                 return conn.getHeaderField(header);
             }
         }
