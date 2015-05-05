@@ -104,4 +104,13 @@
         <servlet-name>instagram</servlet-name>
         <url-pattern>/instagram</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>vk</servlet-name>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.VkServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>vk</servlet-name>
+        <url-pattern>/vk</url-pattern>
+    </servlet-mapping>
 </web-app>
