@@ -17,18 +17,29 @@ public class VkRssGenerator {
 
     private VkFeedFilter feedFilter = new VkFeedFilter();
 
+    public SyndFeed error(String errorMessage) {
+        Objects.requireNonNull(errorMessage);
+
+        SyndFeed rss = skeleton();
+        SyndEntry entry = new SyndEntryImpl();
+
+        SyndContent description = new SyndContentImpl();
+        description.setType("text/plain");
+        description.setValue(errorMessage);
+
+        entry.setTitle("Error");
+        entry.setDescription(description);
+        rss.setEntries(Collections.singletonList(entry));
+
+        return rss;
+    }
+
     public SyndFeed generate(VkFeed feed) {
         Objects.requireNonNull(feed);
 
         feed = feedFilter.removeDuplicates(feed);
 
-        SyndFeed rss = new SyndFeedImpl();
-
-        rss.setTitle("VK");
-        rss.setPublishedDate(new Date());
-        rss.setDescription("VK news feed");
-        rss.setLink("http://www.vk.com");
-        rss.setFeedType("rss_2.0");
+        SyndFeed rss = skeleton();
 
         List<SyndEntry> entries = new ArrayList<>(feed.items.size());
 
@@ -37,6 +48,18 @@ public class VkRssGenerator {
         }
 
         rss.setEntries(entries);
+
+        return rss;
+    }
+
+    private SyndFeed skeleton() {
+        SyndFeed rss = new SyndFeedImpl();
+
+        rss.setTitle("VK");
+        rss.setPublishedDate(new Date());
+        rss.setDescription("VK news feed");
+        rss.setLink("http://www.vk.com");
+        rss.setFeedType("rss_2.0");
 
         return rss;
     }

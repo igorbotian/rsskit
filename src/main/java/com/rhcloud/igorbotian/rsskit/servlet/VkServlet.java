@@ -48,7 +48,7 @@ public class VkServlet extends AbstractRssServlet {
 
         String accessToken = req.getParameter(ACCESS_TOKEN_PARAM);
 
-        if(StringUtils.isNotEmpty(accessToken)) {
+        if (StringUtils.isNotEmpty(accessToken)) {
             respondRss(accessToken, resp);
         } else {
             String code = req.getParameter(CODE_PARAM);
@@ -65,13 +65,16 @@ public class VkServlet extends AbstractRssServlet {
         assert accessToken != null;
         assert resp != null;
 
+        SyndFeed rss;
+
         try {
             VkFeed newsFeed = api.getNewsFeed(accessToken);
-            SyndFeed rss = rssGenerator.generate(newsFeed);
-            respond(rss, resp);
+            rss = rssGenerator.generate(newsFeed);
         } catch (VkException e) {
-            throw new IOException("Failed to generate RSS feed", e);
+            rss = rssGenerator.error(e.getMessage());
         }
+
+        respond(rss, resp);
     }
 
     private String requestAccessToken(String code, HttpServletRequest req) throws IOException {

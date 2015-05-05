@@ -29,8 +29,8 @@ public class VkResponse {
 
         String message = "";
 
-        if (error.has("message")) {
-            message = error.get("message").asText();
+        if (error.has("error_msg")) {
+            message = error.get("error_msg").asText();
         }
 
         if (error.has("code")) {
