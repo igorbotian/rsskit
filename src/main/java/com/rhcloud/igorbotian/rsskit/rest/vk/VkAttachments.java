@@ -1,6 +1,8 @@
 package com.rhcloud.igorbotian.rsskit.rest.vk;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.rhcloud.igorbotian.rsskit.rest.EntityParser;
+import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +14,7 @@ import java.util.Objects;
  */
 public class VkAttachments {
 
-    private static final VkEntityParser<VkAttachments> PARSER = new VkAttachmentsParser();
+    private static final EntityParser<VkAttachments> PARSER = new VkAttachmentsParser();
 
     public final List<VkPhoto> photos;
     public final List<VkPostedPhoto> postedPhotos;
@@ -50,15 +52,15 @@ public class VkAttachments {
         this.notes = Collections.unmodifiableList(Objects.requireNonNull(notes));
     }
 
-    public static VkAttachments parse(JsonNode json) throws VkException {
+    public static VkAttachments parse(JsonNode json) throws RestParseException {
         Objects.requireNonNull(json);
         return PARSER.parse(json);
     }
 
-    private static class VkAttachmentsParser extends VkEntityParser<VkAttachments> {
+    private static class VkAttachmentsParser extends EntityParser<VkAttachments> {
 
         @Override
-        public VkAttachments parse(JsonNode json) throws VkException {
+        public VkAttachments parse(JsonNode json) throws RestParseException {
             Objects.requireNonNull(json);
 
             List<VkAudio> audios = new ArrayList<>();

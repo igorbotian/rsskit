@@ -1,6 +1,8 @@
 package com.rhcloud.igorbotian.rsskit.rest.vk;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.rhcloud.igorbotian.rsskit.rest.EntityParser;
+import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
 
 import java.util.Objects;
 
@@ -31,15 +33,15 @@ public class VkAudio {
         this.url = Objects.requireNonNull(url);
     }
 
-    public static VkAudio parse(JsonNode json) throws VkException {
+    public static VkAudio parse(JsonNode json) throws RestParseException {
         Objects.requireNonNull(json);
         return PARSER.parse(json);
     }
 
-    private static class VkAudioParser extends VkEntityParser<VkAudio> {
+    private static class VkAudioParser extends EntityParser<VkAudio> {
 
         @Override
-        public VkAudio parse(JsonNode json) throws VkException {
+        public VkAudio parse(JsonNode json) throws RestParseException {
             Objects.requireNonNull(json);
 
             long id = getAttribute(json, "id").asLong();

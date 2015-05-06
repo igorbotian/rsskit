@@ -1,6 +1,8 @@
 package com.rhcloud.igorbotian.rsskit.rest.vk;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.rhcloud.igorbotian.rsskit.rest.EntityParser;
+import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
 
 import java.util.Objects;
 
@@ -9,7 +11,7 @@ import java.util.Objects;
  */
 public class VkPost extends VkFeedItem {
 
-    private static final VkEntityParser<VkPost> PARSER = new VkPostParser();
+    private static final EntityParser<VkPost> PARSER = new VkPostParser();
 
     public final long postID;
     public final String text;
@@ -31,15 +33,15 @@ public class VkPost extends VkFeedItem {
         this.attachments = Objects.requireNonNull(attachments);
     }
 
-    public static VkPost parse(JsonNode json) throws VkException {
+    public static VkPost parse(JsonNode json) throws RestParseException {
         Objects.requireNonNull(json);
         return PARSER.parse(json);
     }
 
-    private static class VkPostParser extends VkEntityParser<VkPost> {
+    private static class VkPostParser extends EntityParser<VkPost> {
 
         @Override
-        public VkPost parse(JsonNode json) throws VkException {
+        public VkPost parse(JsonNode json) throws RestParseException {
             Objects.requireNonNull(json);
 
             VkFeedItem item = VkFeedItem.parse(json);

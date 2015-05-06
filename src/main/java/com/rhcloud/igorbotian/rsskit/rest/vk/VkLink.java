@@ -1,6 +1,8 @@
 package com.rhcloud.igorbotian.rsskit.rest.vk;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.rhcloud.igorbotian.rsskit.rest.EntityParser;
+import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
 
 import java.util.Objects;
 
@@ -9,7 +11,7 @@ import java.util.Objects;
  */
 public class VkLink {
 
-    private static final VkEntityParser<VkLink> PARSER = new VkLinkParser();
+    private static final EntityParser<VkLink> PARSER = new VkLinkParser();
 
     public final String url;
     public final String title;
@@ -23,15 +25,15 @@ public class VkLink {
         this.imageSrc = imageSrc;
     }
 
-    public static VkLink parse(JsonNode json) throws VkException {
+    public static VkLink parse(JsonNode json) throws RestParseException {
         Objects.requireNonNull(json);
         return PARSER.parse(json);
     }
 
-    private static class VkLinkParser extends VkEntityParser<VkLink> {
+    private static class VkLinkParser extends EntityParser<VkLink> {
 
         @Override
-        public VkLink parse(JsonNode json) throws VkException {
+        public VkLink parse(JsonNode json) throws RestParseException {
             Objects.requireNonNull(json);
 
             String url = getAttribute(json, "url").asText();

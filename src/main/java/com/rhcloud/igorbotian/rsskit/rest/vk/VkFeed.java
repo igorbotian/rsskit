@@ -1,6 +1,8 @@
 package com.rhcloud.igorbotian.rsskit.rest.vk;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.rhcloud.igorbotian.rsskit.rest.EntityParser;
+import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
 
 import java.util.*;
 
@@ -9,7 +11,7 @@ import java.util.*;
  */
 public class VkFeed {
 
-    private static final VkEntityParser<VkFeed> PARSER = new VkFeedParser();
+    private static final EntityParser<VkFeed> PARSER = new VkFeedParser();
 
     public final List<VkFeedItem> items;
     public final Map<Long, VkUser> profiles;
@@ -21,15 +23,15 @@ public class VkFeed {
         this.groups = Collections.unmodifiableMap(Objects.requireNonNull(groups));
     }
 
-    public static VkFeed parse(JsonNode json) throws VkException {
+    public static VkFeed parse(JsonNode json) throws RestParseException {
         Objects.requireNonNull(json);
         return PARSER.parse(json);
     }
 
-    private static class VkFeedParser extends VkEntityParser<VkFeed> {
+    private static class VkFeedParser extends EntityParser<VkFeed> {
 
         @Override
-        public VkFeed parse(JsonNode json) throws VkException {
+        public VkFeed parse(JsonNode json) throws RestParseException {
             Objects.requireNonNull(json);
 
             Map<Long, VkUser> profiles = parseProfiles(getAttribute(json, "profiles"));
@@ -39,7 +41,7 @@ public class VkFeed {
             return new VkFeed(items, profiles, groups);
         }
 
-        private Map<Long, VkUser> parseProfiles(JsonNode json) throws VkException {
+        private Map<Long, VkUser> parseProfiles(JsonNode json) throws RestParseException {
             assert json != null;
 
             Map<Long, VkUser> profiles = new HashMap<>(json.size());
@@ -52,7 +54,7 @@ public class VkFeed {
             return profiles;
         }
 
-        private Map<Long, VkGroup> parseGroups(JsonNode json) throws VkException {
+        private Map<Long, VkGroup> parseGroups(JsonNode json) throws RestParseException {
             assert json != null;
 
             Map<Long, VkGroup> groups = new HashMap<>(json.size());
@@ -65,7 +67,7 @@ public class VkFeed {
             return groups;
         }
 
-        private List<VkFeedItem> parseItems(JsonNode json) throws VkException {
+        private List<VkFeedItem> parseItems(JsonNode json) throws RestParseException {
             assert json != null;
 
             List<VkFeedItem> items = new ArrayList<>(json.size());
@@ -77,7 +79,7 @@ public class VkFeed {
             return items;
         }
 
-        private VkFeedItem parseItem(JsonNode json) throws VkException {
+        private VkFeedItem parseItem(JsonNode json) throws RestParseException {
             assert json != null;
 
             VkFeedItem item = VkFeedItem.parse(json);

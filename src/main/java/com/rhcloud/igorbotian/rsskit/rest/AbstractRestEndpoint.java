@@ -25,7 +25,7 @@ public abstract class AbstractRestEndpoint implements RestEndpoint {
         HttpURLConnection response = requestor().request(endpoint, params);
 
         if (response.getResponseCode() != HttpURLConnection.HTTP_OK) {
-            throw new RestException("Unable to make a request (" + response.getResponseCode() + ")");
+            throw new IOException("Unable to make a request (" + response.getResponseCode() + ")");
         }
 
         long contentLength = response.getContentLength();

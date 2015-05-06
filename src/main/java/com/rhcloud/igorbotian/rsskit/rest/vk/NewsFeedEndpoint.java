@@ -1,7 +1,9 @@
 package com.rhcloud.igorbotian.rsskit.rest.vk;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.rhcloud.igorbotian.rsskit.rest.EntityParser;
 import com.rhcloud.igorbotian.rsskit.rest.RestGetEndpoint;
+import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -40,16 +42,18 @@ class NewsFeedEndpoint extends RestGetEndpoint {
             return parseNewsFeed(response);
         } catch (IOException e) {
             throw new VkException("Failed to retrieve the news feed of a specified VK user", e);
+        } catch (RestParseException e) {
+            throw new VkException("Failed to parse VK response", e);
         }
     }
 
-    private VkFeed parseNewsFeed(JsonNode json) throws VkException {
+    private VkFeed parseNewsFeed(JsonNode json) throws RestParseException, VkException {
         assert json != null;
 
-        return VkResponse.parse(json, new VkEntityParser<VkFeed>() {
+        return VkResponse.parse(json, new EntityParser<VkFeed>() {
 
             @Override
-            public VkFeed parse(JsonNode json) throws VkException {
+            public VkFeed parse(JsonNode json) throws RestParseException {
                 Objects.requireNonNull(json);
                 return VkFeed.parse(json);
             }

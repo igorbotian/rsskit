@@ -1,6 +1,8 @@
 package com.rhcloud.igorbotian.rsskit.rest.vk;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.rhcloud.igorbotian.rsskit.rest.EntityParser;
+import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
 
 import java.util.Objects;
 
@@ -9,7 +11,7 @@ import java.util.Objects;
  */
 public class VkRepost extends VkFeedItem {
 
-    private static final VkEntityParser<VkRepost> PARSER = new VkRepostParser();
+    private static final EntityParser<VkRepost> PARSER = new VkRepostParser();
 
     public final long postID;
     public final String text;
@@ -23,20 +25,20 @@ public class VkRepost extends VkFeedItem {
         this.originalPost = Objects.requireNonNull(originalPost);
     }
 
-    public static VkRepost parse(JsonNode json) throws VkException {
+    public static VkRepost parse(JsonNode json) throws RestParseException {
         Objects.requireNonNull(json);
         return PARSER.parse(json);
     }
 
-    public static boolean isRepost(JsonNode json) throws VkException {
+    public static boolean isRepost(JsonNode json) throws RestParseException {
         Objects.requireNonNull(json);
         return json.has("copy_history");
     }
 
-    private static class VkRepostParser extends VkEntityParser<VkRepost> {
+    private static class VkRepostParser extends EntityParser<VkRepost> {
 
         @Override
-        public VkRepost parse(JsonNode json) throws VkException {
+        public VkRepost parse(JsonNode json) throws RestParseException {
             Objects.requireNonNull(json);
 
             VkFeedItem item = VkFeedItem.parse(json);

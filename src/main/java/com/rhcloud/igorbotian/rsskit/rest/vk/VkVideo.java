@@ -1,6 +1,8 @@
 package com.rhcloud.igorbotian.rsskit.rest.vk;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.rhcloud.igorbotian.rsskit.rest.EntityParser;
+import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
 
 import java.util.Objects;
 
@@ -9,7 +11,7 @@ import java.util.Objects;
  */
 public class VkVideo {
 
-    private static final VkEntityParser<VkVideo> PARSER = new VkVideoParser();
+    private static final EntityParser<VkVideo> PARSER = new VkVideoParser();
 
     public final long id;
     public final long ownerID;
@@ -31,15 +33,15 @@ public class VkVideo {
         this.thumbnailURL = Objects.requireNonNull(thumbnailURL);
     }
 
-    public static VkVideo parse(JsonNode json) throws VkException {
+    public static VkVideo parse(JsonNode json) throws RestParseException {
         Objects.requireNonNull(json);
         return PARSER.parse(json);
     }
 
-    private static class VkVideoParser extends VkEntityParser<VkVideo> {
+    private static class VkVideoParser extends EntityParser<VkVideo> {
 
         @Override
-        public VkVideo parse(JsonNode json) throws VkException {
+        public VkVideo parse(JsonNode json) throws RestParseException {
             Objects.requireNonNull(json);
 
             long id = getAttribute(json, "id").asLong();

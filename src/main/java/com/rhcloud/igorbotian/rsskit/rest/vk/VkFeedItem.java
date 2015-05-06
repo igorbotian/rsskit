@@ -1,6 +1,8 @@
 package com.rhcloud.igorbotian.rsskit.rest.vk;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.rhcloud.igorbotian.rsskit.rest.EntityParser;
+import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
 
 import java.util.Date;
 import java.util.Objects;
@@ -10,7 +12,7 @@ import java.util.Objects;
  */
 public class VkFeedItem {
 
-    private static final VkEntityParser<VkFeedItem> PARSER = new VkFeedItemParser();
+    private static final EntityParser<VkFeedItem> PARSER = new VkFeedItemParser();
 
     public final VkFeedItemType type;
     public final long sourceID;
@@ -30,15 +32,15 @@ public class VkFeedItem {
         this.date = Objects.requireNonNull(date);
     }
 
-    public static VkFeedItem parse(JsonNode json) throws VkException {
+    public static VkFeedItem parse(JsonNode json) throws RestParseException {
         Objects.requireNonNull(json);
         return PARSER.parse(json);
     }
 
-    private static class VkFeedItemParser extends VkEntityParser<VkFeedItem> {
+    private static class VkFeedItemParser extends EntityParser<VkFeedItem> {
 
         @Override
-        public VkFeedItem parse(JsonNode json) throws VkException {
+        public VkFeedItem parse(JsonNode json) throws RestParseException {
             Objects.requireNonNull(json);
 
             VkFeedItemType type = json.has("type")

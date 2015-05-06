@@ -1,6 +1,8 @@
 package com.rhcloud.igorbotian.rsskit.rest.vk;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.rhcloud.igorbotian.rsskit.rest.EntityParser;
+import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
 
 import java.util.Objects;
 
@@ -9,7 +11,7 @@ import java.util.Objects;
  */
 public class VkPhoto {
 
-    private static final VkEntityParser<VkPhoto> PARSER = new VkPhotoParser();
+    private static final EntityParser<VkPhoto> PARSER = new VkPhotoParser();
 
     public final long id;
     public final long ownerID;
@@ -25,15 +27,15 @@ public class VkPhoto {
         this.text = text != null ? text : "";
     }
 
-    public static VkPhoto parse(JsonNode json) throws VkException {
+    public static VkPhoto parse(JsonNode json) throws RestParseException {
         Objects.requireNonNull(json);
         return PARSER.parse(json);
     }
 
-    private static class VkPhotoParser extends VkEntityParser<VkPhoto> {
+    private static class VkPhotoParser extends EntityParser<VkPhoto> {
 
         @Override
-        public VkPhoto parse(JsonNode json) throws VkException {
+        public VkPhoto parse(JsonNode json) throws RestParseException {
             Objects.requireNonNull(json);
 
             long id = getAttribute(json, "id").asLong();

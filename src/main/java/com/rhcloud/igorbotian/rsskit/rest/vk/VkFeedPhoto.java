@@ -1,6 +1,8 @@
 package com.rhcloud.igorbotian.rsskit.rest.vk;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.rhcloud.igorbotian.rsskit.rest.EntityParser;
+import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +14,7 @@ import java.util.Objects;
  */
 public class VkFeedPhoto extends VkFeedItem {
 
-    private static final VkEntityParser<VkFeedPhoto> PARSER = new VkFeedPhotoParser();
+    private static final EntityParser<VkFeedPhoto> PARSER = new VkFeedPhotoParser();
 
     public final long postID;
     public final List<VkPhoto> photos;
@@ -24,15 +26,15 @@ public class VkFeedPhoto extends VkFeedItem {
         this.photos = Collections.unmodifiableList(Objects.requireNonNull(photos));
     }
 
-    public static VkFeedPhoto parse(JsonNode json) throws VkException {
+    public static VkFeedPhoto parse(JsonNode json) throws RestParseException {
         Objects.requireNonNull(json);
         return PARSER.parse(json);
     }
 
-    private static class VkFeedPhotoParser extends VkEntityParser<VkFeedPhoto> {
+    private static class VkFeedPhotoParser extends EntityParser<VkFeedPhoto> {
 
         @Override
-        public VkFeedPhoto parse(JsonNode json) throws VkException {
+        public VkFeedPhoto parse(JsonNode json) throws RestParseException {
             Objects.requireNonNull(json);
 
             VkFeedItem item = VkFeedItem.parse(json);
@@ -42,7 +44,7 @@ public class VkFeedPhoto extends VkFeedItem {
             return new VkFeedPhoto(item, postID, photos);
         }
 
-        private List<VkPhoto> parsePhotos(JsonNode json) throws VkException {
+        private List<VkPhoto> parsePhotos(JsonNode json) throws RestParseException {
             assert json != null;
 
             JsonNode items = getAttribute(json, "items");
