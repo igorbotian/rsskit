@@ -4,7 +4,7 @@ import com.rhcloud.igorbotian.rsskit.rest.instagram.InstagramAPI;
 import com.rhcloud.igorbotian.rsskit.rest.instagram.InstagramAPIImpl;
 import com.rhcloud.igorbotian.rsskit.rest.instagram.InstagramException;
 import com.rhcloud.igorbotian.rsskit.rest.instagram.InstagramFeed;
-import com.rhcloud.igorbotian.rsskit.rss.instagram.InstagramRssGenerator;
+import com.rhcloud.igorbotian.rsskit.rss.instagram.InstagramSelfFeedRssGenerator;
 import com.rhcloud.igorbotian.rsskit.utils.Configuration;
 import com.rhcloud.igorbotian.rsskit.utils.URLUtils;
 import com.rometools.rome.feed.synd.SyndFeed;
@@ -32,7 +32,7 @@ public class InstagramServlet extends AbstractRssServlet {
     private static final String CLIENT_SECRET = Configuration.getProperty("INSTAGRAM_CLIENT_SECRET");
 
     private final InstagramAPI api = new InstagramAPIImpl();
-    private final InstagramRssGenerator rssGenerator = new InstagramRssGenerator();
+    private final InstagramSelfFeedRssGenerator rssGenerator = new InstagramSelfFeedRssGenerator();
 
     @Override
     protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
@@ -61,13 +61,16 @@ public class InstagramServlet extends AbstractRssServlet {
         assert accessToken != null;
         assert resp != null;
 
+        SyndFeed rss;
+
         try {
             InstagramFeed feed = api.getSelfFeed(accessToken);
-            SyndFeed rss = rssGenerator.generate(feed);
-            respond(rss, resp);
+            rss = rssGenerator.generate(feed);
         } catch (InstagramException e) {
-            throw new IOException("Failed to generate Instagram RSS feed", e);
+            rss = rssGenerator.error(e);
         }
+
+        respond(rss, resp);
     }
 
     private String requestAccessToken(String clientID, String clientSecret, String authorizationCode,

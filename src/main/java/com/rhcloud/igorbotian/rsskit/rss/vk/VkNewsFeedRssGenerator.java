@@ -1,6 +1,7 @@
 package com.rhcloud.igorbotian.rsskit.rss.vk;
 
 import com.rhcloud.igorbotian.rsskit.rest.vk.*;
+import com.rhcloud.igorbotian.rsskit.rss.RssGenerator;
 import com.rometools.rome.feed.synd.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -9,7 +10,7 @@ import java.util.*;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public class VkRssGenerator {
+public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
 
     private static final String PHOTO_LINK_FORMAT = "https://vk.com/photo%s_%s";
     private static final String VIDEO_LINK_FORMAT = "https://vk.com/video%s_%s";
@@ -17,23 +18,7 @@ public class VkRssGenerator {
 
     private VkFeedFilter feedFilter = new VkFeedFilter();
 
-    public SyndFeed error(String errorMessage) {
-        Objects.requireNonNull(errorMessage);
-
-        SyndFeed rss = skeleton();
-        SyndEntry entry = new SyndEntryImpl();
-
-        SyndContent description = new SyndContentImpl();
-        description.setType("text/plain");
-        description.setValue(errorMessage);
-
-        entry.setTitle("Error");
-        entry.setDescription(description);
-        rss.setEntries(Collections.singletonList(entry));
-
-        return rss;
-    }
-
+    @Override
     public SyndFeed generate(VkFeed feed) {
         Objects.requireNonNull(feed);
 
@@ -52,7 +37,8 @@ public class VkRssGenerator {
         return rss;
     }
 
-    private SyndFeed skeleton() {
+    @Override
+    protected SyndFeed skeleton() {
         SyndFeed rss = new SyndFeedImpl();
 
         rss.setTitle("VK");

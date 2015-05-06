@@ -2,7 +2,7 @@ package com.rhcloud.igorbotian.rsskit.servlet;
 
 import com.rhcloud.igorbotian.rsskit.rest.OAuth10Credentials;
 import com.rhcloud.igorbotian.rsskit.rest.twitter.*;
-import com.rhcloud.igorbotian.rsskit.rss.twitter.TwitterRssGenerator;
+import com.rhcloud.igorbotian.rsskit.rss.twitter.TwitterHomeTimelineRssGenerator;
 import com.rhcloud.igorbotian.rsskit.utils.Configuration;
 import com.rhcloud.igorbotian.rsskit.utils.URLUtils;
 import com.rometools.rome.feed.synd.SyndFeed;
@@ -30,7 +30,7 @@ public class TwitterServlet extends AbstractRssServlet {
     private static final String CONSUMER_KEY = Configuration.getProperty("TWITTER_CONSUMER_KEY");
     private static final String CONSUMER_SECRET = Configuration.getProperty("TWITTER_CONSUMER_SECRET");
     private static final String INSTAGRAM_ACCESS_TOKEN = Configuration.getProperty("INSTAGRAM_ACCESS_TOKEN");
-    private static final TwitterRssGenerator rss = new TwitterRssGenerator(INSTAGRAM_ACCESS_TOKEN);
+    private static final TwitterHomeTimelineRssGenerator rssGenerator = new TwitterHomeTimelineRssGenerator(INSTAGRAM_ACCESS_TOKEN);
 
     private final TwitterAPI api = new TwitterAPIImpl(new OAuth10Credentials(CONSUMER_KEY, CONSUMER_SECRET));
 
@@ -59,13 +59,16 @@ public class TwitterServlet extends AbstractRssServlet {
         assert req != null;
         assert resp != null;
 
+        SyndFeed rss;
+
         try {
             TwitterTimeline timeline = api.getHomeTimeline(token);
-            SyndFeed feed = rss.generate(timeline);
-            respond(feed, resp);
+            rss = rssGenerator.generate(timeline);
         } catch (TwitterException e) {
-            throw new IOException("Failed to generate RSS feed from a Twitter home Timeline", e);
+            rss = rssGenerator.error(e);
         }
+
+        respond(rss, resp);
     }
 
     private OAuth10Credentials requestAccessToken(String oauthVerifier) throws IOException {

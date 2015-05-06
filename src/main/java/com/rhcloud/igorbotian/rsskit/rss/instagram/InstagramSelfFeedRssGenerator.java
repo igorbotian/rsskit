@@ -1,8 +1,8 @@
 package com.rhcloud.igorbotian.rsskit.rss.instagram;
 
-import com.rhcloud.igorbotian.rsskit.rest.instagram.InstagramException;
 import com.rhcloud.igorbotian.rsskit.rest.instagram.InstagramFeed;
 import com.rhcloud.igorbotian.rsskit.rest.instagram.InstagramPost;
+import com.rhcloud.igorbotian.rsskit.rss.RssGenerator;
 import com.rometools.rome.feed.synd.*;
 
 import java.util.ArrayList;
@@ -13,20 +13,28 @@ import java.util.Objects;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public class InstagramRssGenerator {
+public class InstagramSelfFeedRssGenerator extends RssGenerator<InstagramFeed> {
 
-    public SyndFeed generate(InstagramFeed feed) throws InstagramException {
+    public SyndFeed generate(InstagramFeed feed) {
         Objects.requireNonNull(feed);
 
-        SyndFeed rss = new SyndFeedImpl();
-        rss.setTitle("Instagram self feed");
-        rss.setLink("http://www.instagram.com");
-        rss.setFeedType("rss_2.0");
-        rss.setDescription(rss.getTitle());
-        rss.setPublishedDate(new Date());
+        SyndFeed rss = skeleton();
         rss.setEntries(generateEntries(feed.posts));
 
         return rss;
+    }
+
+    @Override
+    protected SyndFeed skeleton() {
+        SyndFeed feed = new SyndFeedImpl();
+
+        feed.setTitle("Instagram self feed");
+        feed.setLink("http://www.instagram.com");
+        feed.setFeedType("rss_2.0");
+        feed.setDescription(feed.getTitle());
+        feed.setPublishedDate(new Date());
+
+        return feed;
     }
 
     private List<SyndEntry> generateEntries(List<InstagramPost> posts) {

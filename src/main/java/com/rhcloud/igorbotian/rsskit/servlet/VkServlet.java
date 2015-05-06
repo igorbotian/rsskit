@@ -4,7 +4,7 @@ import com.rhcloud.igorbotian.rsskit.rest.vk.VkAPI;
 import com.rhcloud.igorbotian.rsskit.rest.vk.VkAPIImpl;
 import com.rhcloud.igorbotian.rsskit.rest.vk.VkException;
 import com.rhcloud.igorbotian.rsskit.rest.vk.VkFeed;
-import com.rhcloud.igorbotian.rsskit.rss.vk.VkRssGenerator;
+import com.rhcloud.igorbotian.rsskit.rss.vk.VkNewsFeedRssGenerator;
 import com.rhcloud.igorbotian.rsskit.utils.Configuration;
 import com.rhcloud.igorbotian.rsskit.utils.URLUtils;
 import com.rometools.rome.feed.synd.SyndFeed;
@@ -37,7 +37,7 @@ public class VkServlet extends AbstractRssServlet {
     )));
 
     private VkAPI api = new VkAPIImpl();
-    private VkRssGenerator rssGenerator = new VkRssGenerator();
+    private VkNewsFeedRssGenerator rssGenerator = new VkNewsFeedRssGenerator();
 
     @Override
     protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
@@ -71,7 +71,7 @@ public class VkServlet extends AbstractRssServlet {
             VkFeed newsFeed = api.getNewsFeed(accessToken);
             rss = rssGenerator.generate(newsFeed);
         } catch (VkException e) {
-            rss = rssGenerator.error(e.getMessage());
+            rss = rssGenerator.error(e);
         }
 
         respond(rss, resp);

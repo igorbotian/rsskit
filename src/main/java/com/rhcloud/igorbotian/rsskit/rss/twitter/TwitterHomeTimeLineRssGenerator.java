@@ -1,8 +1,8 @@
 package com.rhcloud.igorbotian.rsskit.rss.twitter;
 
-import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterException;
 import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterTimeline;
 import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterTweet;
+import com.rhcloud.igorbotian.rsskit.rss.RssGenerator;
 import com.rhcloud.igorbotian.rsskit.rss.instagram.InstagramEnclosureExpander;
 import com.rometools.rome.feed.synd.*;
 import org.apache.commons.lang3.StringUtils;
@@ -15,7 +15,7 @@ import java.util.Objects;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public class TwitterRssGenerator {
+public class TwitterHomeTimelineRssGenerator extends RssGenerator<TwitterTimeline> {
 
     private static final String AUTHOR_FORMAT = "%s (%s)";
     private static final String LINK_FORMAT = "https://twitter.com/%s/status/%s";
@@ -25,25 +25,20 @@ public class TwitterRssGenerator {
     private static final TwitterRssLinkUnshorter linkUnshorter = new TwitterRssLinkUnshorter();
     private final InstagramEnclosureExpander instagramEnclosureExpander;
 
-    public TwitterRssGenerator() {
+    public TwitterHomeTimelineRssGenerator() {
         this(null);
     }
 
-    public TwitterRssGenerator(String instagramAccessToken) {
+    public TwitterHomeTimelineRssGenerator(String instagramAccessToken) {
         this.instagramEnclosureExpander = StringUtils.isNotEmpty(instagramAccessToken)
                 ? new InstagramEnclosureExpander(instagramAccessToken) : null;
     }
 
-    public SyndFeed generate(TwitterTimeline timeline) throws TwitterException {
+    @Override
+    public SyndFeed generate(TwitterTimeline timeline) {
         Objects.requireNonNull(timeline);
 
-        SyndFeed feed = new SyndFeedImpl();
-        feed.setLink("http://www.twitter.com");
-        feed.setPublishedDate(new Date());
-        feed.setTitle("Home Timeline");
-        feed.setDescription("Twitter Home Timeline");
-        feed.setFeedType("rss_2.0");
-
+        SyndFeed feed = skeleton();
         feed.setEntries(generateEntries(timeline.tweets));
 
         linkExtractor.apply(feed);
@@ -54,6 +49,19 @@ public class TwitterRssGenerator {
         }
 
         descriptionExtender.apply(feed);
+
+        return feed;
+    }
+
+    @Override
+    protected SyndFeed skeleton() {
+        SyndFeed feed = new SyndFeedImpl();
+
+        feed.setLink("http://www.twitter.com");
+        feed.setPublishedDate(new Date());
+        feed.setTitle("Home Timeline");
+        feed.setDescription("Twitter Home Timeline");
+        feed.setFeedType("rss_2.0");
 
         return feed;
     }

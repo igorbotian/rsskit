@@ -3,7 +3,7 @@ package com.rhcloud.igorbotian.rsskit.servlet;
 import com.rhcloud.igorbotian.rsskit.rest.buffer.BufferAPI;
 import com.rhcloud.igorbotian.rsskit.rest.buffer.BufferAPIImpl;
 import com.rhcloud.igorbotian.rsskit.rest.buffer.BufferException;
-import com.rhcloud.igorbotian.rsskit.rss.buffer.BufferRssGenerator;
+import com.rhcloud.igorbotian.rsskit.rss.buffer.BufferPendingUpdatesRssGenerator;
 import com.rhcloud.igorbotian.rsskit.utils.Configuration;
 import com.rhcloud.igorbotian.rsskit.utils.URLUtils;
 import com.rometools.rome.feed.synd.SyndFeed;
@@ -34,7 +34,7 @@ public class BufferServlet extends AbstractRssServlet {
     private static final String CLIENT_SECRET = Configuration.getProperty(BUFFER_CLIENT_SECRET);
 
     private static final BufferAPI api = new BufferAPIImpl();
-    private static final BufferRssGenerator rssGenerator = new BufferRssGenerator();
+    private static final BufferPendingUpdatesRssGenerator rssGenerator = new BufferPendingUpdatesRssGenerator();
 
     @Override
     protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
@@ -117,12 +117,15 @@ public class BufferServlet extends AbstractRssServlet {
         assert req != null;
         assert resp != null;
 
+        SyndFeed rss;
+
         try {
             List<NameValuePair> pendingUpdates = api.getPendingUpdates(profileIDS, accessToken, MAX_ENTRIES);
-            SyndFeed feed = rssGenerator.generate(pendingUpdates);
-            respond(feed, resp);
+            rss = rssGenerator.generate(pendingUpdates);
         } catch (BufferException e) {
-            throw new IOException("Failed to generate RSS from Buffer pending updates", e);
+            rss = rssGenerator.error(e);
         }
+
+        respond(rss, resp);
     }
 }

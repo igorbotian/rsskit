@@ -7,7 +7,11 @@ import java.util.Objects;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public class VkResponse {
+public final class VkResponse {
+
+    private VkResponse() {
+        //
+    }
 
     public static <T> T parse(JsonNode json, VkParser<T> entityParser) throws VkException {
         Objects.requireNonNull(json);
@@ -33,8 +37,8 @@ public class VkResponse {
             message = error.get("error_msg").asText();
         }
 
-        if (error.has("code")) {
-            message += String.format("(%d)", error.get("code").asInt());
+        if (error.has("error_code")) {
+            message += String.format(" (%d)", error.get("error_code").asInt());
         }
 
         throw new VkException(message);
