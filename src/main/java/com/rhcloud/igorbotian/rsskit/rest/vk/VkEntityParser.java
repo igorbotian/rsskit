@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public abstract class VkParser <T> {
+public abstract class VkEntityParser<T> {
 
     public abstract T parse(JsonNode json) throws VkException;
 

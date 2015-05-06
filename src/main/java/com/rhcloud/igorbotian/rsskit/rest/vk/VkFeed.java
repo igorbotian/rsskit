@@ -9,7 +9,7 @@ import java.util.*;
  */
 public class VkFeed {
 
-    private static final VkParser<VkFeed> PARSER = new VkFeedParser();
+    private static final VkEntityParser<VkFeed> PARSER = new VkFeedParser();
 
     public final List<VkFeedItem> items;
     public final Map<Long, VkUser> profiles;
@@ -26,7 +26,7 @@ public class VkFeed {
         return PARSER.parse(json);
     }
 
-    private static class VkFeedParser extends VkParser<VkFeed> {
+    private static class VkFeedParser extends VkEntityParser<VkFeed> {
 
         @Override
         public VkFeed parse(JsonNode json) throws VkException {

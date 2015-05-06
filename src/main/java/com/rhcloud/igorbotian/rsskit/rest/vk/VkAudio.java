@@ -36,7 +36,7 @@ public class VkAudio {
         return PARSER.parse(json);
     }
 
-    private static class VkAudioParser extends VkParser<VkAudio> {
+    private static class VkAudioParser extends VkEntityParser<VkAudio> {
 
         @Override
         public VkAudio parse(JsonNode json) throws VkException {

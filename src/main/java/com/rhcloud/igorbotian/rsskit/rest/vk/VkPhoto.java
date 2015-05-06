@@ -9,7 +9,7 @@ import java.util.Objects;
  */
 public class VkPhoto {
 
-    private static final VkParser<VkPhoto> PARSER = new VkPhotoParser();
+    private static final VkEntityParser<VkPhoto> PARSER = new VkPhotoParser();
 
     public final long id;
     public final long ownerID;
@@ -30,7 +30,7 @@ public class VkPhoto {
         return PARSER.parse(json);
     }
 
-    private static class VkPhotoParser extends VkParser<VkPhoto> {
+    private static class VkPhotoParser extends VkEntityParser<VkPhoto> {
 
         @Override
         public VkPhoto parse(JsonNode json) throws VkException {

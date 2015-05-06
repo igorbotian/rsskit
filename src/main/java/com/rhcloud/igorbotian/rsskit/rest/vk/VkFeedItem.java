@@ -10,7 +10,7 @@ import java.util.Objects;
  */
 public class VkFeedItem {
 
-    private static final VkParser<VkFeedItem> PARSER = new VkFeedItemParser();
+    private static final VkEntityParser<VkFeedItem> PARSER = new VkFeedItemParser();
 
     public final VkFeedItemType type;
     public final long sourceID;
@@ -35,7 +35,7 @@ public class VkFeedItem {
         return PARSER.parse(json);
     }
 
-    private static class VkFeedItemParser extends VkParser<VkFeedItem> {
+    private static class VkFeedItemParser extends VkEntityParser<VkFeedItem> {
 
         @Override
         public VkFeedItem parse(JsonNode json) throws VkException {

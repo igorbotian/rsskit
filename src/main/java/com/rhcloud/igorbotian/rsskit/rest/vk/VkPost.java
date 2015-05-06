@@ -9,7 +9,7 @@ import java.util.Objects;
  */
 public class VkPost extends VkFeedItem {
 
-    private static final VkParser<VkPost> PARSER = new VkPostParser();
+    private static final VkEntityParser<VkPost> PARSER = new VkPostParser();
 
     public final long postID;
     public final String text;
@@ -36,7 +36,7 @@ public class VkPost extends VkFeedItem {
         return PARSER.parse(json);
     }
 
-    private static class VkPostParser extends VkParser<VkPost> {
+    private static class VkPostParser extends VkEntityParser<VkPost> {
 
         @Override
         public VkPost parse(JsonNode json) throws VkException {

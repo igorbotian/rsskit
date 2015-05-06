@@ -13,7 +13,7 @@ public final class VkResponse {
         //
     }
 
-    public static <T> T parse(JsonNode json, VkParser<T> entityParser) throws VkException {
+    public static <T> T parse(JsonNode json, VkEntityParser<T> entityParser) throws VkException {
         Objects.requireNonNull(json);
         Objects.requireNonNull(entityParser);
 

@@ -12,7 +12,7 @@ import java.util.Objects;
  */
 public class VkAttachments {
 
-    private static final VkParser<VkAttachments> PARSER = new VkAttachmentsParser();
+    private static final VkEntityParser<VkAttachments> PARSER = new VkAttachmentsParser();
 
     public final List<VkPhoto> photos;
     public final List<VkPostedPhoto> postedPhotos;
@@ -55,7 +55,7 @@ public class VkAttachments {
         return PARSER.parse(json);
     }
 
-    private static class VkAttachmentsParser extends VkParser<VkAttachments> {
+    private static class VkAttachmentsParser extends VkEntityParser<VkAttachments> {
 
         @Override
         public VkAttachments parse(JsonNode json) throws VkException {

@@ -9,7 +9,7 @@ import java.util.Objects;
  */
 public class VkVideo {
 
-    private static final VkParser<VkVideo> PARSER = new VkVideoParser();
+    private static final VkEntityParser<VkVideo> PARSER = new VkVideoParser();
 
     public final long id;
     public final long ownerID;
@@ -36,7 +36,7 @@ public class VkVideo {
         return PARSER.parse(json);
     }
 
-    private static class VkVideoParser extends VkParser<VkVideo> {
+    private static class VkVideoParser extends VkEntityParser<VkVideo> {
 
         @Override
         public VkVideo parse(JsonNode json) throws VkException {

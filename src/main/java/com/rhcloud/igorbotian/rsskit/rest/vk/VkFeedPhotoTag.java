@@ -11,7 +11,7 @@ import java.util.Objects;
  */
 public class VkFeedPhotoTag extends VkFeedItem {
 
-    private static final VkParser<VkFeedPhotoTag> PARSER = new VkFeedPhotoTagParser();
+    private static final VkEntityParser<VkFeedPhotoTag> PARSER = new VkFeedPhotoTagParser();
 
     public final List<VkPhoto> photoTags;
 
@@ -25,7 +25,7 @@ public class VkFeedPhotoTag extends VkFeedItem {
         return PARSER.parse(json);
     }
 
-    private static class VkFeedPhotoTagParser extends VkParser<VkFeedPhotoTag> {
+    private static class VkFeedPhotoTagParser extends VkEntityParser<VkFeedPhotoTag> {
 
         @Override
         public VkFeedPhotoTag parse(JsonNode json) throws VkException {

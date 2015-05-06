@@ -9,7 +9,7 @@ import java.util.Objects;
  */
 public class VkLink {
 
-    private static final VkParser<VkLink> PARSER = new VkLinkParser();
+    private static final VkEntityParser<VkLink> PARSER = new VkLinkParser();
 
     public final String url;
     public final String title;
@@ -28,7 +28,7 @@ public class VkLink {
         return PARSER.parse(json);
     }
 
-    private static class VkLinkParser extends VkParser<VkLink> {
+    private static class VkLinkParser extends VkEntityParser<VkLink> {
 
         @Override
         public VkLink parse(JsonNode json) throws VkException {

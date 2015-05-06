@@ -9,7 +9,7 @@ import java.util.Objects;
  */
 public class VkGroup {
 
-    private static final VkParser<VkGroup> PARSER = new VkGroupParser();
+    private static final VkEntityParser<VkGroup> PARSER = new VkGroupParser();
 
     public final long id;
     public final String name;
@@ -26,7 +26,7 @@ public class VkGroup {
         return PARSER.parse(json);
     }
 
-    private static class VkGroupParser extends VkParser<VkGroup> {
+    private static class VkGroupParser extends VkEntityParser<VkGroup> {
 
         @Override
         public VkGroup parse(JsonNode json) throws VkException {

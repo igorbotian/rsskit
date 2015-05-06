@@ -9,7 +9,7 @@ import java.util.Objects;
  */
 public class VkPage {
 
-    private static final VkParser<VkPage> PARSER = new VkPageParser();
+    private static final VkEntityParser<VkPage> PARSER = new VkPageParser();
 
     public final long id;
     public final long groupID;
@@ -30,7 +30,7 @@ public class VkPage {
         return PARSER.parse(json);
     }
 
-    private static class VkPageParser extends VkParser<VkPage> {
+    private static class VkPageParser extends VkEntityParser<VkPage> {
 
         @Override
         public VkPage parse(JsonNode json) throws VkException {

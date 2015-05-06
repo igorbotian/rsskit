@@ -9,7 +9,7 @@ import java.util.Objects;
  */
 public class VkRepost extends VkFeedItem {
 
-    private static final VkParser<VkRepost> PARSER = new VkRepostParser();
+    private static final VkEntityParser<VkRepost> PARSER = new VkRepostParser();
 
     public final long postID;
     public final String text;
@@ -33,7 +33,7 @@ public class VkRepost extends VkFeedItem {
         return json.has("copy_history");
     }
 
-    private static class VkRepostParser extends VkParser<VkRepost> {
+    private static class VkRepostParser extends VkEntityParser<VkRepost> {
 
         @Override
         public VkRepost parse(JsonNode json) throws VkException {

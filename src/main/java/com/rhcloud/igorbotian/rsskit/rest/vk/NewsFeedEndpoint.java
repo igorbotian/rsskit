@@ -46,7 +46,7 @@ class NewsFeedEndpoint extends RestGetEndpoint {
     private VkFeed parseNewsFeed(JsonNode json) throws VkException {
         assert json != null;
 
-        return VkResponse.parse(json, new VkParser<VkFeed>() {
+        return VkResponse.parse(json, new VkEntityParser<VkFeed>() {
 
             @Override
             public VkFeed parse(JsonNode json) throws VkException {

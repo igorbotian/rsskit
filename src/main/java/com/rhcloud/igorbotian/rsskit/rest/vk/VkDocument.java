@@ -9,7 +9,7 @@ import java.util.Objects;
  */
 public class VkDocument {
 
-    private static final VkParser<VkDocument> PARSER = new VkDocumentParser();
+    private static final VkEntityParser<VkDocument> PARSER = new VkDocumentParser();
 
     public final long id;
     public final long ownerID;
@@ -38,7 +38,7 @@ public class VkDocument {
         return PARSER.parse(json);
     }
 
-    private static class VkDocumentParser extends VkParser<VkDocument> {
+    private static class VkDocumentParser extends VkEntityParser<VkDocument> {
 
         @Override
         public VkDocument parse(JsonNode json) throws VkException {

@@ -12,7 +12,7 @@ import java.util.Objects;
  */
 public class VkFeedPhoto extends VkFeedItem {
 
-    private static final VkParser<VkFeedPhoto> PARSER = new VkFeedPhotoParser();
+    private static final VkEntityParser<VkFeedPhoto> PARSER = new VkFeedPhotoParser();
 
     public final long postID;
     public final List<VkPhoto> photos;
@@ -29,7 +29,7 @@ public class VkFeedPhoto extends VkFeedItem {
         return PARSER.parse(json);
     }
 
-    private static class VkFeedPhotoParser extends VkParser<VkFeedPhoto> {
+    private static class VkFeedPhotoParser extends VkEntityParser<VkFeedPhoto> {
 
         @Override
         public VkFeedPhoto parse(JsonNode json) throws VkException {
