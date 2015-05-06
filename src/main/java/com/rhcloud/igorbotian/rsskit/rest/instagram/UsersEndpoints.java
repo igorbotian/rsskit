@@ -40,7 +40,7 @@ class UsersEndpoints extends RestGetEndpoint {
         } catch (IOException e) {
             throw new InstagramException("Failed to retrieve Instagram self feed", e);
         } catch (RestParseException e) {
-            throw new InstagramException("Failed to parse Instagram reponse", e);
+            throw new InstagramException("Failed to parse Instagram response", e);
         }
     }
 }

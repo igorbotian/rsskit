@@ -57,7 +57,7 @@ public class InstagramPost {
 
         private String parseCaption(JsonNode caption) throws RestParseException {
             assert caption != null;
-            return getAttribute(caption, "text").asText();
+            return caption.has("text") ? caption.get("text").asText() : "";
         }
     }
 }
