@@ -1,10 +1,12 @@
 package com.rhcloud.igorbotian.rsskit.rss.twitter;
 
+import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterMedia;
 import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterTimeline;
 import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterTweet;
+import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterURL;
 import com.rhcloud.igorbotian.rsskit.rss.RssGenerator;
-import com.rhcloud.igorbotian.rsskit.rss.instagram.InstagramEnclosureExpander;
 import com.rometools.rome.feed.synd.*;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -20,35 +22,12 @@ public class TwitterHomeTimelineRssGenerator extends RssGenerator<TwitterTimelin
     private static final String AUTHOR_FORMAT = "%s (%s)";
     private static final String LINK_FORMAT = "https://twitter.com/%s/status/%s";
 
-    private static final TwitterRssDescriptionExtender descriptionExtender = new TwitterRssDescriptionExtender();
-    private static final TwitterRssLinkExtractor linkExtractor = new TwitterRssLinkExtractor();
-    private static final TwitterRssLinkUnshorter linkUnshorter = new TwitterRssLinkUnshorter();
-    private final InstagramEnclosureExpander instagramEnclosureExpander;
-
-    public TwitterHomeTimelineRssGenerator() {
-        this(null);
-    }
-
-    public TwitterHomeTimelineRssGenerator(String instagramAccessToken) {
-        this.instagramEnclosureExpander = StringUtils.isNotEmpty(instagramAccessToken)
-                ? new InstagramEnclosureExpander(instagramAccessToken) : null;
-    }
-
     @Override
     public SyndFeed generate(TwitterTimeline timeline) {
         Objects.requireNonNull(timeline);
 
         SyndFeed feed = skeleton();
         feed.setEntries(generateEntries(timeline.tweets));
-
-        linkExtractor.apply(feed);
-        linkUnshorter.apply(feed);
-
-        if(instagramEnclosureExpander != null) {
-            instagramEnclosureExpander.apply(feed);
-        }
-
-        descriptionExtender.apply(feed);
 
         return feed;
     }
@@ -82,28 +61,62 @@ public class TwitterHomeTimelineRssGenerator extends RssGenerator<TwitterTimelin
         assert tweet != null;
 
         SyndEntry entry = new SyndEntryImpl();
-        entry.setTitle(tweet.text);
+        entry.setTitle(tweet.author.name);
         entry.setLink(String.format(LINK_FORMAT, tweet.author.screenName, tweet.id));
         entry.setPublishedDate(tweet.date);
         entry.setAuthor(author(tweet.author.name, tweet.author.screenName));
 
-        SyndContent description = new SyndContentImpl();
-        description.setValue(tweet.text);
-        description.setType("text/plain");
-        entry.setDescription(description);
+        List<SyndEnclosure> enclosures = new ArrayList<>(tweet.entities.urls.size());
 
-        List<SyndEnclosure> enclosures = new ArrayList<>(tweet.attachments.size());
+        String text = getDescription(tweet);
 
-        for (String url : tweet.attachments) {
+        for (TwitterURL url : tweet.entities.urls) {
+            text = StringUtils.replace(
+                    text,
+                    url.mediaURL,
+                    String.format("<a href='%s'>%s</a>", url.expandedURL, url.expandedURL)
+            );
+
             SyndEnclosure enclosure = new SyndEnclosureImpl();
-            enclosure.setUrl(url);
+            enclosure.setUrl(url.expandedURL);
 
             enclosures.add(enclosure);
         }
 
         entry.setEnclosures(enclosures);
 
+        for (TwitterMedia media : tweet.entities.media) {
+            if(!text.isEmpty()) {
+                text += "<br/><br/>";
+            }
+
+            text += String.format("<img src='%s'/>", media.mediaURL);
+        }
+
+        SyndContent description = new SyndContentImpl();
+        description.setValue(StringEscapeUtils.unescapeHtml4(text));
+        description.setType("text/html");
+
+        entry.setDescription(description);
+
         return entry;
+    }
+
+    private String getDescription(TwitterTweet tweet) {
+        assert tweet != null;
+        return tweetTextWithoutLinksToMedia(tweet);
+    }
+
+    private String tweetTextWithoutLinksToMedia(TwitterTweet tweet) {
+        assert tweet != null;
+
+        String text = tweet.text;
+
+        for(TwitterMedia media : tweet.entities.media) {
+            text = StringUtils.replace(text, media.url, "");
+        }
+
+        return text;
     }
 
     private String author(String name, String screenName) {

@@ -6,6 +6,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
@@ -17,8 +18,24 @@ import java.util.Objects;
  */
 public abstract class AbstractRestEndpoint implements RestEndpoint {
 
-    protected static final HttpClient HTTP_CLIENT = HttpClientBuilder.create().build();
+    private static final int CONNECTION_TIMEOUT = 10000;
+    private static final int SOCKET_TIMEOUT = 5000;
+
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+    protected static final HttpClient HTTP_CLIENT;
+
+    static {
+        RequestConfig.Builder rcBuilder = RequestConfig.custom();
+
+        rcBuilder.setConnectTimeout(CONNECTION_TIMEOUT);
+        rcBuilder.setSocketTimeout(SOCKET_TIMEOUT);
+        rcBuilder.setConnectionRequestTimeout(CONNECTION_TIMEOUT);
+
+        HttpClientBuilder builder = HttpClientBuilder.create();
+        builder.setDefaultRequestConfig(rcBuilder.build());
+
+        HTTP_CLIENT = builder.build();
+    }
 
     @Override
     public JsonNode makeRequest(String endpoint, List<NameValuePair> params) throws IOException {

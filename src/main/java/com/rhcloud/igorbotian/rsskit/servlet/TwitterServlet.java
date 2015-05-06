@@ -29,8 +29,8 @@ public class TwitterServlet extends AbstractRssServlet {
 
     private static final String CONSUMER_KEY = Configuration.getProperty("TWITTER_CONSUMER_KEY");
     private static final String CONSUMER_SECRET = Configuration.getProperty("TWITTER_CONSUMER_SECRET");
-    private static final String INSTAGRAM_ACCESS_TOKEN = Configuration.getProperty("INSTAGRAM_ACCESS_TOKEN");
-    private static final TwitterHomeTimelineRssGenerator rssGenerator = new TwitterHomeTimelineRssGenerator(INSTAGRAM_ACCESS_TOKEN);
+
+    private static final TwitterHomeTimelineRssGenerator rssGenerator = new TwitterHomeTimelineRssGenerator();
 
     private final TwitterAPI api = new TwitterAPIImpl(new OAuth10Credentials(CONSUMER_KEY, CONSUMER_SECRET));
 
