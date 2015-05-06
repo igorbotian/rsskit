@@ -18,8 +18,8 @@ import java.util.Objects;
  */
 public abstract class AbstractRestEndpoint implements RestEndpoint {
 
-    private static final int CONNECTION_TIMEOUT = 10000;
-    private static final int SOCKET_TIMEOUT = 5000;
+    private static final int CONNECTION_TIMEOUT = 30000;
+    private static final int SOCKET_TIMEOUT = 60000;
 
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
     protected static final HttpClient HTTP_CLIENT;
