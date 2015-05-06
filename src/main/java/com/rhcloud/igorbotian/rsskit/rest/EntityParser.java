@@ -2,6 +2,8 @@ package com.rhcloud.igorbotian.rsskit.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import java.util.Objects;
+
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
@@ -10,13 +12,9 @@ public abstract class EntityParser<T> {
     public abstract T parse(JsonNode json) throws RestParseException;
 
     protected JsonNode getAttribute(JsonNode parent, String attr) throws RestParseException {
-        assert parent != null;
-        assert attr != null;
+        Objects.requireNonNull(parent);
+        Objects.requireNonNull(attr);
 
-        if (!parent.has(attr)) {
-            throw new RestParseException("Attribute is expected but not found: " + attr);
-        }
-
-        return parent.get(attr);
+        return JSONUtils.getAttribute(parent, attr);
     }
 }

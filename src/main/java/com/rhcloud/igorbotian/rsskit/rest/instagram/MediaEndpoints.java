@@ -1,7 +1,9 @@
 package com.rhcloud.igorbotian.rsskit.rest.instagram;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.rhcloud.igorbotian.rsskit.rest.EntityParser;
 import com.rhcloud.igorbotian.rsskit.rest.RestGetEndpoint;
+import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -38,10 +40,33 @@ class MediaEndpoints extends RestGetEndpoint {
                     SHORTCODE_ENDPOINT_URL + "/" + shortCode,
                     Collections.<NameValuePair>singletonList(new BasicNameValuePair("access_token", accessToken))
             );
-            return parseMediaObject(response);
+
+            return parseShortCode(response);
         } catch (IOException e) {
             throw new InstagramException("Failed to get information about an Instagram media object: "
                     + shortenURL.toString(), e);
+        } catch (RestParseException e) {
+            throw new InstagramException("Failed to parse Instagram response", e);
+        }
+    }
+
+    private URL parseShortCode(JsonNode response) throws InstagramException, RestParseException {
+        assert response != null;
+
+        InstagramImages images = InstagramResponse.parse(response, new EntityParser<InstagramImages>() {
+
+            @Override
+            public InstagramImages parse(JsonNode json) throws RestParseException {
+                Objects.requireNonNull(json);
+                return InstagramImages.parse(json);
+            }
+        });
+
+        try {
+            return new URL(images.standardResolutionURL);
+        } catch (MalformedURLException e) {
+            throw new InstagramException("Instagram returned invalid URL of a given object " +
+                    "specified by a short code", e);
         }
     }
 
@@ -55,30 +80,5 @@ class MediaEndpoints extends RestGetEndpoint {
         }
 
         throw new InstagramException("Specified URL contains no Instagram short code");
-    }
-
-    private URL parseMediaObject(JsonNode response) throws InstagramException {
-        assert response != null;
-
-        JsonNode data = getAttribute(response, "data");
-        JsonNode images = getAttribute(data, "images");
-        JsonNode img = getAttribute(images, "standard_resolution");
-
-        try {
-            return new URL(getAttribute(img, "url").asText());
-        } catch (MalformedURLException e) {
-            throw new InstagramException("No media object URL found", e);
-        }
-    }
-
-    private JsonNode getAttribute(JsonNode parent, String attr) throws InstagramException {
-        assert parent != null;
-        assert attr != null;
-
-        if(!parent.has(attr)) {
-            throw new InstagramException("Attribute is expected but not found: " + attr);
-        }
-
-        return parent.get(attr);
     }
 }
