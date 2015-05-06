@@ -31,7 +31,7 @@ public final class InstagramResponse {
         int code = JSONUtils.getAttribute(meta, "code").asInt();
 
         if(code != 200) { // OK
-            String errorType = JSONUtils.getAttribute(meta, "erorr_type").asText();
+            String errorType = JSONUtils.getAttribute(meta, "error_type").asText();
             String errorMessage = JSONUtils.getAttribute(meta, "error_message").asText();
 
             throw new InstagramException(String.format("%s: %s (%d)", errorType, errorMessage, code));

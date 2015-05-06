@@ -1,12 +1,13 @@
 package com.rhcloud.igorbotian.rsskit.rest;
 
 import com.rhcloud.igorbotian.rsskit.utils.URLUtils;
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Igor Botian <igor.botian@gmail.com>
@@ -16,14 +17,12 @@ public class RestGetEndpoint extends AbstractRestEndpoint {
     private static final Requestor REQUESTOR = new Requestor() {
 
         @Override
-        public HttpURLConnection request(String endpoint, List<NameValuePair> params) throws IOException {
-            URL url = URLUtils.makeURL(endpoint, params);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.setRequestMethod("GET");
-            connection.connect();
+        public HttpResponse request(String endpoint, List<NameValuePair> params) throws IOException {
+            Objects.requireNonNull(endpoint);
+            Objects.requireNonNull(params);
 
-            return connection;
+            HttpGet request = new HttpGet(URLUtils.makeURL(endpoint, params).toString());
+            return HTTP_CLIENT.execute(request);
         }
     };
 

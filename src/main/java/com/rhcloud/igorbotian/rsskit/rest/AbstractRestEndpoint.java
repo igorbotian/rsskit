@@ -3,10 +3,12 @@ package com.rhcloud.igorbotian.rsskit.rest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,6 +17,7 @@ import java.util.Objects;
  */
 public abstract class AbstractRestEndpoint implements RestEndpoint {
 
+    protected static final HttpClient HTTP_CLIENT = HttpClientBuilder.create().build();
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
     @Override
@@ -22,16 +25,12 @@ public abstract class AbstractRestEndpoint implements RestEndpoint {
         Objects.requireNonNull(endpoint);
         Objects.requireNonNull(params);
 
-        HttpURLConnection response = requestor().request(endpoint, params);
+        HttpResponse response = requestor().request(endpoint, params);
 
-        if (response.getResponseCode() != HttpURLConnection.HTTP_OK) {
-            throw new IOException("Unable to make a request (" + response.getResponseCode() + ")");
-        }
-
-        long contentLength = response.getContentLength();
+        long contentLength = response.getEntity().getContentLength();
         byte[] content = (contentLength < 0)
-                ? IOUtils.toByteArray(response.getInputStream())
-                : IOUtils.toByteArray(response.getInputStream(), contentLength);
+                ? IOUtils.toByteArray(response.getEntity().getContent())
+                : IOUtils.toByteArray(response.getEntity().getContent(), contentLength);
 
         return JSON_MAPPER.readTree(content);
     }
@@ -40,6 +39,6 @@ public abstract class AbstractRestEndpoint implements RestEndpoint {
 
     protected interface Requestor {
 
-        HttpURLConnection request(String endpoint, List<NameValuePair> params) throws IOException;
+        HttpResponse request(String endpoint, List<NameValuePair> params) throws IOException;
     }
 }

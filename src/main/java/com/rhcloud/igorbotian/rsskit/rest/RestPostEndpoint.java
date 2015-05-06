@@ -1,12 +1,13 @@
 package com.rhcloud.igorbotian.rsskit.rest;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Igor Botian <igor.botian@gmail.com>
@@ -16,16 +17,14 @@ public class RestPostEndpoint extends AbstractRestEndpoint {
     private static final Requestor REQUESTOR = new Requestor() {
 
         @Override
-        public HttpURLConnection request(String endpoint, List<NameValuePair> params) throws IOException {
-            HttpURLConnection connection = (HttpURLConnection) new URL(endpoint).openConnection();
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
-            connection.setRequestMethod("POST");
-            connection.connect();
+        public HttpResponse request(String endpoint, List<NameValuePair> params) throws IOException {
+            Objects.requireNonNull(endpoint);
+            Objects.requireNonNull(params);
 
-            new UrlEncodedFormEntity(params).writeTo(connection.getOutputStream());
+            HttpPost request = new HttpPost(endpoint);
+            request.setEntity(new UrlEncodedFormEntity(params));
 
-            return connection;
+            return HTTP_CLIENT.execute(request);
         }
     };
 
