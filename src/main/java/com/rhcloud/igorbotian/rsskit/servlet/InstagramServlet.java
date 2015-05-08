@@ -11,6 +11,8 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +26,8 @@ import java.util.Objects;
  * @author Igor Botian <igor.botian@gmail.com>
  */
 public class InstagramServlet extends AbstractRssServlet {
+
+    private static final Logger LOGGER = LogManager.getLogger(InstagramServlet.class);
 
     private static final String CODE_PARAM = "code";
     private static final String ACCESS_TOKEN_PARAM = "access_token";
@@ -67,6 +71,7 @@ public class InstagramServlet extends AbstractRssServlet {
             InstagramFeed feed = api.getSelfFeed(accessToken);
             rss = rssGenerator.generate(feed);
         } catch (InstagramException e) {
+            LOGGER.error("Failed to get Instagram self feed and generate appropriate RSS feed", e);
             rss = rssGenerator.error(e);
         }
 

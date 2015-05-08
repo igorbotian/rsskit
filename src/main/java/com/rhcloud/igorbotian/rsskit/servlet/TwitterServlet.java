@@ -9,6 +9,8 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +24,8 @@ import java.util.Objects;
  * @author Igor Botian <igor.botian@gmail.com>
  */
 public class TwitterServlet extends AbstractRssServlet {
+
+    private static final Logger LOGGER = LogManager.getLogger(TwitterServlet.class);
 
     private static final String ACCESS_TOKEN_PARAM = "access_token";
     private static final String TOKEN_SECRET_PARAM = "token_secret";
@@ -65,6 +69,7 @@ public class TwitterServlet extends AbstractRssServlet {
             TwitterTimeline timeline = api.getHomeTimeline(token);
             rss = rssGenerator.generate(timeline);
         } catch (TwitterException e) {
+            LOGGER.error("Failed to get Twitter home timeline and generate appropriate RSS feed", e);
             rss = rssGenerator.error(e);
         }
 

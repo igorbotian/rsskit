@@ -11,6 +11,8 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +25,8 @@ import java.util.*;
  * @author Igor Botian <igor.botian@gmail.com>
  */
 public class VkServlet extends AbstractRssServlet {
+
+    private static final Logger LOGGER = LogManager.getLogger(VkServlet.class);
 
     private static final String CODE_PARAM = "code";
     private static final String ACCESS_TOKEN_PARAM = "access_token";
@@ -71,6 +75,7 @@ public class VkServlet extends AbstractRssServlet {
             VkFeed newsFeed = api.getNewsFeed(accessToken);
             rss = rssGenerator.generate(newsFeed);
         } catch (VkException e) {
+            LOGGER.error("Failed to get VK news feed and generate appropriate RSS feed", e);
             rss = rssGenerator.error(e);
         }
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" name="rsskit" packages="com.rhcloud.igorbotian.rsskit">
+    <Appenders>
+        <RollingFile name="rsskitLogFile" fileName="${sys:catalina.home}/logs/rsskit.log"
+                     filePattern="${sys:catalina.home}/logs/rsskit-%i.log.gz"
+                     immediateFlush="true"
+                     append="true">
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="5MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="3"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="warn">
+            <AppenderRef ref="rsskitLogFile"/>
+        </Root>
+    </Loggers>
+</Configuration>

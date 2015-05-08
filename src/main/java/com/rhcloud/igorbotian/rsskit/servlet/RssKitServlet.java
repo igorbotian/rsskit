@@ -2,6 +2,8 @@ package com.rhcloud.igorbotian.rsskit.servlet;
 
 import com.rhcloud.igorbotian.rsskit.utils.Configuration;
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,21 +20,32 @@ import java.nio.charset.Charset;
  */
 public abstract class RssKitServlet extends HttpServlet {
 
+    private static final Logger LOGGER = LogManager.getLogger(RssKitServlet.class);
+
     @Override
     public void init() throws ServletException {
         if(!Configuration.isSuccessfullyLoaded()) {
+            LOGGER.fatal("Configuration file is not found!");
             throw new ServletException(Configuration.FILE + " configuration file is not found!");
         }
     }
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        processRequest(req, resp);
+        try {
+            processRequest(req, resp);
+        } catch (Exception e) {
+            LOGGER.error("Failed to process request", e);
+        }
     }
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        processRequest(req, resp);
+        try {
+            processRequest(req, resp);
+        } catch (Exception e) {
+            LOGGER.error("Failed to process request", e);
+        }
     }
 
     protected void respond(byte[] data, String contentType, Charset encoding, HttpServletResponse response)
