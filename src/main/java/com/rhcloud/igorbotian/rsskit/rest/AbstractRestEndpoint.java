@@ -8,6 +8,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -44,12 +45,16 @@ public abstract class AbstractRestEndpoint implements RestEndpoint {
 
         HttpResponse response = requestor().request(endpoint, params);
 
-        long contentLength = response.getEntity().getContentLength();
-        byte[] content = (contentLength < 0)
-                ? IOUtils.toByteArray(response.getEntity().getContent())
-                : IOUtils.toByteArray(response.getEntity().getContent(), contentLength);
+        try {
+            long contentLength = response.getEntity().getContentLength();
+            byte[] content = (contentLength < 0)
+                    ? IOUtils.toByteArray(response.getEntity().getContent())
+                    : IOUtils.toByteArray(response.getEntity().getContent(), contentLength);
 
-        return JSON_MAPPER.readTree(content);
+            return JSON_MAPPER.readTree(content);
+        } finally {
+            EntityUtils.consumeQuietly(response.getEntity());
+        }
     }
 
     protected abstract Requestor requestor();
