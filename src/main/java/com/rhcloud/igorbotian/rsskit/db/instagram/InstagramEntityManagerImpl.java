@@ -1,5 +1,6 @@
 package com.rhcloud.igorbotian.rsskit.db.instagram;
 
+import com.rhcloud.igorbotian.rsskit.db.RsskitDAO;
 import com.rhcloud.igorbotian.rsskit.db.RsskitDataSource;
 import com.rhcloud.igorbotian.rsskit.db.RsskitEntityManager;
 import com.rhcloud.igorbotian.rsskit.rest.instagram.InstagramException;
@@ -12,14 +13,14 @@ import java.util.Objects;
  */
 public class InstagramEntityManagerImpl extends RsskitEntityManager implements InstagramEntityManager {
 
-    private final InstagramTokenDAO tokenDAO;
-    private final InstagramSelfFeedDAO selfFeedDAO;
+    private final RsskitDAO<InstagramToken> tokenDAO;
+    private final RsskitDAO<InstagramSelfFeed> selfFeedDAO;
 
     public InstagramEntityManagerImpl(RsskitDataSource source) throws SQLException {
         super(source);
 
-        this.tokenDAO = new InstagramTokenDAO(dataSource, databaseType);
-        this.selfFeedDAO = new InstagramSelfFeedDAO(dataSource, databaseType);
+        this.tokenDAO = new RsskitDAO<>(dataSource, databaseType, InstagramToken.class);
+        this.selfFeedDAO = new RsskitDAO<>(dataSource, databaseType, InstagramSelfFeed.class);
     }
 
     @Override

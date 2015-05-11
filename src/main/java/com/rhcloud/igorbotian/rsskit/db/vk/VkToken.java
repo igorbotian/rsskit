@@ -12,7 +12,7 @@ class VkToken {
     @DatabaseField(columnName = "rsskit_token", id = true)
     private String rsskitToken;
 
-    @DatabaseField(columnName = "access_token")
+    @DatabaseField(columnName = "access_token", unique = true)
     private String accessToken;
 
     public String getRsskitToken() {

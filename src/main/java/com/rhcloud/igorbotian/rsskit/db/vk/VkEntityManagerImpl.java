@@ -1,5 +1,6 @@
 package com.rhcloud.igorbotian.rsskit.db.vk;
 
+import com.rhcloud.igorbotian.rsskit.db.RsskitDAO;
 import com.rhcloud.igorbotian.rsskit.db.RsskitDataSource;
 import com.rhcloud.igorbotian.rsskit.db.RsskitEntityManager;
 import com.rhcloud.igorbotian.rsskit.rest.vk.VkException;
@@ -12,14 +13,14 @@ import java.util.Objects;
  */
 public class VkEntityManagerImpl extends RsskitEntityManager implements VkEntityManager {
 
-    private final VkTokenDAO tokenDAO;
-    private final VkNewsFeedDAO newsFeedDAO;
+    private final RsskitDAO<VkToken> tokenDAO;
+    private final RsskitDAO<VkNewsFeed> newsFeedDAO;
 
     public VkEntityManagerImpl(RsskitDataSource source) throws SQLException {
         super(source);
 
-        this.tokenDAO = new VkTokenDAO(dataSource, databaseType);
-        this.newsFeedDAO = new VkNewsFeedDAO(dataSource, databaseType);
+        this.tokenDAO = new RsskitDAO<>(dataSource, databaseType, VkToken.class);
+        this.newsFeedDAO = new RsskitDAO<>(dataSource, databaseType, VkNewsFeed.class);
     }
 
     @Override

@@ -14,7 +14,7 @@ import java.util.Objects;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public abstract class RsskitDAO<T> {
+public class RsskitDAO<T> {
 
     protected final Dao<T, String> dao;
 
