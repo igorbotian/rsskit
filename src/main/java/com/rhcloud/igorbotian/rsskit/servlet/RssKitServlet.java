@@ -1,5 +1,7 @@
 package com.rhcloud.igorbotian.rsskit.servlet;
 
+import com.j256.ormlite.db.H2DatabaseType;
+import com.rhcloud.igorbotian.rsskit.db.RsskitDataSource;
 import com.rhcloud.igorbotian.rsskit.utils.Configuration;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -14,6 +16,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.SQLException;
 
 /**
  * @author Igor Botian <igor.botian@gmail.com>
@@ -21,13 +26,21 @@ import java.nio.charset.Charset;
 public abstract class RssKitServlet extends HttpServlet {
 
     private static final Logger LOGGER = LogManager.getLogger(RssKitServlet.class);
+    private RsskitDataSource dataSource;
 
     @Override
     public void init() throws ServletException {
-        if(!Configuration.isSuccessfullyLoaded()) {
+        if (!Configuration.isSuccessfullyLoaded()) {
             LOGGER.fatal("Configuration file is not found!");
             throw new ServletException(Configuration.FILE + " configuration file is not found!");
         }
+
+        String dbURL = String.format("jdbc:h2:%s/db/rsskit", tomcatPath());
+        dataSource = new RsskitDataSource(dbURL, "sa", "sa", new H2DatabaseType());
+    }
+
+    protected RsskitDataSource dataSource() throws SQLException {
+        return dataSource;
     }
 
     @Override
@@ -46,6 +59,10 @@ public abstract class RssKitServlet extends HttpServlet {
         } catch (Exception e) {
             LOGGER.error("Failed to process request", e);
         }
+    }
+
+    protected Path tomcatPath() {
+        return Paths.get(System.getProperty("catalina.home"));
     }
 
     protected void respond(byte[] data, String contentType, Charset encoding, HttpServletResponse response)

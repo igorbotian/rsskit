@@ -37,6 +37,6 @@ public class LogsServlet extends RssKitServlet {
     }
 
     private Path logFile() {
-        return Paths.get(System.getProperty("catalina.home"), "logs", "rsskit.log");
+        return Paths.get(tomcatPath().toAbsolutePath().toString(), "logs", "rsskit.log");
     }
 }
