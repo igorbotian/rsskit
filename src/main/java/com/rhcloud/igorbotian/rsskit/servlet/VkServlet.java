@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -40,8 +41,20 @@ public class VkServlet extends AbstractRssServlet {
             "offline"
     )));
 
-    private VkAPI api = new VkAPIImpl();
+    private VkAPI api;
     private VkNewsFeedRssGenerator rssGenerator = new VkNewsFeedRssGenerator();
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+
+        try {
+            api = new VkAPIImpl(dataSource());
+        } catch (SQLException | VkException e) {
+            LOGGER.fatal("Failed to initialize VK entity manager", e);
+            throw new ServletException("Failed to initialize DB", e);
+        }
+    }
 
     @Override
     protected void processRequest(HttpServletRequest req, HttpServletResponse resp)

@@ -26,8 +26,12 @@ class NewsFeedEndpoint extends RestGetEndpoint {
         this.apiVersion = Objects.requireNonNull(apiVersion);
     }
 
-    public VkFeed get(String accessToken) throws VkException {
+    public VkFeed get(String accessToken, Long startTime) throws VkException {
         Objects.requireNonNull(accessToken);
+
+        if(startTime != null && startTime < 0) {
+            throw new VkException("Start time parameter should have a positive value" + startTime);
+        }
 
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("access_token", accessToken));
@@ -36,6 +40,10 @@ class NewsFeedEndpoint extends RestGetEndpoint {
         params.add(new BasicNameValuePair("fields", "first_name,last_name,photo_50"));
         params.add(new BasicNameValuePair("filters", "post,photo,photo_tag,wall_photo"));
         params.add(new BasicNameValuePair("v", apiVersion));
+
+        if(startTime != null) {
+            params.add(new BasicNameValuePair("start_time", Long.toString(startTime / 1000)));
+        }
 
         try {
             JsonNode response = makeRequest(ENDPOINT_URL, params);

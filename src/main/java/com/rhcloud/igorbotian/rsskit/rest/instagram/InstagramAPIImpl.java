@@ -23,7 +23,6 @@ public class InstagramAPIImpl implements InstagramAPI {
 
         try {
             this.entityManager = new InstagramEntityManagerImpl(dataSource);
-            entityManager.registerAccessToken("468302558.a1b21b4.d150c5cccd9b494480110f0acf1eb522");
         } catch (SQLException e) {
             throw new InstagramException("Failed to initialize Instagram entity manager", e);
         }

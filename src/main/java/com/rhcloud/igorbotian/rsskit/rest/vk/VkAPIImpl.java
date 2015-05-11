@@ -1,6 +1,11 @@
 package com.rhcloud.igorbotian.rsskit.rest.vk;
 
+import com.rhcloud.igorbotian.rsskit.db.RsskitDataSource;
+import com.rhcloud.igorbotian.rsskit.db.vk.VkEntityManager;
+import com.rhcloud.igorbotian.rsskit.db.vk.VkEntityManagerImpl;
+
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Set;
 
@@ -13,6 +18,17 @@ public class VkAPIImpl implements VkAPI {
 
     private final OAuthEndpoint oAuth = new OAuthEndpoint();
     private final NewsFeedEndpoint newsFeed = new NewsFeedEndpoint(API_VERSION);
+    private final VkEntityManager entityManager;
+
+    public VkAPIImpl(RsskitDataSource source) throws VkException {
+        Objects.requireNonNull(source);
+
+        try {
+            this.entityManager = new VkEntityManagerImpl(source);
+        } catch(SQLException e) {
+            throw new VkException("Failed to initialize VK entity manager", e);
+        }
+    }
 
     @Override
     public String version() {
@@ -35,12 +51,44 @@ public class VkAPIImpl implements VkAPI {
         Objects.requireNonNull(clientSecret);
         Objects.requireNonNull(code);
 
-        return oAuth.requestAccessToken(clientID, clientSecret, code);
+        String accessToken = oAuth.requestAccessToken(clientID, clientSecret, code);
+        return entityManager.registerAccessToken(accessToken);
     }
 
     @Override
-    public VkFeed getNewsFeed(String accessToken) throws VkException {
-        Objects.requireNonNull(accessToken);
-        return newsFeed.get(accessToken);
+    public VkFeed getNewsFeed(String token) throws VkException {
+        Objects.requireNonNull(token);
+
+        String accessToken = getAccessToken(token);
+        Long startTime = entityManager.getNewsFeedStartTime(token);
+        VkFeed feed = newsFeed.get(accessToken, startTime);
+
+        updateStartTime(token, feed);
+
+        return feed;
+    }
+
+    private String getAccessToken(String token) throws VkException {
+        assert token != null;
+
+        String accessToken = entityManager.getAccessToken(token);
+
+        if(accessToken == null) {
+            throw new VkException("Specified access token is not registered: " + token);
+        }
+
+        return accessToken;
+    }
+
+    private void updateStartTime(String token, VkFeed feed) throws VkException {
+        assert token != null;
+        assert feed != null;
+
+        if(feed.items.isEmpty()) {
+            return;
+        }
+
+        long startTime = feed.items.get(0).date.getTime(); // latter post is always returned by rsskit
+        entityManager.setNewsFeedStartTime(token, startTime);
     }
 }
