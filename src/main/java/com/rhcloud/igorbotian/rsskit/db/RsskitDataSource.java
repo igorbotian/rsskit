@@ -25,7 +25,10 @@ public class RsskitDataSource {
         props.setUrl(dbURL);
         props.setUsername(dbUsername);
         props.setPassword(dbPassword);
+        props.setCommitOnReturn(true);
         props.setDefaultAutoCommit(true);
+        props.setJdbcInterceptors("ConnectionState;StatementFinalizer");
+        props.setDriverClassName("org.h2.Driver");
         props.setMaxActive(10);
         props.setMaxIdle(5);
         props.setMinIdle(2);
