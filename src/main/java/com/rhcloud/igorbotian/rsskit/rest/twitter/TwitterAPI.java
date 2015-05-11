@@ -1,7 +1,5 @@
 package com.rhcloud.igorbotian.rsskit.rest.twitter;
 
-import com.rhcloud.igorbotian.rsskit.rest.OAuth10Credentials;
-
 import java.net.URL;
 
 /**
@@ -11,7 +9,7 @@ public interface TwitterAPI {
 
     URL getAuthorizationURL(URL callbackURL) throws TwitterException;
 
-    OAuth10Credentials requestAccessToken(String oauthVerifier) throws TwitterException;
+    String requestAccessToken(String oauthVerifier) throws TwitterException;
 
-    TwitterTimeline getHomeTimeline(OAuth10Credentials token) throws TwitterException;
+    TwitterTimeline getHomeTimeline(String token) throws TwitterException;
 }

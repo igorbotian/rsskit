@@ -1,7 +1,10 @@
 package com.rhcloud.igorbotian.rsskit.servlet;
 
 import com.rhcloud.igorbotian.rsskit.rest.OAuth10Credentials;
-import com.rhcloud.igorbotian.rsskit.rest.twitter.*;
+import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterAPI;
+import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterAPIImpl;
+import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterException;
+import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterTimeline;
 import com.rhcloud.igorbotian.rsskit.rss.twitter.TwitterHomeTimelineRssGenerator;
 import com.rhcloud.igorbotian.rsskit.utils.Configuration;
 import com.rhcloud.igorbotian.rsskit.utils.URLUtils;
@@ -16,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,7 +32,6 @@ public class TwitterServlet extends AbstractRssServlet {
     private static final Logger LOGGER = LogManager.getLogger(TwitterServlet.class);
 
     private static final String ACCESS_TOKEN_PARAM = "access_token";
-    private static final String TOKEN_SECRET_PARAM = "token_secret";
     private static final String OAUTH_VERIFIER_PARAM = "oauth_verifier";
 
     private static final String CONSUMER_KEY = Configuration.getProperty("TWITTER_CONSUMER_KEY");
@@ -36,7 +39,19 @@ public class TwitterServlet extends AbstractRssServlet {
 
     private static final TwitterHomeTimelineRssGenerator rssGenerator = new TwitterHomeTimelineRssGenerator();
 
-    private final TwitterAPI api = new TwitterAPIImpl(new OAuth10Credentials(CONSUMER_KEY, CONSUMER_SECRET));
+    private TwitterAPI api;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+
+        try {
+            api = new TwitterAPIImpl(new OAuth10Credentials(CONSUMER_KEY, CONSUMER_SECRET), dataSource());
+        } catch (TwitterException | SQLException e) {
+            LOGGER.fatal("Failed to initialize Twitter entity manager", e);
+            throw new ServletException("Failed to initialize DB", e);
+        }
+    }
 
     @Override
     protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
@@ -46,11 +61,10 @@ public class TwitterServlet extends AbstractRssServlet {
         Objects.requireNonNull(resp);
 
         String accessToken = req.getParameter(ACCESS_TOKEN_PARAM);
-        String tokenSecret = req.getParameter(TOKEN_SECRET_PARAM);
         String oauthVerifier = req.getParameter(OAUTH_VERIFIER_PARAM);
 
-        if(StringUtils.isNotEmpty(accessToken) && StringUtils.isNotEmpty(TOKEN_SECRET_PARAM)) {
-            respondRss(new OAuth10Credentials(CONSUMER_KEY, CONSUMER_SECRET, accessToken, tokenSecret), req, resp);
+        if (StringUtils.isNotEmpty(accessToken)) {
+            respondRss(accessToken, req, resp);
         } else if (StringUtils.isNotEmpty(oauthVerifier)) {
             redirectToRss(requestAccessToken(oauthVerifier), req, resp);
         } else {
@@ -58,7 +72,7 @@ public class TwitterServlet extends AbstractRssServlet {
         }
     }
 
-    private void respondRss(OAuth10Credentials token, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void respondRss(String token, HttpServletRequest req, HttpServletResponse resp) throws IOException {
         assert token != null;
         assert req != null;
         assert resp != null;
@@ -76,7 +90,7 @@ public class TwitterServlet extends AbstractRssServlet {
         respond(rss, resp);
     }
 
-    private OAuth10Credentials requestAccessToken(String oauthVerifier) throws IOException {
+    private String requestAccessToken(String oauthVerifier) throws IOException {
         assert oauthVerifier != null;
 
         try {
@@ -86,7 +100,7 @@ public class TwitterServlet extends AbstractRssServlet {
         }
     }
 
-    private void redirectToRss(OAuth10Credentials token, HttpServletRequest req, HttpServletResponse resp)
+    private void redirectToRss(String token, HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
 
         assert token != null;
@@ -94,8 +108,7 @@ public class TwitterServlet extends AbstractRssServlet {
         assert resp != null;
 
         List<NameValuePair> params = new ArrayList<>();
-        params.add(new BasicNameValuePair("access_token", token.consumerKey));
-        params.add(new BasicNameValuePair("token_secret", token.consumerSecret));
+        params.add(new BasicNameValuePair("access_token", token));
 
         resp.sendRedirect(URLUtils.makeURL(
                 URLUtils.makeServletURL(req).toString(),

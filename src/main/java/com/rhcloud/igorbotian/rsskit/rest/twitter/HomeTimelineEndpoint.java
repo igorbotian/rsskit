@@ -25,12 +25,16 @@ class HomeTimelineEndpoint extends OAuth10RestGetEndpoint {
         super(credentials);
     }
 
-    public TwitterTimeline get() throws TwitterException {
+    public TwitterTimeline get(String sinceID) throws TwitterException {
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("count", Integer.toString(MAX_ENTRIES)));
         params.add(new BasicNameValuePair("trim_user", "false"));
         params.add(new BasicNameValuePair("exclude_replies", "true"));
         params.add(new BasicNameValuePair("include_entities", "true"));
+
+        if(sinceID != null) {
+            params.add(new BasicNameValuePair("since_id", sinceID));
+        }
 
         try {
             JsonNode response = makeRequest(ENDPOINT_URL, params);
