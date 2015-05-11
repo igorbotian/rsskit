@@ -105,6 +105,15 @@
         <url-pattern>/vk</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>logs</servlet-name>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.LogsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>logs</servlet-name>
+        <url-pattern>/logs</url-pattern>
+    </servlet-mapping>
+
     <context-param>
         <param-name>log4jConfiguration</param-name>
         <param-value>/WEB-INF/log4j.xml</param-value>
