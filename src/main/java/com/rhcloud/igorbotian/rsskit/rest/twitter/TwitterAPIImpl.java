@@ -29,8 +29,6 @@ public class TwitterAPIImpl implements TwitterAPI {
 
         try {
             this.entityManager = new TwitterEntityManagerImpl(dataSource);
-            entityManager.registerAccessToken(new TwitterAccessToken("1048636771-K2Ks3Xtrj5cmTfJrZYOOit4oqYZvGl2iQcQwJuH",
-                    "3vBdQxDR4rdEip4zUkeOnLp0zeFPM7zEiyI7lHPCH7xIB"));
         } catch (SQLException e) {
             throw new TwitterException("Failed to initialize Twitter entity manager", e);
         }
