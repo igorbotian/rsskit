@@ -1,8 +1,11 @@
 package com.rhcloud.igorbotian.rsskit.rest.instagram;
 
+import com.rhcloud.igorbotian.rsskit.db.RsskitDataSource;
 import com.rhcloud.igorbotian.rsskit.db.instagram.InstagramEntityManager;
+import com.rhcloud.igorbotian.rsskit.db.instagram.InstagramEntityManagerImpl;
 
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.Objects;
 
 /**
@@ -15,8 +18,15 @@ public class InstagramAPIImpl implements InstagramAPI {
     private final MediaEndpoints media = new MediaEndpoints();
     private final InstagramEntityManager entityManager;
 
-    public InstagramAPIImpl(InstagramEntityManager entityManager) {
-        this.entityManager = Objects.requireNonNull(entityManager);
+    public InstagramAPIImpl(RsskitDataSource dataSource) throws InstagramException {
+        Objects.requireNonNull(dataSource);
+
+        try {
+            this.entityManager = new InstagramEntityManagerImpl(dataSource);
+            entityManager.registerAccessToken("468302558.a1b21b4.d150c5cccd9b494480110f0acf1eb522");
+        } catch (SQLException e) {
+            throw new InstagramException("Failed to initialize Instagram entity manager", e);
+        }
     }
 
     @Override
@@ -72,11 +82,11 @@ public class InstagramAPIImpl implements InstagramAPI {
         assert token != null;
         assert feed != null;
 
-        if(feed.posts.isEmpty()) {
+        if(feed.posts.size() <= 1) { // at least one item is always returned by rsskit
            return;
         }
 
-        String minID = feed.posts.get(0).id;
+        String minID = feed.posts.get(1).id;
         entityManager.setSelfFeedMinID(token, minID);
     }
 

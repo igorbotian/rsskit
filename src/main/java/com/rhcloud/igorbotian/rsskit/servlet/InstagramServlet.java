@@ -1,7 +1,5 @@
 package com.rhcloud.igorbotian.rsskit.servlet;
 
-import com.rhcloud.igorbotian.rsskit.db.instagram.InstagramEntityManager;
-import com.rhcloud.igorbotian.rsskit.db.instagram.InstagramEntityManagerImpl;
 import com.rhcloud.igorbotian.rsskit.rest.instagram.InstagramAPI;
 import com.rhcloud.igorbotian.rsskit.rest.instagram.InstagramAPIImpl;
 import com.rhcloud.igorbotian.rsskit.rest.instagram.InstagramException;
@@ -46,9 +44,8 @@ public class InstagramServlet extends AbstractRssServlet {
         super.init();
 
         try {
-            InstagramEntityManager entityManager = new InstagramEntityManagerImpl(dataSource());
-            api = new InstagramAPIImpl(entityManager);
-        } catch (SQLException e) {
+            api = new InstagramAPIImpl(dataSource());
+        } catch (InstagramException | SQLException e) {
             LOGGER.fatal("Failed to initialize Instagram entity manager", e);
             throw new ServletException("Failed to initialize DB", e);
         }

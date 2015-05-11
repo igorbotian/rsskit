@@ -83,6 +83,7 @@ public class InstagramEntityManagerImpl extends RsskitEntityManager implements I
     @Override
     public String getSelfFeedMinID(String token) throws InstagramException {
         Objects.requireNonNull(token);
+
         try {
             return selfFeedDAO.exists(token) ? selfFeedDAO.get(token).getMinID() : null;
         } catch (SQLException e) {
