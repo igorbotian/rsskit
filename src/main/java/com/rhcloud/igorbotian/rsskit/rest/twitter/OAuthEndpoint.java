@@ -2,8 +2,7 @@ package com.rhcloud.igorbotian.rsskit.rest.twitter;
 
 import com.rhcloud.igorbotian.rsskit.rest.OAuth10Credentials;
 import com.rhcloud.igorbotian.rsskit.rest.OAuth10RestGetEndpoint;
-import oauth.signpost.OAuthProvider;
-import oauth.signpost.basic.DefaultOAuthProvider;
+import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
 
 import java.net.URL;
 import java.util.Objects;
@@ -13,16 +12,16 @@ import java.util.Objects;
  */
 class OAuthEndpoint extends OAuth10RestGetEndpoint {
 
-    private static final String AUTHENTICATION_URL = "https://api.twitter.com/oauth/authorize";
     private static final String REQUEST_TOKEN_ENDPOINT_URL = "https://api.twitter.com/oauth/request_token";
     private static final String ACCESS_TOKEN_ENDPOINT_URL = "https://api.twitter.com/oauth/access_token";
+    private static final String AUTHENTICATION_URL = "https://api.twitter.com/oauth/authorize";
 
-    private final OAuthProvider provider;
+    private final CommonsHttpOAuthProvider provider;
 
     OAuthEndpoint(OAuth10Credentials credentials) {
         super(credentials);
 
-        provider = new DefaultOAuthProvider(
+        provider = new CommonsHttpOAuthProvider(
                 REQUEST_TOKEN_ENDPOINT_URL,
                 ACCESS_TOKEN_ENDPOINT_URL,
                 AUTHENTICATION_URL
@@ -39,14 +38,14 @@ class OAuthEndpoint extends OAuth10RestGetEndpoint {
         }
     }
 
-    public OAuth10Credentials requestAccessToken(String oauthVerifier) throws TwitterException {
+    public TwitterAccessToken requestAccessToken(String oauthVerifier) throws TwitterException {
         Objects.requireNonNull(oauthVerifier);
 
         try {
             provider.retrieveAccessToken(consumer, oauthVerifier);
             String token = consumer.getToken();
             String tokenSecret = consumer.getTokenSecret();
-            return new OAuth10Credentials(token, tokenSecret);
+            return new TwitterAccessToken(token, tokenSecret);
         } catch (Exception e) {
             throw new TwitterException("Failed to request Twitter REST API access token", e);
         }

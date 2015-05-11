@@ -80,11 +80,20 @@
 
     <servlet>
         <servlet-name>twitter</servlet-name>
-        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.TwitterServlet</servlet-class>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.TwitterHomeTimelineServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>twitter</servlet-name>
         <url-pattern>/twitter</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>reading_list</servlet-name>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.TwitterReadingListServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>reading_list</servlet-name>
+        <url-pattern>/reading_list</url-pattern>
     </servlet-mapping>
 
     <servlet>

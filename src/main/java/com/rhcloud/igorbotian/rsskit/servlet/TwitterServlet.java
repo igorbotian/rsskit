@@ -5,7 +5,7 @@ import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterAPI;
 import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterAPIImpl;
 import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterException;
 import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterTimeline;
-import com.rhcloud.igorbotian.rsskit.rss.twitter.TwitterHomeTimelineRssGenerator;
+import com.rhcloud.igorbotian.rsskit.rss.RssGenerator;
 import com.rhcloud.igorbotian.rsskit.utils.Configuration;
 import com.rhcloud.igorbotian.rsskit.utils.URLUtils;
 import com.rometools.rome.feed.synd.SyndFeed;
@@ -27,7 +27,7 @@ import java.util.Objects;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public class TwitterServlet extends AbstractRssServlet {
+public abstract class TwitterServlet extends AbstractRssServlet {
 
     private static final Logger LOGGER = LogManager.getLogger(TwitterServlet.class);
 
@@ -37,16 +37,16 @@ public class TwitterServlet extends AbstractRssServlet {
     private static final String CONSUMER_KEY = Configuration.getProperty("TWITTER_CONSUMER_KEY");
     private static final String CONSUMER_SECRET = Configuration.getProperty("TWITTER_CONSUMER_SECRET");
 
-    private static final TwitterHomeTimelineRssGenerator rssGenerator = new TwitterHomeTimelineRssGenerator();
-
-    private TwitterAPI api;
+    private static TwitterAPI api;
 
     @Override
     public void init() throws ServletException {
         super.init();
 
         try {
-            api = new TwitterAPIImpl(new OAuth10Credentials(CONSUMER_KEY, CONSUMER_SECRET), dataSource());
+            if(api == null) {
+                api = new TwitterAPIImpl(new OAuth10Credentials(CONSUMER_KEY, CONSUMER_SECRET), dataSource());
+            }
         } catch (TwitterException | SQLException e) {
             LOGGER.fatal("Failed to initialize Twitter entity manager", e);
             throw new ServletException("Failed to initialize DB", e);
@@ -81,14 +81,16 @@ public class TwitterServlet extends AbstractRssServlet {
 
         try {
             TwitterTimeline timeline = api.getHomeTimeline(token);
-            rss = rssGenerator.generate(timeline);
+            rss = rssGenerator().generate(timeline);
         } catch (TwitterException e) {
             LOGGER.error("Failed to get Twitter home timeline and generate appropriate RSS feed", e);
-            rss = rssGenerator.error(e);
+            rss = rssGenerator().error(e);
         }
 
         respond(rss, resp);
     }
+
+    protected abstract RssGenerator<TwitterTimeline> rssGenerator();
 
     private String requestAccessToken(String oauthVerifier) throws IOException {
         assert oauthVerifier != null;

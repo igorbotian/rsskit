@@ -1,7 +1,6 @@
 package com.rhcloud.igorbotian.rsskit.rest;
 
 import com.rhcloud.igorbotian.rsskit.utils.URLUtils;
-import oauth.signpost.OAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -16,7 +15,7 @@ import java.util.Objects;
  */
 public class OAuth10RestGetEndpoint extends RestGetEndpoint {
 
-    protected final OAuthConsumer consumer;
+    protected final CommonsHttpOAuthConsumer consumer;
 
     private Requestor requestor = new Requestor() {
 

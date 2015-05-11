@@ -44,11 +44,8 @@ public class TwitterAPIImpl implements TwitterAPI {
     public String requestAccessToken(String oauthVerifier) throws TwitterException {
         Objects.requireNonNull(oauthVerifier);
 
-        OAuth10Credentials credentials = oAuth.requestAccessToken(oauthVerifier);
-
-        return entityManager.registerAccessToken(new TwitterAccessToken(
-                credentials.accessToken, credentials.tokenSecret
-        ));
+        TwitterAccessToken accessToken = oAuth.requestAccessToken(oauthVerifier);
+        return entityManager.registerAccessToken(accessToken);
     }
 
     @Override
