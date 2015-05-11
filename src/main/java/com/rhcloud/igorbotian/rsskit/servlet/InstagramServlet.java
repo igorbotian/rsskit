@@ -1,5 +1,7 @@
 package com.rhcloud.igorbotian.rsskit.servlet;
 
+import com.rhcloud.igorbotian.rsskit.db.instagram.InstagramEntityManager;
+import com.rhcloud.igorbotian.rsskit.db.instagram.InstagramEntityManagerImpl;
 import com.rhcloud.igorbotian.rsskit.rest.instagram.InstagramAPI;
 import com.rhcloud.igorbotian.rsskit.rest.instagram.InstagramAPIImpl;
 import com.rhcloud.igorbotian.rsskit.rest.instagram.InstagramException;
@@ -19,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Objects;
 
@@ -35,8 +38,21 @@ public class InstagramServlet extends AbstractRssServlet {
     private static final String CLIENT_ID = Configuration.getProperty("INSTAGRAM_CLIENT_ID");
     private static final String CLIENT_SECRET = Configuration.getProperty("INSTAGRAM_CLIENT_SECRET");
 
-    private final InstagramAPI api = new InstagramAPIImpl();
+    private InstagramAPI api;
     private final InstagramSelfFeedRssGenerator rssGenerator = new InstagramSelfFeedRssGenerator();
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+
+        try {
+            InstagramEntityManager entityManager = new InstagramEntityManagerImpl(dataSource());
+            api = new InstagramAPIImpl(entityManager);
+        } catch (SQLException e) {
+            LOGGER.fatal("Failed to initialize Instagram entity manager", e);
+            throw new ServletException("Failed to initialize DB", e);
+        }
+    }
 
     @Override
     protected void processRequest(HttpServletRequest req, HttpServletResponse resp)

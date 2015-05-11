@@ -1,5 +1,7 @@
 package com.rhcloud.igorbotian.rsskit.rest.instagram;
 
+import com.rhcloud.igorbotian.rsskit.db.instagram.InstagramEntityManager;
+
 import java.net.URL;
 import java.util.Objects;
 
@@ -11,6 +13,11 @@ public class InstagramAPIImpl implements InstagramAPI {
     private final AuthenticationEndpoint authentication = new AuthenticationEndpoint();
     private final UsersEndpoints users = new UsersEndpoints();
     private final MediaEndpoints media = new MediaEndpoints();
+    private final InstagramEntityManager entityManager;
+
+    public InstagramAPIImpl(InstagramEntityManager entityManager) {
+        this.entityManager = Objects.requireNonNull(entityManager);
+    }
 
     @Override
     public URL getAuthorizationURL(String clientID, URL callbackURL) throws InstagramException {
@@ -29,14 +36,21 @@ public class InstagramAPIImpl implements InstagramAPI {
         Objects.requireNonNull(authorizationCode);
         Objects.requireNonNull(callbackURL);
 
-        return authentication.requestAccessToken(clientID, clientSecret, authorizationCode, callbackURL);
+        String accessToken = authentication.requestAccessToken(clientID, clientSecret, authorizationCode, callbackURL);
+        return entityManager.registerAccessToken(accessToken);
     }
 
     @Override
-    public InstagramFeed getSelfFeed(String accessToken) throws InstagramException {
-        Objects.requireNonNull(accessToken);
+    public InstagramFeed getSelfFeed(String token) throws InstagramException {
+        Objects.requireNonNull(token);
 
-        return users.getSelfFeed(accessToken);
+        String accessToken = getAccessToken(token);
+        String minID = entityManager.getSelfFeedMinID(token);
+        InstagramFeed feed = users.getSelfFeed(accessToken, minID);
+
+        updateMinID(token, feed);
+
+        return feed;
     }
 
     @Override
@@ -46,10 +60,35 @@ public class InstagramAPIImpl implements InstagramAPI {
     }
 
     @Override
-    public URL unshortURL(URL url, String accessToken) throws InstagramException {
+    public URL unshortURL(URL url, String token) throws InstagramException {
         Objects.requireNonNull(url);
-        Objects.requireNonNull(accessToken);
+        Objects.requireNonNull(token);
 
+        String accessToken = getAccessToken(token);
         return media.unshortURL(url, accessToken);
+    }
+
+    private void updateMinID(String token, InstagramFeed feed) throws InstagramException {
+        assert token != null;
+        assert feed != null;
+
+        if(feed.posts.isEmpty()) {
+           return;
+        }
+
+        String minID = feed.posts.get(0).id;
+        entityManager.setSelfFeedMinID(token, minID);
+    }
+
+    private String getAccessToken(String token) throws InstagramException {
+        assert token != null;
+
+        String accessToken = entityManager.getAccessToken(token);
+
+        if(accessToken == null) {
+            throw new InstagramException("Specified access token is not registered: " + token);
+        }
+
+        return accessToken;
     }
 }

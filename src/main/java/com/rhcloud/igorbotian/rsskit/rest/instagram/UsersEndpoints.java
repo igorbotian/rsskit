@@ -18,15 +18,19 @@ import java.util.Objects;
 class UsersEndpoints extends RestGetEndpoint {
 
     private static final String SELF_FEED_ENDPOINT_URL = "https://api.instagram.com/v1/users/self/feed";
-    private static final int MAX_ENTRIES = 100;
+    private static final int MAX_ENTRIES = 50;
 
-    public InstagramFeed getSelfFeed(String accessToken) throws InstagramException {
+    public InstagramFeed getSelfFeed(String accessToken, String minID) throws InstagramException {
         Objects.requireNonNull(accessToken);
 
         try {
             List<NameValuePair> params = new ArrayList<>();
             params.add(new BasicNameValuePair("access_token", accessToken));
             params.add(new BasicNameValuePair("count", Integer.toString(MAX_ENTRIES)));
+
+            if(minID != null) {
+                params.add(new BasicNameValuePair("min_id", minID));
+            }
 
             JsonNode response = makeRequest(SELF_FEED_ENDPOINT_URL, params);
             return InstagramResponse.parse(response, new EntityParser<InstagramFeed>() {

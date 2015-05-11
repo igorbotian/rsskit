@@ -14,13 +14,15 @@ public class InstagramPost {
 
     private static final EntityParser<InstagramPost> PARSER = new InstagramPostParser();
 
+    public final String id;
     public final String url;
     public final String thumbnailURL;
     public final String comment;
     public final Date date;
     public final InstagramUser author;
 
-    public InstagramPost(String url, String thumbnailURL, String comment, Date date, InstagramUser author) {
+    public InstagramPost(String id, String url, String thumbnailURL, String comment, Date date, InstagramUser author) {
+        this.id = id;
         this.url = Objects.requireNonNull(url);
         this.thumbnailURL = Objects.requireNonNull(thumbnailURL);
         this.comment = Objects.requireNonNull(comment);
@@ -39,13 +41,14 @@ public class InstagramPost {
         public InstagramPost parse(JsonNode json) throws RestParseException {
             Objects.requireNonNull(json);
 
+            String id = getAttribute(json, "id").asText();
             InstagramUser user = InstagramUser.parse(getAttribute(json, "user"));
             String comment = json.has("caption") ? parseCaption(json.get("caption")) : "";
             String url = getAttribute(json, "link").asText();
             Date date = new Date(getAttribute(json, "created_time").asLong() * 1000);
             String thumbnailURL = parseThumbnail(getAttribute(json, "images"));
 
-            return new InstagramPost(url, thumbnailURL, comment, date, user);
+            return new InstagramPost(id, url, thumbnailURL, comment, date, user);
         }
 
         private String parseThumbnail(JsonNode images) throws RestParseException {
