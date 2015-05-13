@@ -7,6 +7,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.net.ssl.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +19,11 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.sql.SQLException;
 
 /**
@@ -28,8 +34,37 @@ public abstract class RssKitServlet extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(RssKitServlet.class);
     private RsskitDataSource dataSource;
 
+    public static void enableSSLSocket() throws KeyManagementException, NoSuchAlgorithmException {
+        HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+            public boolean verify(String hostname, SSLSession session) {
+                return true;
+            }
+        });
+
+        SSLContext context = SSLContext.getInstance("TLS");
+        context.init(null, new X509TrustManager[]{new X509TrustManager() {
+            public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+            }
+
+            public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+            }
+
+            public X509Certificate[] getAcceptedIssuers() {
+                return new X509Certificate[0];
+            }
+        }}, new SecureRandom());
+
+        HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
+    }
+
     @Override
     public void init() throws ServletException {
+        try {
+            enableSSLSocket();
+        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+            throw new ServletException("Failed to enable SSL socket factory", e);
+        }
+
         if (!Configuration.isSuccessfullyLoaded()) {
             LOGGER.fatal("Configuration file is not found!");
             throw new ServletException(Configuration.FILE + " configuration file is not found!");

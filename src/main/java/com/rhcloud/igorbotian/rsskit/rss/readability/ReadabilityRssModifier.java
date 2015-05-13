@@ -1,6 +1,6 @@
 package com.rhcloud.igorbotian.rsskit.rss.readability;
 
-import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizers;
+import com.rhcloud.igorbotian.rsskit.rss.ReadabilityBasedRssDescriptionExtender;
 import com.rhcloud.igorbotian.rsskit.rss.RssDescriptionExtender;
 import com.rhcloud.igorbotian.rsskit.rss.RssModifier;
 import com.rhcloud.igorbotian.rsskit.rss.RssTruncater;
@@ -13,11 +13,11 @@ import java.util.Objects;
  */
 public class ReadabilityRssModifier implements RssModifier {
 
-    private static final int MAX_ENTRIES = 1;
+    private static final int MAX_ENTRIES = 10;
 
     private static final RssTruncater feedTruncater = new RssTruncater(MAX_ENTRIES);
     private static final ReadabilityRssLinksTruncater linkTruncater = new ReadabilityRssLinksTruncater();
-    private static final RssDescriptionExtender descriptionExtender = new RssDescriptionExtender(Mobilizers.instapaper());
+    private static final RssDescriptionExtender descriptionExtender = new ReadabilityBasedRssDescriptionExtender();
 
     @Override
     public void apply(SyndFeed feed) {

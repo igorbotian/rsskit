@@ -1,8 +1,7 @@
 package com.rhcloud.igorbotian.rsskit.rss.lenta;
 
-import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizers;
+import com.rhcloud.igorbotian.rsskit.rss.InstapaperBasedRssDescriptionExtender;
 import com.rhcloud.igorbotian.rsskit.rss.LinkMapper;
-import com.rhcloud.igorbotian.rsskit.rss.RssDescriptionExtender;
 import com.rhcloud.igorbotian.rsskit.rss.RssLinkMapper;
 import com.rhcloud.igorbotian.rsskit.rss.RssModifier;
 import com.rometools.rome.feed.synd.SyndCategory;
@@ -25,7 +24,7 @@ public class LentaRssFeedModifier implements RssModifier {
 
     private static final RssModifier byCategoriesFilter = new ByCategoriesFilter();
     private static final RssLinkMapper mobileVersionLinkMapper = new RssLinkMapper(new MobileVersionLinkMapper());
-    private static final RssModifier descriptionExtender = new RssDescriptionExtender(Mobilizers.instapaper());
+    private static final RssModifier descriptionExtender = new InstapaperBasedRssDescriptionExtender();
 
     @Override
     public void apply(SyndFeed feed) {
@@ -47,7 +46,7 @@ public class LentaRssFeedModifier implements RssModifier {
             URIBuilder builder = new URIBuilder();
             builder.setScheme(url.getProtocol());
 
-            if(url.getPort() > 0) {
+            if (url.getPort() > 0) {
                 builder.setPort(url.getPort());
             }
 
@@ -73,8 +72,8 @@ public class LentaRssFeedModifier implements RssModifier {
 
             List<SyndEntry> filtered = new ArrayList<>();
 
-            for(SyndEntry entry : feed.getEntries()) {
-                if(isFilteredByCategory(entry)) {
+            for (SyndEntry entry : feed.getEntries()) {
+                if (isFilteredByCategory(entry)) {
                     filtered.add(entry);
                 }
             }
@@ -85,8 +84,8 @@ public class LentaRssFeedModifier implements RssModifier {
         private boolean isFilteredByCategory(SyndEntry entry) {
             assert entry != null;
 
-            for(SyndCategory category : entry.getCategories()) {
-                if(CATEGORIES.contains(category.getName())) {
+            for (SyndCategory category : entry.getCategories()) {
+                if (CATEGORIES.contains(category.getName())) {
                     return true;
                 }
             }

@@ -86,7 +86,7 @@ public class TwitterHomeTimelineRssGenerator extends RssGenerator<TwitterTimelin
         entry.setEnclosures(enclosures);
 
         for (TwitterMedia media : tweet.entities.media) {
-            if(!text.isEmpty()) {
+            if (!text.isEmpty()) {
                 text += "<br/><br/>";
             }
 
@@ -112,7 +112,7 @@ public class TwitterHomeTimelineRssGenerator extends RssGenerator<TwitterTimelin
 
         String text = tweet.text;
 
-        for(TwitterMedia media : tweet.entities.media) {
+        for (TwitterMedia media : tweet.entities.media) {
             text = StringUtils.replace(text, media.url, "");
         }
 

@@ -1,9 +1,9 @@
 package com.rhcloud.igorbotian.rsskit.rss.twitter;
 
-import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizers;
 import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterTimeline;
 import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterTweet;
 import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterURL;
+import com.rhcloud.igorbotian.rsskit.rss.InstapaperBasedRssDescriptionExtender;
 import com.rhcloud.igorbotian.rsskit.rss.RssDescriptionExtender;
 import com.rhcloud.igorbotian.rsskit.rss.RssGenerator;
 import com.rometools.rome.feed.synd.*;
@@ -18,7 +18,7 @@ import java.util.Objects;
  */
 public class TwitterReadingListRssGenerator extends RssGenerator<TwitterTimeline> {
 
-    private final RssDescriptionExtender descriptionExtender = new RssDescriptionExtender(Mobilizers.instapaper());
+    private final RssDescriptionExtender descriptionExtender = new InstapaperBasedRssDescriptionExtender();
 
     @Override
     public SyndFeed generate(TwitterTimeline timeline) {

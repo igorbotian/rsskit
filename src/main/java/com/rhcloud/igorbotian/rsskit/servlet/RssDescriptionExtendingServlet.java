@@ -1,6 +1,7 @@
 package com.rhcloud.igorbotian.rsskit.servlet;
 
-import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizers;
+import com.rhcloud.igorbotian.rsskit.rss.InstapaperBasedRssDescriptionExtender;
+import com.rhcloud.igorbotian.rsskit.rss.ReadabilityBasedRssDescriptionExtender;
 import com.rhcloud.igorbotian.rsskit.rss.RssDescriptionExtender;
 import com.rhcloud.igorbotian.rsskit.rss.RssTruncater;
 import com.rometools.rome.feed.synd.SyndFeed;
@@ -21,13 +22,11 @@ public class RssDescriptionExtendingServlet extends AbstractRssServlet {
     private static final String SERVICE_PARAM = "service";
     private static final int MAX_ENTRIES = 10;
 
-    private static final RssDescriptionExtender instapaperDescriptionExtender = new RssDescriptionExtender(
-            Mobilizers.instapaper()
-    );
+    private static final RssDescriptionExtender instapaperDescriptionExtender
+            = new InstapaperBasedRssDescriptionExtender();
 
-    private static final RssDescriptionExtender readabilityDescriptionExtender = new RssDescriptionExtender(
-            Mobilizers.readability()
-    );
+    private static final RssDescriptionExtender readabilityDescriptionExtender
+            = new ReadabilityBasedRssDescriptionExtender();
 
     private static final RssTruncater truncater = new RssTruncater(MAX_ENTRIES);
 

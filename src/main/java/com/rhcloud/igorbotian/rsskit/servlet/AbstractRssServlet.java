@@ -4,12 +4,15 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.SyndFeedOutput;
-import com.rometools.rome.io.XmlReader;
+import org.xml.sax.InputSource;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.zip.GZIPInputStream;
 
 /**
  * @author Igor Botian <igor.botyan@alcatel-lucent.com>
@@ -22,8 +25,22 @@ public abstract class AbstractRssServlet extends RssKitServlet {
         assert url != null;
 
         try {
-            SyndFeedInput rssInput = new SyndFeedInput();
-            return rssInput.build(new XmlReader(url));
+            URLConnection openConnection = url.openConnection();
+            InputStream is = null;
+
+            try {
+                is = openConnection.getInputStream();
+
+                if ("gzip".equals(openConnection.getContentEncoding())) {
+                    is = new GZIPInputStream(is);
+                }
+
+                return new SyndFeedInput().build(new InputSource(is));
+            } finally {
+                if (is != null) {
+                    is.close();
+                }
+            }
         } catch (FeedException e) {
             throw new IOException("Failed to retrieve an RSS feed: " + url.toString(), e);
         }

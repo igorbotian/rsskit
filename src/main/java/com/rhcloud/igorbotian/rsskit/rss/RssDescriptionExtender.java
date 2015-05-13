@@ -1,6 +1,5 @@
 package com.rhcloud.igorbotian.rsskit.rss;
 
-import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizer;
 import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndContentImpl;
 import com.rometools.rome.feed.synd.SyndEntry;
@@ -13,15 +12,9 @@ import java.util.Objects;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public class RssDescriptionExtender implements RssModifier {
+public abstract class RssDescriptionExtender implements RssModifier {
 
     protected static final String HTTP_MIME_TYPE = "text/html";
-
-    private final Mobilizer mobilizer;
-
-    public RssDescriptionExtender(Mobilizer mobilizer) {
-        this.mobilizer = Objects.requireNonNull(mobilizer);
-    }
 
     @Override
     public void apply(SyndFeed feed) {
@@ -44,11 +37,13 @@ public class RssDescriptionExtender implements RssModifier {
     private void extendDescription(SyndEntry entry) throws IOException {
         assert entry != null;
 
-        String fullDescription = mobilizer.mobilize(new URL(entry.getLink()));
+        String fullDescription = mobilize(new URL(entry.getLink()));
         SyndContent content = new SyndContentImpl();
         content.setType(HTTP_MIME_TYPE);
         content.setValue(fullDescription);
 
         entry.setDescription(content);
     }
+
+    protected abstract String mobilize(URL url) throws IOException;
 }

@@ -1,10 +1,6 @@
 package com.rhcloud.igorbotian.rsskit.rss.championat;
 
-import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizers;
-import com.rhcloud.igorbotian.rsskit.rss.LinkMapper;
-import com.rhcloud.igorbotian.rsskit.rss.RssDescriptionExtender;
-import com.rhcloud.igorbotian.rsskit.rss.RssLinkMapper;
-import com.rhcloud.igorbotian.rsskit.rss.RssModifier;
+import com.rhcloud.igorbotian.rsskit.rss.*;
 import com.rometools.rome.feed.synd.SyndFeed;
 
 import java.net.MalformedURLException;
@@ -21,7 +17,7 @@ public class ChampionatRssFeedModifier implements RssModifier {
 
     private static final RssModifier breakingNewsFilter = new BreakingNewsFilter();
     private static final RssLinkMapper mobileVersionLinkMapper = new RssLinkMapper(new MobileVersionLinkMapper());
-    private static final RssModifier descriptionExtender = new RssDescriptionExtender(Mobilizers.instapaper());
+    private static final RssModifier descriptionExtender = new ReadabilityBasedRssDescriptionExtender();
 
     @Override
     public void apply(SyndFeed feed) {

@@ -123,6 +123,24 @@
         <url-pattern>/logs</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>meduza</servlet-name>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.MeduzaServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>meduza</servlet-name>
+        <url-pattern>/meduza</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>novayagazeta</servlet-name>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.NovayaGazetaServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>novayagazeta</servlet-name>
+        <url-pattern>/novayagazeta</url-pattern>
+    </servlet-mapping>
+
     <context-param>
         <param-name>log4jConfiguration</param-name>
         <param-value>/WEB-INF/log4j.xml</param-value>
