@@ -141,6 +141,15 @@
         <url-pattern>/novayagazeta</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>facebook</servlet-name>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.FacebookServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>facebook</servlet-name>
+        <url-pattern>/facebook</url-pattern>
+    </servlet-mapping>
+
     <context-param>
         <param-name>log4jConfiguration</param-name>
         <param-value>/WEB-INF/log4j.xml</param-value>
