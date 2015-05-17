@@ -15,11 +15,13 @@ public class VkGroup {
 
     public final long id;
     public final String name;
+    public final String screenName;
     public final String photoURL;
 
-    public VkGroup(long id, String name, String photoURL) {
+    public VkGroup(long id, String name, String screeName, String photoURL) {
         this.id = id;
         this.name = Objects.requireNonNull(name);
+        this.screenName = screeName;
         this.photoURL = Objects.requireNonNull(photoURL);
     }
 
@@ -36,9 +38,10 @@ public class VkGroup {
 
             long id = getAttribute(json, "id").asLong();
             String name = getAttribute(json, "name").asText();
+            String screenName = json.has("screen_name") ? json.get("screen_name").asText() : null;
             String photoURL = getAttribute(json, "photo_50").asText();
 
-            return new VkGroup(id, name, photoURL);
+            return new VkGroup(id, name, screenName, photoURL);
         }
     }
 }

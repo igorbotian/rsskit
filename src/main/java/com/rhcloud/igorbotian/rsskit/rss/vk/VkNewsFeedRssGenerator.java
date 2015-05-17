@@ -15,6 +15,9 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
     private static final String PHOTO_LINK_FORMAT = "https://vk.com/photo%s_%s";
     private static final String VIDEO_LINK_FORMAT = "https://vk.com/video%s_%s";
     private static final String POST_LINK_FORMAT = "https://vk.com/feed?w=wall%s_%s";
+    private static final String USER_ID_LINK_FORMAT = "https://vk.com/id%d";
+    private static final String CLUB_LINK_FORMAT = "https://vk.com/club%d";
+    private static final String SCREEN_NAME_LINK_FORMAT = "https://vk.com/%s";
 
     private VkFeedFilter feedFilter = new VkFeedFilter();
 
@@ -138,7 +141,8 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
 
         long sourceID = repost.originalPost.sourceID;
         String author = sourceID > 0 ? profiles.get(sourceID).fullName : groups.get(Math.abs(sourceID)).name;
-        content.append(String.format("<b>&#8618; %s</b>", author));
+        String linkToAuthor = linkToSource(sourceID, profiles, groups);
+        content.append(String.format("&#8618; <a href='%s'>%s</a>", linkToAuthor, author));
 
         if(StringUtils.isNotEmpty(repost.text)) {
             content.append("<br/><br/>");
@@ -153,6 +157,25 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
         }
 
         return content.toString();
+    }
+
+    private String linkToSource(long sourceID, Map<Long, VkUser> profiles, Map<Long, VkGroup> groups) {
+        assert profiles != null;
+        assert groups != null;
+
+        if(sourceID > 0) { // user
+            VkUser user = profiles.get(sourceID);
+
+            return StringUtils.isNotEmpty(user.screenName)
+                    ? String.format(SCREEN_NAME_LINK_FORMAT, user.screenName)
+                    : String.format(USER_ID_LINK_FORMAT, user.id);
+        } else { // group
+            VkGroup group = groups.get(Math.abs(sourceID));
+
+            return StringUtils.isNotEmpty(group.screenName)
+                    ? String.format(SCREEN_NAME_LINK_FORMAT, group.screenName)
+                    : String.format(CLUB_LINK_FORMAT, Math.abs(group.id));
+        }
     }
 
     private String processPhotos(VkFeedPhoto photos, Map<Long, VkUser> profiles, Map<Long, VkGroup> groups) {
@@ -208,7 +231,7 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
         StringBuilder content = new StringBuilder();
 
         if(StringUtils.isNotEmpty(post.text)) {
-            content.append(post.text);
+            content.append(StringUtils.replace(post.text, "\n", "<br/>"));
         }
 
         String photosContent = processPhotos(post.attachments.photos);

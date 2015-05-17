@@ -15,11 +15,13 @@ public class VkUser {
 
     public final long id;
     public final String fullName;
+    public final String screenName;
     public final String photoURL;
 
-    public VkUser(long id, String fullName, String photoURL) {
+    public VkUser(long id, String fullName, String screenName, String photoURL) {
         this.id = id;
         this.fullName = Objects.requireNonNull(fullName);
+        this.screenName = screenName;
         this.photoURL = Objects.requireNonNull(photoURL);
     }
 
@@ -36,9 +38,10 @@ public class VkUser {
             long id = getAttribute(json, "id").asLong();
             String firstName = getAttribute(json, "first_name").asText();
             String lastName = getAttribute(json, "last_name").asText();
+            String screenName = json.has("screen_name") ? json.get("screen_name").asText() : null;
             String photoURL = getAttribute(json, "photo_50").asText();
 
-            return new VkUser(id, firstName + " " + lastName, photoURL);
+            return new VkUser(id, firstName + " " + lastName, screenName, photoURL);
         }
     }
 }

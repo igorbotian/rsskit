@@ -37,7 +37,7 @@ class NewsFeedEndpoint extends RestGetEndpoint {
         params.add(new BasicNameValuePair("access_token", accessToken));
         params.add(new BasicNameValuePair("return_banned", "0"));
         params.add(new BasicNameValuePair("count", Integer.toString(MAX_ENTRIES)));
-        params.add(new BasicNameValuePair("fields", "first_name,last_name,photo_50"));
+        params.add(new BasicNameValuePair("fields", "first_name,last_name,screen_name,photo_50"));
         params.add(new BasicNameValuePair("filters", "post,photo,photo_tag,wall_photo"));
         params.add(new BasicNameValuePair("v", apiVersion));
 
