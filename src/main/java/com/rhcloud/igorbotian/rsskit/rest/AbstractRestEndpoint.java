@@ -3,6 +3,8 @@ package com.rhcloud.igorbotian.rsskit.rest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -31,6 +33,13 @@ public abstract class AbstractRestEndpoint implements RestEndpoint {
         rcBuilder.setConnectTimeout(CONNECTION_TIMEOUT);
         rcBuilder.setSocketTimeout(SOCKET_TIMEOUT);
         rcBuilder.setConnectionRequestTimeout(CONNECTION_TIMEOUT);
+
+        String proxyHost = System.getProperty("http.proxyHost");
+        String proxyPort = System.getProperty("http.proxyPort");
+
+        if(StringUtils.isNotEmpty(proxyHost) && StringUtils.isNotEmpty(proxyPort)) {
+            rcBuilder.setProxy(new HttpHost(proxyHost, Integer.parseInt(proxyPort)));
+        }
 
         HttpClientBuilder builder = HttpClientBuilder.create();
         builder.setDefaultRequestConfig(rcBuilder.build());
