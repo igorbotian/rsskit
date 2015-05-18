@@ -24,7 +24,7 @@ public abstract class AbstractRestEndpoint implements RestEndpoint {
     private static final int CONNECTION_TIMEOUT = 30000;
     private static final int SOCKET_TIMEOUT = 60000;
 
-    private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+    protected static final ObjectMapper JSON_MAPPER = new ObjectMapper();
     protected static final HttpClient HTTP_CLIENT;
 
     static {
@@ -52,15 +52,21 @@ public abstract class AbstractRestEndpoint implements RestEndpoint {
         Objects.requireNonNull(endpoint);
         Objects.requireNonNull(params);
 
+        byte[] content = makeRawRequest(endpoint, params);
+        return JSON_MAPPER.readTree(content);
+    }
+
+    protected byte[] makeRawRequest(String endpoint, List<NameValuePair> params) throws IOException {
+        Objects.requireNonNull(endpoint);
+        Objects.requireNonNull(params);
+
         HttpResponse response = requestor().request(endpoint, params);
 
         try {
             long contentLength = response.getEntity().getContentLength();
-            byte[] content = (contentLength < 0)
+            return (contentLength < 0)
                     ? IOUtils.toByteArray(response.getEntity().getContent())
                     : IOUtils.toByteArray(response.getEntity().getContent(), contentLength);
-
-            return JSON_MAPPER.readTree(content);
         } finally {
             EntityUtils.consumeQuietly(response.getEntity());
         }

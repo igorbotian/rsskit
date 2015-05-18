@@ -30,7 +30,6 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
         feed = feedFilter.removeDuplicates(feed);
 
         SyndFeed rss = skeleton();
-
         List<SyndEntry> entries = new ArrayList<>(feed.items.size());
 
         for (VkFeedItem item : feed.items) {

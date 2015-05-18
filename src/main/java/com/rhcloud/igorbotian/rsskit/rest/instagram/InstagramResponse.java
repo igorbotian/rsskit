@@ -10,7 +10,7 @@ import java.util.Objects;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public final class InstagramResponse {
+final class InstagramResponse {
 
     private InstagramResponse() {
         //

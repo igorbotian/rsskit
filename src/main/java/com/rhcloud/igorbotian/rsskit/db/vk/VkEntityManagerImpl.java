@@ -53,7 +53,7 @@ public class VkEntityManagerImpl extends RsskitEntityManager implements VkEntity
         try {
             return tokenDAO.exists(token) ? tokenDAO.get(token).getAccessToken() : null;
         } catch (SQLException e) {
-            throw new VkException("Failed to get МЛ access token by a specified user ID: " + token, e);
+            throw new VkException("Failed to get VK access token by a specified user ID: " + token, e);
         }
     }
 
