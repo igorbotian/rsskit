@@ -5,6 +5,7 @@ import com.rhcloud.igorbotian.rsskit.rss.RssGenerator;
 import com.rometools.rome.feed.synd.*;
 import org.apache.commons.lang3.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -18,6 +19,7 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
     private static final String USER_ID_LINK_FORMAT = "https://vk.com/id%d";
     private static final String CLUB_LINK_FORMAT = "https://vk.com/club%d";
     private static final String SCREEN_NAME_LINK_FORMAT = "https://vk.com/%s";
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     private VkFeedFilter feedFilter = new VkFeedFilter();
 
@@ -142,10 +144,11 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
         long sourceID = repost.originalPost.sourceID;
         String author = sourceID > 0 ? profiles.get(sourceID).fullName : groups.get(Math.abs(sourceID)).name;
         String linkToAuthor = linkToSource(sourceID, profiles, groups);
-        content.append(String.format("&#8618; <a href='%s'>%s</a>", linkToAuthor, author));
+        String profilePictureURL = (sourceID > 0) ? profiles.get(sourceID).photoURL : groups.get(Math.abs(sourceID)).photoURL;
+        content.append(postCaption(true, author, linkToAuthor, profilePictureURL, repost.originalPost.date));
 
         if(StringUtils.isNotEmpty(repost.text)) {
-            content.append("<br/><br/>");
+            content.append("<br/>");
             content.append(repost.text);
         }
 
@@ -176,6 +179,45 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
                     ? String.format(SCREEN_NAME_LINK_FORMAT, group.screenName)
                     : String.format(CLUB_LINK_FORMAT, Math.abs(group.id));
         }
+    }
+
+    private String postCaption(boolean repost, String author, String linkToAuthor, String profilePictureURL, Date date) {
+        assert author != null;
+        assert linkToAuthor != null;
+        assert profilePictureURL != null;
+        assert date != null;
+
+        StringBuilder caption = new StringBuilder();
+
+        caption.append("<table>");
+
+        caption.append("<tr>");
+        caption.append("<td rowspan=2>");
+        caption.append(String.format("<img src='%s'/>", profilePictureURL));
+        caption.append("</td>");
+        caption.append("<td>");
+        caption.append(String.format("<a href='%s' style='text-decoration: none'>", linkToAuthor));
+
+        if(repost) {
+            caption.append("&#8618;&nbsp;");
+        }
+
+        caption.append(String.format("<b>%s</b>", author));
+        caption.append("</a>");
+        caption.append("</td>");
+        caption.append("</tr>");
+
+        caption.append("<tr>");
+        caption.append("<td align='center'>");
+        caption.append("<font style='font-size: small'>");
+        caption.append(DATE_FORMAT.format(date));
+        caption.append("</font>");
+        caption.append("</td>");
+        caption.append("</tr>");
+
+        caption.append("</table>");
+
+        return caption.toString();
     }
 
     private String processPhotos(VkFeedPhoto photos, Map<Long, VkUser> profiles, Map<Long, VkGroup> groups) {
