@@ -18,13 +18,19 @@ class VkFeedFilter {
     private List<VkFeedItem> removeDuplicates(List<VkFeedItem> items) {
         assert items != null;
 
-        LinkedHashMap<Identifier, VkFeedItem> result = new LinkedHashMap<>();
+        LinkedHashMap<Identifier, VkFeedItem> uniqueItems = new LinkedHashMap<>();
 
         for(VkFeedItem item : items) {
-            result.put(new Identifier(item.date, item.sourceID), item);
+            uniqueItems.put(new Identifier(item.date, item.sourceID), item);
         }
 
-        return new ArrayList<>(result.values());
+        List<VkFeedItem> result = new ArrayList<>(uniqueItems.size());
+
+        for(Map.Entry<Identifier, VkFeedItem> item : uniqueItems.entrySet()) {
+            result.add(item.getValue());
+        }
+
+        return result;
     }
 
     private static class Identifier {

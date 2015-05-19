@@ -24,11 +24,10 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
     private VkFeedFilter feedFilter = new VkFeedFilter();
 
     @Override
-    public SyndFeed generate(VkFeed feed) {
-        Objects.requireNonNull(feed);
+    public SyndFeed generate(VkFeed originalFeed) {
+        Objects.requireNonNull(originalFeed);
 
-        feed = feedFilter.removeDuplicates(feed);
-
+        VkFeed feed = feedFilter.removeDuplicates(originalFeed);
         SyndFeed rss = skeleton();
         List<SyndEntry> entries = new ArrayList<>(feed.items.size());
 
