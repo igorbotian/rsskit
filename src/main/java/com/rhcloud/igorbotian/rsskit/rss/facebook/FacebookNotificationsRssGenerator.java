@@ -118,21 +118,15 @@ public class FacebookNotificationsRssGenerator extends RssGenerator<FacebookNoti
             content.append("<br/><br/>");
         }
 
-        content.append("<table>");
-        content.append("<tr>");
-
         if(StringUtils.isNotEmpty(link.picture)) {
             content.append("<td>");
             content.append(String.format("<a href='%s'>", link.link));
             content.append(String.format("<img src='%s'/>", link.picture));
             content.append("</a>");
-            content.append("</td>");
         }
 
-        content.append("<td>");
-
         if(StringUtils.isNotEmpty(link.name)) {
-            content.append(String.format("<b>%s</b>", link.name));
+            content.append(String.format("<br/><b>%s</b>", link.name));
         }
 
         if(StringUtils.isNotEmpty(link.description)) {
@@ -147,10 +141,6 @@ public class FacebookNotificationsRssGenerator extends RssGenerator<FacebookNoti
                 link.link,
                 StringUtils.isNotEmpty(link.caption) ? link.caption : link.link
         ));
-
-        content.append("</td>");
-        content.append("</tr>");
-        content.append("</table>");
 
         return content.toString();
     }
@@ -190,17 +180,10 @@ public class FacebookNotificationsRssGenerator extends RssGenerator<FacebookNoti
             content.append("<br/><br/>");
         }
 
-        content.append("<table>");
-        content.append("<tr>");
-
-        content.append("<td>");
         content.append(String.format("<a href='%s'><img src='%s'/></a>", video.source, video.picture));
-        content.append("</td>");
-
-        content.append("<td>");
 
         if(StringUtils.isNotEmpty(video.name)) {
-            content.append(String.format("<b>%s</b>", html(video.name)));
+            content.append(String.format("<br/><b>%s</b>", html(video.name)));
         }
 
         if(StringUtils.isNotEmpty(video.description)) {
@@ -210,9 +193,6 @@ public class FacebookNotificationsRssGenerator extends RssGenerator<FacebookNoti
         if(StringUtils.isNotEmpty(video.caption)) {
             content.append(String.format("<br/><font style='font-size: small'><i>%s</i></font>", html(video.caption)));
         }
-
-        content.append("</tr>");
-        content.append("</table>");
 
         return content.toString();
     }
