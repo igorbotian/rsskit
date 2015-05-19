@@ -155,7 +155,12 @@
         <param-value>/WEB-INF/log4j.xml</param-value>
     </context-param>
 
+    <context-param>
+        <param-name>db.url</param-name>
+        <param-value>jdbc:h2:/db/rsskit</param-value>
+    </context-param>
+
     <listener>
-        <listener-class>org.h2.server.web.DbStarter</listener-class>
+        <listener-class>com.rhcloud.igorbotian.rsskit.servlet.RsskitContextListener</listener-class>
     </listener>
 </web-app>

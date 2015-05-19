@@ -74,6 +74,17 @@ public abstract class RssKitServlet extends HttpServlet {
         dataSource = new RsskitDataSource(dbURL, "sa", "sa", new H2DatabaseType());
     }
 
+    @Override
+    public void destroy() {
+        try {
+            dataSource.get().close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to stop database", e);
+        } finally {
+            super.destroy();
+        }
+    }
+
     protected RsskitDataSource dataSource() throws SQLException {
         return dataSource;
     }
