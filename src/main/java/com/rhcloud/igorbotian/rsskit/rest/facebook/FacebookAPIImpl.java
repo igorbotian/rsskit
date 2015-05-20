@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.rhcloud.igorbotian.rsskit.db.RsskitDataSource;
 import com.rhcloud.igorbotian.rsskit.db.facebook.FacebookEntityManager;
 import com.rhcloud.igorbotian.rsskit.db.facebook.FacebookEntityManagerImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -15,6 +17,7 @@ import java.util.Set;
  */
 public class FacebookAPIImpl implements FacebookAPI {
 
+    private static final Logger LOGGER = LogManager.getLogger(FacebookAPIImpl.class);
     private static final String API_VERSION = "2.3";
 
     private final OAuthEndpoint oAuth = new OAuthEndpoint();
@@ -79,7 +82,34 @@ public class FacebookAPIImpl implements FacebookAPI {
         }
 
         String userID = me.getID(this, accessToken);
-        return notifications.get(userID, accessToken);
+        FacebookNotifications result = notifications.get(userID, accessToken);
+        markNotificationsAsRead(result, accessToken);
+        return result;
+    }
+
+    private void markNotificationsAsRead(FacebookNotifications notifications, String accessToken) {
+        assert notifications != null;
+        assert accessToken != null;
+
+        try {
+            for(int i = 1 ; i < notifications.items.size(); i++) { // first notification is always left unread
+                FacebookNotification notification = notifications.items.get(i);
+
+                if (notification.unread) {
+                    markNotificationAsRead(notification.id, accessToken);
+                }
+            }
+        } catch (FacebookException e) {
+            LOGGER.error("Failed to mark notifications as read", e);
+        }
+    }
+
+    @Override
+    public void markNotificationAsRead(String id, String accessToken) throws FacebookException {
+        Objects.requireNonNull(id);
+        Objects.requireNonNull(accessToken);
+
+        notifications.markAsRead(id, accessToken);
     }
 
     @Override

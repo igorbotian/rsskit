@@ -3,6 +3,7 @@ package com.rhcloud.igorbotian.rsskit.rest.facebook;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.rhcloud.igorbotian.rsskit.rest.RestGetEndpoint;
 import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
+import com.rhcloud.igorbotian.rsskit.rest.RestPostEndpoint;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -16,9 +17,11 @@ import java.util.Objects;
  */
 class NotificationsEndpoint extends RestGetEndpoint {
 
-    private static final String ENDPOINT_URL = "https://graph.facebook.com/v%s/%s/notifications";
+    private static final String GRAPH_API_URL = "https://graph.facebook.com/v%s";
+    private static final String ENDPOINT_URL = GRAPH_API_URL + "/%s/notifications";
     private final String apiVersion;
     private final FacebookAPI api;
+    private final RestPostEndpoint post = new RestPostEndpoint();
 
     public NotificationsEndpoint(String apiVersion, FacebookAPI api) {
         this.apiVersion = Objects.requireNonNull(apiVersion);
@@ -59,5 +62,32 @@ class NotificationsEndpoint extends RestGetEndpoint {
                 return FacebookNotifications.parse(json, api, accessToken);
             }
         });
+    }
+
+    public void markAsRead(String notificationId, String accessToken) throws FacebookException {
+        Objects.requireNonNull(notificationId);
+        Objects.requireNonNull(accessToken);
+
+        List<NameValuePair> params = new ArrayList<>();
+        params.add(new BasicNameValuePair("access_token", accessToken));
+
+        try {
+            JsonNode response = post.makeRequest(
+                    String.format(GRAPH_API_URL + "/%s?unread=false", api.version(), notificationId),
+                    params
+            );
+
+            if(response.has("success")) {
+                if(!response.get("success").asBoolean()) {
+                    throw new FacebookException("Marking a notification with the specified ID was not successful: "
+                            + notificationId);
+                }
+            } else {
+                throw new FacebookException("Unexpected response returned by Facebook: " + response.toString());
+            }
+        } catch (IOException e) {
+            throw new FacebookException("Failed to mark a notification with a specified ID as read: "
+                    + notificationId, e);
+        }
     }
 }

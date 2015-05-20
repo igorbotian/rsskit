@@ -20,5 +20,7 @@ public interface FacebookAPI {
 
     FacebookNotifications getNotifications(String accessToken) throws FacebookException;
 
+    void markNotificationAsRead(String id, String accessToken) throws FacebookException;
+
     JsonNode getObject(String id, String accessToken) throws FacebookException;
 }
