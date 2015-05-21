@@ -206,7 +206,7 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
         caption.append("</tr>");
 
         caption.append("<tr>");
-        caption.append("<td align='center'>");
+        caption.append("<td>");
         caption.append("<font style='font-size: small'>");
         caption.append(DATE_FORMAT.format(date));
         caption.append("</font>");
