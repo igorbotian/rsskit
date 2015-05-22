@@ -1,14 +1,16 @@
-package com.rhcloud.igorbotian.rsskit.rest.facebook;
+package com.rhcloud.igorbotian.rsskit.rest.facebook.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.rhcloud.igorbotian.rsskit.db.RsskitDataSource;
 import com.rhcloud.igorbotian.rsskit.db.facebook.FacebookEntityManager;
 import com.rhcloud.igorbotian.rsskit.db.facebook.FacebookEntityManagerImpl;
+import com.rhcloud.igorbotian.rsskit.rest.facebook.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
@@ -21,9 +23,8 @@ public class FacebookAPIImpl implements FacebookAPI {
     private static final String API_VERSION = "2.3";
 
     private final OAuthEndpoint oAuth = new OAuthEndpoint();
-    private final MeEndpoint me = new MeEndpoint(API_VERSION);
-    private final NotificationsEndpoint notifications;
-    private final ObjectEndpoint objects = new ObjectEndpoint(API_VERSION);
+    private final HomeEndpoint home;
+    private final ObjectEndpoint objects;
     private final FacebookEntityManager entityManager;
 
     public FacebookAPIImpl(RsskitDataSource source) throws FacebookException {
@@ -35,7 +36,8 @@ public class FacebookAPIImpl implements FacebookAPI {
             throw new FacebookException("Failed to initialize Facebook entity manager");
         }
 
-        this.notifications = new NotificationsEndpoint(API_VERSION, this);
+        this.home = new HomeEndpoint(this);
+        this.objects = new ObjectEndpoint(this);
     }
 
     @Override
@@ -72,7 +74,7 @@ public class FacebookAPIImpl implements FacebookAPI {
     }
 
     @Override
-    public FacebookNotifications getNotifications(String token) throws FacebookException {
+    public FacebookNewsFeed getNewsFeed(String token) throws FacebookException {
         Objects.requireNonNull(token);
 
         String accessToken = entityManager.getAccessToken(token);
@@ -81,35 +83,24 @@ public class FacebookAPIImpl implements FacebookAPI {
             throw new FacebookException("Access token is not registered: " + token);
         }
 
-        String userID = me.getID(this, accessToken);
-        FacebookNotifications result = notifications.get(userID, accessToken);
-        markNotificationsAsRead(result, accessToken);
-        return result;
-    }
-
-    private void markNotificationsAsRead(FacebookNotifications notifications, String accessToken) {
-        assert notifications != null;
-        assert accessToken != null;
+        Date since = entityManager.getNewsFeedSince(token);
+        FacebookNewsFeed feed = home.getNewsFeed(accessToken, since);
 
         try {
-            for(int i = 1 ; i < notifications.items.size(); i++) { // first notification is always left unread
-                FacebookNotification notification = notifications.items.get(i);
+            if(feed.posts.size() > 1) {
+                // at least one item is always returned
+                FacebookNewsFeedItem item = feed.posts.get(1);
+                FacebookPost firstPost = (item instanceof FacebookRepost)
+                        ? ((FacebookRepost) item).repost
+                        : (FacebookPost) item;
 
-                if (notification.unread) {
-                    markNotificationAsRead(notification.id, accessToken);
-                }
+                entityManager.setNewsFeedSince(token, firstPost.createdTime);
             }
         } catch (FacebookException e) {
-            LOGGER.error("Failed to mark notifications as read", e);
+            LOGGER.error("Failed to update Facebook News Feed since value", e);
         }
-    }
 
-    @Override
-    public void markNotificationAsRead(String id, String accessToken) throws FacebookException {
-        Objects.requireNonNull(id);
-        Objects.requireNonNull(accessToken);
-
-        notifications.markAsRead(id, accessToken);
+        return feed;
     }
 
     @Override

@@ -14,12 +14,14 @@ import java.util.Objects;
  */
 public class FacebookEntityManagerImpl extends RsskitEntityManager implements FacebookEntityManager {
 
-    private RsskitDAO<FacebookToken> tokenDAO;
+    private final RsskitDAO<FacebookToken> tokenDAO;
+    private final RsskitDAO<FacebookNewsFeed> newsFeedDAO;
 
     public FacebookEntityManagerImpl(RsskitDataSource source) throws SQLException {
         super(source);
 
         this.tokenDAO = new RsskitDAO<>(dataSource, databaseType, FacebookToken.class);
+        this.newsFeedDAO = new RsskitDAO<>(dataSource, databaseType, FacebookNewsFeed.class);
     }
 
     @Override
@@ -33,7 +35,7 @@ public class FacebookEntityManagerImpl extends RsskitEntityManager implements Fa
             if (tokenDAO.exists(token)) {
                 FacebookToken obj = tokenDAO.get(token);
 
-                if(!obj.getExpiredDate().equals(expiredDate)) {
+                if (!obj.getExpiredDate().equals(expiredDate)) {
                     obj.setExpiredDate(expiredDate);
                     tokenDAO.update(obj);
                 }
@@ -49,7 +51,7 @@ public class FacebookEntityManagerImpl extends RsskitEntityManager implements Fa
 
             return token;
         } catch (SQLException e) {
-            throw new FacebookException("Failed to register access token by a specified user ID: " + accessToken, e);
+            throw new FacebookException("Failed to register access token: " + accessToken, e);
         }
     }
 
@@ -60,7 +62,39 @@ public class FacebookEntityManagerImpl extends RsskitEntityManager implements Fa
         try {
             return tokenDAO.exists(token) ? tokenDAO.get(token).getAccessToken() : null;
         } catch (SQLException e) {
-            throw new FacebookException("Failed to get Facebook access token by a specified user ID: " + token, e);
+            throw new FacebookException("Failed to get Facebook access token by a specified token: " + token, e);
+        }
+    }
+
+    @Override
+    public void setNewsFeedSince(String token, Date since) throws FacebookException {
+        Objects.requireNonNull(token);
+
+        try {
+            if (newsFeedDAO.exists(token)) {
+                FacebookNewsFeed newsFeed = newsFeedDAO.get(token);
+                newsFeed.setSince(since);
+                newsFeedDAO.update(newsFeed);
+            } else {
+                FacebookNewsFeed newsFeed = new FacebookNewsFeed();
+                newsFeed.setRsskitToken(token);
+                newsFeed.setSince(since);
+                newsFeedDAO.create(newsFeed);
+            }
+        } catch (SQLException e) {
+            throw new FacebookException("Failed to create/update Facebook News Feed since value " +
+                    "by a specified token: " + token, e);
+        }
+    }
+
+    @Override
+    public Date getNewsFeedSince(String token) throws FacebookException {
+        Objects.requireNonNull(token);
+
+        try {
+            return newsFeedDAO.exists(token) ? newsFeedDAO.get(token).getSince() : null;
+        } catch (SQLException e) {
+            throw new FacebookException("Failed to get Facebook News Feed since value by a specified token: " + token, e);
         }
     }
 
@@ -69,7 +103,7 @@ public class FacebookEntityManagerImpl extends RsskitEntityManager implements Fa
         Objects.requireNonNull(token);
 
         try {
-            if(!tokenDAO.exists(token)) {
+            if (!tokenDAO.exists(token)) {
                 throw new FacebookException("No Facebook access token is registered by a specified user ID: " + token);
             }
 

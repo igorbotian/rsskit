@@ -1,7 +1,9 @@
-package com.rhcloud.igorbotian.rsskit.rest.facebook;
+package com.rhcloud.igorbotian.rsskit.rest.facebook.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.rhcloud.igorbotian.rsskit.rest.EntityParser;
 import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
+import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookException;
 
 import java.util.Objects;
 
@@ -14,29 +16,30 @@ final class FacebookResponse {
         //
     }
 
-    public static <T> T parse(JsonNode json, FacebookAPI api, String accessToken, FacebookEntityParser<T> entityParser)
+    public static <T> T parse(JsonNode json, EntityParser<T> entityParser)
             throws RestParseException, FacebookException {
 
         Objects.requireNonNull(json);
         Objects.requireNonNull(entityParser);
-        Objects.requireNonNull(accessToken);
 
         throwExceptionIfError(json);
 
-        if(!json.has("data")) {
+        if (!json.has("data")) {
             throw new RestParseException("No data returned by Facebook: " + json.toString());
         }
 
-        return entityParser.parse(json.get("data"), api, accessToken);
+        return entityParser.parse(json.get("data"));
     }
 
     public static void throwExceptionIfError(JsonNode json) throws FacebookException {
         Objects.requireNonNull(json);
 
-        if(json.has("error")) {
-            String type = json.has("type") ? json.get("type").asText() : "";
-            int code = json.has("code") ? json.get("code").asInt() : 0;
-            String message = json.has("message") ? json.get("message").asText() : "";
+        if (json.has("error")) {
+            JsonNode error = json.get("error");
+
+            String type = error.has("type") ? error.get("type").asText() : "";
+            int code = error.has("code") ? error.get("code").asInt() : 0;
+            String message = error.has("message") ? error.get("message").asText() : "";
 
             throw new FacebookException(String.format("%s (%d): %s", type, code, message));
         }

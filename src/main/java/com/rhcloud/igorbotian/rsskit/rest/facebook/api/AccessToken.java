@@ -1,4 +1,4 @@
-package com.rhcloud.igorbotian.rsskit.rest.facebook;
+package com.rhcloud.igorbotian.rsskit.rest.facebook.api;
 
 import java.util.Date;
 import java.util.Objects;

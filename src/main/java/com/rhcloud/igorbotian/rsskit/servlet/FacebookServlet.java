@@ -1,11 +1,10 @@
 package com.rhcloud.igorbotian.rsskit.servlet;
 
-import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookAPI;
-import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookAPIImpl;
-import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookException;
-import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookNotifications;
+import com.rhcloud.igorbotian.rsskit.rest.facebook.*;
+import com.rhcloud.igorbotian.rsskit.rest.facebook.api.FacebookAPI;
+import com.rhcloud.igorbotian.rsskit.rest.facebook.api.FacebookAPIImpl;
 import com.rhcloud.igorbotian.rsskit.rss.RssGenerator;
-import com.rhcloud.igorbotian.rsskit.rss.facebook.FacebookNotificationsRssGenerator;
+import com.rhcloud.igorbotian.rsskit.rss.facebook.FacebookNewsFeedRssGenerator;
 import com.rhcloud.igorbotian.rsskit.utils.Configuration;
 import com.rhcloud.igorbotian.rsskit.utils.URLUtils;
 import com.rometools.rome.feed.synd.SyndFeed;
@@ -38,13 +37,12 @@ public class FacebookServlet extends AbstractRssServlet {
 
     private static final Set<String> PERMISSIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
             "public_profile",
-            "manage_notifications",
             "read_stream",
-            "user_posts"
+            "manage_pages"
     )));
 
     private FacebookAPI api;
-    private final RssGenerator<FacebookNotifications> rssGenerator = new FacebookNotificationsRssGenerator();
+    private final RssGenerator<FacebookNewsFeed> rssGenerator = new FacebookNewsFeedRssGenerator();
 
     @Override
     public void init() throws ServletException {
@@ -87,8 +85,8 @@ public class FacebookServlet extends AbstractRssServlet {
         SyndFeed rss;
 
         try {
-            FacebookNotifications notifications = api.getNotifications(accessToken);
-            rss = rssGenerator.generate(notifications);
+            FacebookNewsFeed newsFeed = api.getNewsFeed(accessToken);
+            rss = rssGenerator.generate(newsFeed);
         } catch (FacebookException e) {
             LOGGER.error("Failed to get Facebook notifications and generate appropriate RSS feed", e);
             rss = rssGenerator.error(e);

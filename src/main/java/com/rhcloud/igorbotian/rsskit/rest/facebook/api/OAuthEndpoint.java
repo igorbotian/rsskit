@@ -1,6 +1,7 @@
-package com.rhcloud.igorbotian.rsskit.rest.facebook;
+package com.rhcloud.igorbotian.rsskit.rest.facebook.api;
 
 import com.rhcloud.igorbotian.rsskit.rest.RestGetEndpoint;
+import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookException;
 import com.rhcloud.igorbotian.rsskit.utils.URLUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
@@ -31,7 +32,7 @@ class OAuthEndpoint extends RestGetEndpoint {
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("client_id", clientID));
         params.add(new BasicNameValuePair("scope", StringUtils.join(permissions.iterator(), ',')));
-        params.add(new BasicNameValuePair("redirect_uri", /*callbackURL.toString()*/ "http://rsskit-igorbotian.rhcloud.com/facebook"));
+        params.add(new BasicNameValuePair("redirect_uri", callbackURL.toString()));
         params.add(new BasicNameValuePair("response_type", "code"));
 
         try {
@@ -52,7 +53,7 @@ class OAuthEndpoint extends RestGetEndpoint {
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("client_id", clientID));
         params.add(new BasicNameValuePair("client_secret", clientSecret));
-        params.add(new BasicNameValuePair("redirect_uri", /*callbackURL.toString()*/"http://rsskit-igorbotian.rhcloud.com/facebook"));
+        params.add(new BasicNameValuePair("redirect_uri", callbackURL.toString()));
         params.add(new BasicNameValuePair("code", code));
 
         try {
