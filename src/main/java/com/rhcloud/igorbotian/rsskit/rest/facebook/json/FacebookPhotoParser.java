@@ -28,6 +28,6 @@ public class FacebookPhotoParser extends FacebookPostParser<FacebookPhoto> {
         String link = json.has("link") ? json.get("link").asText() : "";
         String picture = json.has("picture") ? json.get("picture").asText() : "";
 
-        return new FacebookPhoto(id, createdTime, from, caption, message, name, link, picture);
+        return new FacebookPhoto(id, createdTime, from, caption, message, name, link, "", picture);
     }
 }

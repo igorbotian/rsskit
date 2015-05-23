@@ -209,7 +209,8 @@ public class FacebookNewsFeedRssGenerator extends RssGenerator<FacebookNewsFeed>
             content.append("<br/><br/>");
         }
 
-        content.append(String.format("<a href='%s'><img src='%s'/></a>", photo.link, photo.picture));
+        content.append(String.format("<a href='%s'><img src='%s'/></a>",
+                photo.link, StringUtils.isNotEmpty(photo.image) ? photo.image : photo.picture));
 
         return content.toString();
     }

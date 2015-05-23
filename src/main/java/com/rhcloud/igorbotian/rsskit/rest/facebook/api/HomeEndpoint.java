@@ -43,13 +43,14 @@ class HomeEndpoint extends FacebookEndpoint {
 
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("access_token", accessToken));
-        params.add(new BasicNameValuePair("fields", "id,from,created_time,type,story,object_id"));
+        params.add(new BasicNameValuePair("fields", "id,type,from,message,caption,description,link,name,picture," +
+                "object_id,story,created_time"));
         params.add(dateInUNIXTimeFormat());
         params.add(new BasicNameValuePair("limit", Integer.toString(SIZE)));
 
-        if (since != null) {
+        /*if (since != null) {
             params.add(since(since));
-        }
+        }*/
 
         List<IncompleteFacebookPost> posts = makeRequest(ENDPOINT, params, IncompleteFacebookNewsFeed.PARSER).posts;
         posts = orderPostsByCreatedTime(REPOST_IDENTIFIER.apply(posts));
@@ -75,10 +76,52 @@ class HomeEndpoint extends FacebookEndpoint {
                 posts.add(makeNewsFeedItem(post, accessToken));
             } catch (FacebookException | RestParseException e) {
                 LOGGER.trace("Failed to download post contents with a specified ID: " + post.id, e);
+
+                try {
+                    posts.add((post.source != null) ? makeRepost(post, accessToken) : makePost(post, accessToken));
+                } catch (FacebookException ex) {
+                    LOGGER.error("Failed to instantiate Facebook post/repost entity", ex);
+                }
             }
         }
 
         return new FacebookNewsFeed(Collections.unmodifiableList(posts));
+    }
+
+    private FacebookRepost makeRepost(IncompleteFacebookPost post, String accessToken) throws FacebookException {
+        assert post != null;
+        assert accessToken != null;
+
+        return new FacebookRepost(
+                post.source.id,
+                post.source.createdTime,
+                post.source.from,
+                makePost(post, accessToken)
+        );
+    }
+
+    private FacebookPost makePost(IncompleteFacebookPost post, String accessToken) throws FacebookException {
+        assert post != null;
+        assert accessToken != null;
+
+        switch (post.type) {
+            case VIDEO:
+                return new FacebookVideo(post.id, post.createdTime, post.from, post.caption, post.message,
+                        post.name, post.description, post.picture, post.videoSource, "");
+            case STATUS:
+                return new FacebookStatus(post.id, post.createdTime, post.from, post.caption, post.message);
+            case PHOTO:
+                String image = getPhotoImage(post.objectID, accessToken);
+                return new FacebookPhoto(post.id, post.createdTime, post.from, post.caption, post.message,
+                        post.name, post.link, image, post.picture);
+            case OFFER:
+                return new FacebookOffer(post.id, post.createdTime, post.from, post.caption, post.message);
+            case LINK:
+                return new FacebookLink(post.id, post.createdTime, post.from, post.caption, post.message,
+                        post.description, post.link, post.name, post.picture);
+            default:
+                throw new FacebookException("Unexpected Facebook post type: " + post.type);
+        }
     }
 
     private FacebookNewsFeedItem makeNewsFeedItem(IncompleteFacebookPost incompletePost, String accessToken)
@@ -98,7 +141,10 @@ class HomeEndpoint extends FacebookEndpoint {
                 post = OFFER_PARSER.parse(json);
                 break;
             case PHOTO:
-                post = PHOTO_PARSER.parse(json);
+                String image = getPhotoImage(incompletePost.objectID, accessToken);
+                FacebookPhoto photo = PHOTO_PARSER.parse(json);
+                post = new FacebookPhoto(photo.id, photo.createdTime, photo.from, photo.caption,
+                        photo.name, photo.link, photo.link, image, photo.picture);
                 break;
             case STATUS:
                 post = STATUS_PARSER.parse(json);
@@ -118,5 +164,30 @@ class HomeEndpoint extends FacebookEndpoint {
         } else {
             return post;
         }
+    }
+
+    private String getPhotoImage(String objectID, String accessToken) {
+        assert objectID != null;
+
+        try {
+            JsonNode json = api.getObject(objectID, accessToken);
+
+            if(json.has("images")) {
+                JsonNode images = json.get("images");
+
+                if(images.size() > 0) {
+                    JsonNode image = images.get(images.size() - 1);
+
+                    if(image.has("source")) {
+                        return image.get("source").asText();
+                    }
+                }
+            }
+        } catch (FacebookException e) {
+            LOGGER.warn("Failed to download a photo image identified by ID = " + objectID, e);
+            return "";
+        }
+
+        return "";
     }
 }
