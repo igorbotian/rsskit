@@ -4,7 +4,11 @@ import com.rhcloud.igorbotian.rsskit.rest.facebook.*;
 import com.rhcloud.igorbotian.rsskit.rss.RssGenerator;
 import com.rometools.rome.feed.synd.*;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,8 +18,10 @@ import java.util.regex.Pattern;
  */
 public class FacebookNewsFeedRssGenerator extends RssGenerator<FacebookNewsFeed> {
 
+    private static final Logger LOGGER = LogManager.getLogger(FacebookNewsFeedRssGenerator.class);
     private static final String HTML_MIME_TYPE = "text/html";
     private static final Pattern URL_REGEX = Pattern.compile("\\b(https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])");
+    private static final int MAX_URL_LENGTH = 40;
 
     @Override
     public SyndFeed generate(FacebookNewsFeed newsFeed) {
@@ -185,7 +191,7 @@ public class FacebookNewsFeedRssGenerator extends RssGenerator<FacebookNewsFeed>
         content.append(String.format(
                 "<a href='%s'><font style='text-decoration: none; font-size: small'>%s</font></a>",
                 link.link,
-                StringUtils.isNotEmpty(link.caption) ? link.caption : link.link
+                StringUtils.isNotEmpty(link.caption) ? link.caption : shortenLink(link.link)
         ));
 
         return content.toString();
@@ -256,6 +262,21 @@ public class FacebookNewsFeedRssGenerator extends RssGenerator<FacebookNewsFeed>
     private String processOffer(FacebookOffer offer) {
         assert offer != null;
         return ""; // nothing additional
+    }
+
+    private String shortenLink(String url) {
+        assert url != null;
+
+        if(url.length() > MAX_URL_LENGTH) {
+            try {
+                URIBuilder builder = new URIBuilder(url);
+                return String.format("%s://%s/", builder.getScheme(), builder.getHost());
+            } catch (URISyntaxException e) {
+                LOGGER.warn("Failed to shorten a specified link: " + url, e);
+            }
+        }
+
+        return url;
     }
 
     private String html(String text) {
