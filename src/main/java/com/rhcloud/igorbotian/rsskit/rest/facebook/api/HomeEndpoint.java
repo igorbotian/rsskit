@@ -49,13 +49,25 @@ class HomeEndpoint extends FacebookEndpoint {
         params.add(dateInUNIXTimeFormat());
         params.add(new BasicNameValuePair("limit", Integer.toString(SIZE)));
 
-        if (since != null) {
-            params.add(since(since));
-        }
-
         List<IncompleteFacebookPost> posts = makeRequest(ENDPOINT, params, IncompleteFacebookNewsFeed.PARSER).posts;
+        posts = filterPostsPublishedSinceGivenDate(posts, since);
         posts = orderPostsByCreatedTime(REPOST_IDENTIFIER.apply(posts));
         return makeNewsFeed(posts, accessToken);
+    }
+
+    private List<IncompleteFacebookPost> filterPostsPublishedSinceGivenDate(List<IncompleteFacebookPost> posts, Date since) {
+        assert posts != null;
+        assert since != null;
+
+        List<IncompleteFacebookPost> newPosts = new ArrayList<>();
+
+        for(IncompleteFacebookPost post : posts) {
+            if(post.createdTime.after(since)) {
+                newPosts.add(post);
+            }
+        }
+
+        return newPosts;
     }
 
     private List<IncompleteFacebookPost> orderPostsByCreatedTime(List<IncompleteFacebookPost> incompletePosts) {

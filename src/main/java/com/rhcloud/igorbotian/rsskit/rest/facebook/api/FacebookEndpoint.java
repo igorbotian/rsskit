@@ -9,7 +9,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,11 +27,6 @@ class FacebookEndpoint extends RestGetEndpoint {
 
     protected static NameValuePair dateInUNIXTimeFormat() {
         return DATE_FORMAT_PARAM;
-    }
-
-    protected static NameValuePair since(Date date) {
-        Objects.requireNonNull(date);
-        return new BasicNameValuePair("since", Long.toString(date.getTime() / 1000));
     }
 
     protected JsonNode makeRawJsonRequest(String path, List<NameValuePair> params) throws FacebookException {
