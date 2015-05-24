@@ -6,8 +6,14 @@ import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterURL;
 import com.rhcloud.igorbotian.rsskit.rss.InstapaperBasedRssDescriptionExtender;
 import com.rhcloud.igorbotian.rsskit.rss.RssDescriptionExtender;
 import com.rhcloud.igorbotian.rsskit.rss.RssGenerator;
+import com.rhcloud.igorbotian.rsskit.utils.URLUtils;
 import com.rometools.rome.feed.synd.*;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,6 +24,7 @@ import java.util.Objects;
  */
 public class TwitterReadingListRssGenerator extends RssGenerator<TwitterTimeline> {
 
+    private static final Logger LOGGER = LogManager.getLogger(TwitterReadingListRssGenerator.class);
     private final RssDescriptionExtender descriptionExtender = new InstapaperBasedRssDescriptionExtender();
 
     @Override
@@ -68,7 +75,7 @@ public class TwitterReadingListRssGenerator extends RssGenerator<TwitterTimeline
         }
 
         TwitterURL url = tweet.entities.urls.get(0);
-        String text = tweet.text.substring(0, url.indices[0]);
+        String text = getEntryTitle(tweet, url);
 
         SyndEntry entry = new SyndEntryImpl();
 
@@ -82,5 +89,22 @@ public class TwitterReadingListRssGenerator extends RssGenerator<TwitterTimeline
         entry.setDescription(description);
 
         return entry;
+    }
+
+    private String getEntryTitle(TwitterTweet tweet, TwitterURL url) {
+        assert tweet != null;
+        assert url != null;
+
+        String text = tweet.text.substring(0, url.indices[0]);
+
+        if(StringUtils.isEmpty(text)) {
+            try {
+                text = URLUtils.getDocumentTitle(new URL(url.expandedURL));
+            } catch (IOException e) {
+                LOGGER.warn("Failed to get the title of a specified web-page: " + url.expandedURL, e);
+            }
+        }
+
+        return text;
     }
 }

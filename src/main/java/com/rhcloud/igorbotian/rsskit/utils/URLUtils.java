@@ -2,8 +2,12 @@ package com.rhcloud.igorbotian.rsskit.utils;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -84,5 +88,14 @@ public final class URLUtils {
         } catch (URISyntaxException e) {
             throw new MalformedURLException(e.getMessage());
         }
+    }
+
+    public static String getDocumentTitle(URL url) throws IOException {
+        Objects.requireNonNull(url);
+
+        Document html = Jsoup.connect(url.toString()).get();
+        Elements titles = html.select("title");
+
+        return (titles.size() > 0) ? titles.get(0).text() : "";
     }
 }
