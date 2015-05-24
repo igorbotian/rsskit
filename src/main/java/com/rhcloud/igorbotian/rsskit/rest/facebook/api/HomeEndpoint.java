@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
 import com.rhcloud.igorbotian.rsskit.rest.facebook.*;
 import com.rhcloud.igorbotian.rsskit.rest.facebook.json.*;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.logging.log4j.LogManager;
@@ -117,8 +118,10 @@ class HomeEndpoint extends FacebookEndpoint {
             case OFFER:
                 return new FacebookOffer(post.id, post.createdTime, post.from, post.caption, post.message);
             case LINK:
+                String name = (post.source != null && StringUtils.isNotEmpty(post.source.name))
+                        ? post.source.name : post.name;
                 return new FacebookLink(post.id, post.createdTime, post.from, post.caption, post.message,
-                        post.description, post.link, post.name, post.picture);
+                        post.description, post.link, name, post.picture);
             default:
                 throw new FacebookException("Unexpected Facebook post type: " + post.type);
         }
@@ -136,6 +139,12 @@ class HomeEndpoint extends FacebookEndpoint {
         switch (incompletePost.type) {
             case LINK:
                 post = LINK_PARSER.parse(json);
+
+                if (incompletePost.source != null && StringUtils.isNotEmpty(incompletePost.source.message)) {
+                    FacebookLink link = (FacebookLink) post;
+                    post = new FacebookLink(link.id, link.createdTime, link.from, link.caption,
+                            link.message, link.description, link.link, incompletePost.source.name, link.picture);
+                }
                 break;
             case OFFER:
                 post = OFFER_PARSER.parse(json);
