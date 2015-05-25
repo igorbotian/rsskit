@@ -287,7 +287,11 @@ public class FacebookNewsFeedRssGenerator extends RssGenerator<FacebookNewsFeed>
         for(String link : findLinks(html)) {
             html = StringUtils.replace(
                     html,
-                    link, String.format("<a href='%s'><font style='text-decoration: none'>%s</font></a>", link, link)
+                    link, String.format(
+                            "<a href='%s'><font style='text-decoration: none'>%s</font></a>",
+                            link,
+                            shortenLink(link)
+                    )
             );
         }
 
