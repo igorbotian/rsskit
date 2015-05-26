@@ -70,15 +70,6 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>lenta</servlet-name>
-        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.LentaServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>lenta</servlet-name>
-        <url-pattern>/lenta</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
         <servlet-name>twitter</servlet-name>
         <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.TwitterHomeTimelineServlet</servlet-class>
     </servlet>
