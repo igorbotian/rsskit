@@ -1,11 +1,15 @@
 package com.rhcloud.igorbotian.rsskit.rss.championat;
 
-import com.rhcloud.igorbotian.rsskit.rss.*;
+import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizers;
+import com.rhcloud.igorbotian.rsskit.rss.LinkMapper;
+import com.rhcloud.igorbotian.rsskit.rss.RssModifier;
+import com.rhcloud.igorbotian.rsskit.utils.RSSUtils;
 import com.rometools.rome.feed.synd.SyndFeed;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,17 +19,15 @@ import java.util.regex.Pattern;
  */
 public class ChampionatRssFeedModifier implements RssModifier {
 
-    private static final RssModifier breakingNewsFilter = new BreakingNewsFilter();
-    private static final RssLinkMapper mobileVersionLinkMapper = new RssLinkMapper(new MobileVersionLinkMapper());
-    private static final RssModifier descriptionExtender = new ReadabilityBasedRssDescriptionExtender();
+    private static final LinkMapper mobileVersionLinkMapper = new MobileVersionLinkMapper();
 
     @Override
     public void apply(SyndFeed feed) {
         Objects.requireNonNull(feed);
 
-        breakingNewsFilter.apply(feed);
-        mobileVersionLinkMapper.apply(feed);
-        descriptionExtender.apply(feed);
+        RSSUtils.filterByCategories(feed, Collections.singleton("breaking"));
+        RSSUtils.mapLinks(feed, mobileVersionLinkMapper);
+        RSSUtils.extendDescription(feed, Mobilizers.readability());
     }
 
     private static class MobileVersionLinkMapper implements LinkMapper {

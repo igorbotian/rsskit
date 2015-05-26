@@ -4,6 +4,8 @@ import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndContentImpl;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
@@ -14,6 +16,7 @@ import java.util.Objects;
  */
 public abstract class RssDescriptionExtender implements RssModifier {
 
+    private static final Logger LOGGER = LogManager.getLogger(RssDescriptionExtender.class);
     protected static final String HTTP_MIME_TYPE = "text/html";
 
     @Override
@@ -29,7 +32,7 @@ public abstract class RssDescriptionExtender implements RssModifier {
             try {
                 extendDescription(entry);
             } catch (IOException e) {
-                e.printStackTrace(); // skip this description
+                LOGGER.warn("Failed to extend RSS entry description by a specified link: " + entry.getLink(), e);
             }
         }
     }

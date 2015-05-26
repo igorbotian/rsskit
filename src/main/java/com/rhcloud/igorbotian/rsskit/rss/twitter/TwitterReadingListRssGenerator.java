@@ -1,11 +1,11 @@
 package com.rhcloud.igorbotian.rsskit.rss.twitter;
 
+import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizers;
 import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterTimeline;
 import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterTweet;
 import com.rhcloud.igorbotian.rsskit.rest.twitter.TwitterURL;
-import com.rhcloud.igorbotian.rsskit.rss.InstapaperBasedRssDescriptionExtender;
-import com.rhcloud.igorbotian.rsskit.rss.RssDescriptionExtender;
 import com.rhcloud.igorbotian.rsskit.rss.RssGenerator;
+import com.rhcloud.igorbotian.rsskit.utils.RSSUtils;
 import com.rhcloud.igorbotian.rsskit.utils.URLUtils;
 import com.rometools.rome.feed.synd.*;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +25,6 @@ import java.util.Objects;
 public class TwitterReadingListRssGenerator extends RssGenerator<TwitterTimeline> {
 
     private static final Logger LOGGER = LogManager.getLogger(TwitterReadingListRssGenerator.class);
-    private final RssDescriptionExtender descriptionExtender = new InstapaperBasedRssDescriptionExtender();
 
     @Override
     public SyndFeed generate(TwitterTimeline timeline) {
@@ -33,7 +32,7 @@ public class TwitterReadingListRssGenerator extends RssGenerator<TwitterTimeline
 
         SyndFeed feed = skeleton();
         feed.setEntries(generateEntries(timeline));
-        descriptionExtender.apply(feed);
+        RSSUtils.extendDescription(feed, Mobilizers.instapaper());
 
         return feed;
     }
@@ -56,10 +55,10 @@ public class TwitterReadingListRssGenerator extends RssGenerator<TwitterTimeline
 
         List<SyndEntry> entries = new ArrayList<>(timeline.tweets.size());
 
-        for(TwitterTweet tweet : timeline.tweets) {
+        for (TwitterTweet tweet : timeline.tweets) {
             SyndEntry entry = generateEntry(tweet);
 
-            if(entry != null) {
+            if (entry != null) {
                 entries.add(entry);
             }
         }
@@ -70,7 +69,7 @@ public class TwitterReadingListRssGenerator extends RssGenerator<TwitterTimeline
     private SyndEntry generateEntry(TwitterTweet tweet) {
         Objects.requireNonNull(tweet);
 
-        if(tweet.entities.urls.isEmpty()) {
+        if (tweet.entities.urls.isEmpty()) {
             return null;
         }
 
@@ -97,7 +96,7 @@ public class TwitterReadingListRssGenerator extends RssGenerator<TwitterTimeline
 
         String text = tweet.text.substring(0, url.indices[0]);
 
-        if(StringUtils.isEmpty(text)) {
+        if (StringUtils.isEmpty(text)) {
             try {
                 text = URLUtils.getDocumentTitle(new URL(url.expandedURL));
             } catch (IOException e) {
