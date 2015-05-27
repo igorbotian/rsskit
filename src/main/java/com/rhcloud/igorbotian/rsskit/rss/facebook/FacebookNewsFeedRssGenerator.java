@@ -4,11 +4,7 @@ import com.rhcloud.igorbotian.rsskit.rest.facebook.*;
 import com.rhcloud.igorbotian.rsskit.rss.RssGenerator;
 import com.rometools.rome.feed.synd.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,8 +14,8 @@ import java.util.regex.Pattern;
  */
 public class FacebookNewsFeedRssGenerator extends RssGenerator<FacebookNewsFeed> {
 
-    private static final Logger LOGGER = LogManager.getLogger(FacebookNewsFeedRssGenerator.class);
     private static final String HTML_MIME_TYPE = "text/html";
+    private static final String FACEBOOK_COM = "https://www.facebook.com";
     private static final Pattern URL_REGEX = Pattern.compile("\\b(https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])");
     private static final int MAX_URL_LENGTH = 40;
 
@@ -30,7 +26,7 @@ public class FacebookNewsFeedRssGenerator extends RssGenerator<FacebookNewsFeed>
         SyndFeed rss = skeleton();
         List<SyndEntry> entries = new ArrayList<>(newsFeed.posts.size());
 
-        for(FacebookNewsFeedItem post : newsFeed.posts) {
+        for (FacebookNewsFeedItem post : newsFeed.posts) {
             entries.add(generateEntry(post));
         }
 
@@ -46,7 +42,7 @@ public class FacebookNewsFeedRssGenerator extends RssGenerator<FacebookNewsFeed>
         rss.setTitle("Facebook");
         rss.setPublishedDate(new Date());
         rss.setDescription("Facebook News Feed");
-        rss.setLink("http://www.facebook.com");
+        rss.setLink(FACEBOOK_COM);
         rss.setFeedType("rss_2.0");
 
         return rss;
@@ -55,40 +51,48 @@ public class FacebookNewsFeedRssGenerator extends RssGenerator<FacebookNewsFeed>
     private SyndEntry generateEntry(FacebookNewsFeedItem item) {
         assert item != null;
 
-        if(item instanceof FacebookRepost) {
-            FacebookRepost repost = (FacebookRepost) item;
-            return generateEntry(repost.from, repost.repost);
+        FacebookPost post;
+        FacebookPost repost = null;
+
+        if (item instanceof FacebookRepost) {
+            FacebookRepost obj = (FacebookRepost) item;
+            post = obj.post;
+            repost = obj.repost;
+        } else {
+            assert item instanceof FacebookPost;
+            post = (FacebookPost) item;
         }
 
-        assert item instanceof FacebookPost;
-        FacebookPost post = (FacebookPost) item;
-        return generateEntry(post.from, post);
+        return generateEntry(post, repost);
     }
 
-    private SyndEntry generateEntry(FacebookProfile from, FacebookPost post) {
-        assert from != null;
+    private SyndEntry generateEntry(FacebookPost post, FacebookPost repost) {
         assert post != null;
 
         SyndEntry entry = new SyndEntryImpl();
 
-        entry.setAuthor(post.from.name);
-        entry.setLink("https://www.facebook.com/" + post.id);
-        entry.setTitle(post.from.name);
-        entry.setPublishedDate(post.createdTime);
-        entry.setDescription(generateDescription(from, post));
+        entry.setAuthor(repost != null ? repost.from.name : post.from.name);
+        entry.setLink(FACEBOOK_COM + "/" + (repost != null ? repost.id : post.id));
+        entry.setTitle(entry.getAuthor());
+        entry.setPublishedDate(repost != null ? repost.createdTime : post.createdTime);
+        entry.setDescription(generateDescription(post, repost));
 
         return entry;
     }
 
-    private SyndContent generateDescription(FacebookProfile from, FacebookPost post) {
-        assert from != null;
+    private SyndContent generateDescription(FacebookPost post, FacebookPost repost) {
         assert post != null;
 
         StringBuilder description = new StringBuilder();
 
-        if(!StringUtils.equals(from.id, post.from.id)) {
-            description.append(repostCaption(from));
+        if (repost != null) {
+            description.append(repostCaption(post.from));
             description.append("<br/><br/>");
+
+            if(StringUtils.isNotEmpty(repost.message)) {
+                description.append(repost.message);
+                description.append("<br/><br/>");
+            }
         }
 
         description.append(generateDescription(post));
@@ -160,22 +164,22 @@ public class FacebookNewsFeedRssGenerator extends RssGenerator<FacebookNewsFeed>
 
         StringBuilder content = new StringBuilder();
 
-        if(StringUtils.isNotEmpty(link.picture)) {
+        if (StringUtils.isNotEmpty(link.picture)) {
             content.append(String.format("<a href='%s'>", link.link));
             content.append(String.format("<img src='%s'/>", link.picture));
             content.append("</a>");
         }
 
-        if(StringUtils.isNotEmpty(link.name)) {
-            if(content.length() > 0) {
+        if (StringUtils.isNotEmpty(link.name)) {
+            if (content.length() > 0) {
                 content.append("<br/>");
             }
 
             content.append(String.format("<b>%s</b>", link.name));
         }
 
-        if(StringUtils.isNotEmpty(link.description)) {
-            if(content.length() > 0) {
+        if (StringUtils.isNotEmpty(link.description)) {
+            if (content.length() > 0) {
                 content.append("<br/>");
             }
 
@@ -184,7 +188,7 @@ public class FacebookNewsFeedRssGenerator extends RssGenerator<FacebookNewsFeed>
             content.append("</font>");
         }
 
-        if(content.length() > 0) {
+        if (content.length() > 0) {
             content.append("<br/>");
         }
 
@@ -207,11 +211,11 @@ public class FacebookNewsFeedRssGenerator extends RssGenerator<FacebookNewsFeed>
 
         StringBuilder content = new StringBuilder();
 
-        if(StringUtils.isNotEmpty(photo.name)) {
+        if (StringUtils.isNotEmpty(photo.name)) {
             content.append(html(photo.name));
         }
 
-        if(content.length() > 0) {
+        if (content.length() > 0) {
             content.append("<br/><br/>");
         }
 
@@ -226,30 +230,27 @@ public class FacebookNewsFeedRssGenerator extends RssGenerator<FacebookNewsFeed>
 
         StringBuilder content = new StringBuilder();
 
-        if(StringUtils.isNotEmpty(video.embedHTML)) {
-            content.append(video.embedHTML);
-        } else {
-            content.append(String.format("<a href='%s'><img src='%s'/></a>", video.source, video.picture));
-        }
+        String link = StringUtils.isNotEmpty(video.source) ? video.source : (FACEBOOK_COM + "/" + video.id);
+        content.append(String.format("<a href='%s'><img src='%s'/></a>", link, video.picture));
 
-        if(StringUtils.isNotEmpty(video.name)) {
-            if(content.length() > 0) {
+        if (StringUtils.isNotEmpty(video.name)) {
+            if (content.length() > 0) {
                 content.append("<br/>");
             }
 
             content.append(String.format("<b>%s</b>", html(video.name)));
         }
 
-        if(StringUtils.isNotEmpty(video.description)) {
-            if(content.length() > 0) {
+        if (StringUtils.isNotEmpty(video.description)) {
+            if (content.length() > 0) {
                 content.append("<br/>");
             }
 
             content.append(String.format("<font style='font-size: small'>%s</font>", html(video.description)));
         }
 
-        if(StringUtils.isNotEmpty(video.caption)) {
-            if(content.length() > 0) {
+        if (StringUtils.isNotEmpty(video.caption)) {
+            if (content.length() > 0) {
                 content.append("<br/>");
             }
 
@@ -266,17 +267,7 @@ public class FacebookNewsFeedRssGenerator extends RssGenerator<FacebookNewsFeed>
 
     private String shortenLink(String url) {
         assert url != null;
-
-        if(url.length() > MAX_URL_LENGTH) {
-            try {
-                URIBuilder builder = new URIBuilder(url);
-                return String.format("%s://%s/", builder.getScheme(), builder.getHost());
-            } catch (URISyntaxException e) {
-                LOGGER.warn("Failed to shorten a specified link: " + url, e);
-            }
-        }
-
-        return url;
+        return url.length() < MAX_URL_LENGTH ? url : url.substring(0, MAX_URL_LENGTH) + "...";
     }
 
     private String html(String text) {
@@ -284,7 +275,7 @@ public class FacebookNewsFeedRssGenerator extends RssGenerator<FacebookNewsFeed>
 
         String html = StringUtils.replace(text, "\n", "<br/>");
 
-        for(String link : findLinks(html)) {
+        for (String link : findLinks(html)) {
             html = StringUtils.replace(
                     html,
                     link, String.format(
@@ -304,7 +295,7 @@ public class FacebookNewsFeedRssGenerator extends RssGenerator<FacebookNewsFeed>
         Set<String> links = new LinkedHashSet<>();
         Matcher matcher = URL_REGEX.matcher(text);
 
-        while(matcher.find()) {
+        while (matcher.find()) {
             links.add(text.substring(matcher.start(0), matcher.end(0)));
         }
 

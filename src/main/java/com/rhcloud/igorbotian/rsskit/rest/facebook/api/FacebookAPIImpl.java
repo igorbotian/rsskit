@@ -4,13 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.rhcloud.igorbotian.rsskit.db.RsskitDataSource;
 import com.rhcloud.igorbotian.rsskit.db.facebook.FacebookEntityManager;
 import com.rhcloud.igorbotian.rsskit.db.facebook.FacebookEntityManagerImpl;
-import com.rhcloud.igorbotian.rsskit.rest.facebook.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookException;
+import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookNewsFeed;
 
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
@@ -19,7 +17,6 @@ import java.util.Set;
  */
 public class FacebookAPIImpl implements FacebookAPI {
 
-    private static final Logger LOGGER = LogManager.getLogger(FacebookAPIImpl.class);
     private static final String API_VERSION = "2.3";
 
     private final OAuthEndpoint oAuth = new OAuthEndpoint();
@@ -83,24 +80,7 @@ public class FacebookAPIImpl implements FacebookAPI {
             throw new FacebookException("Access token is not registered: " + token);
         }
 
-        Date since = entityManager.getNewsFeedSince(token);
-        FacebookNewsFeed feed = home.getNewsFeed(accessToken, since);
-
-        try {
-            if(feed.posts.size() > 1) {
-                // at least one item is always returned
-                FacebookNewsFeedItem item = feed.posts.get(1);
-                FacebookPost firstPost = (item instanceof FacebookRepost)
-                        ? ((FacebookRepost) item).repost
-                        : (FacebookPost) item;
-
-                entityManager.setNewsFeedSince(token, firstPost.createdTime);
-            }
-        } catch (FacebookException e) {
-            LOGGER.error("Failed to update Facebook News Feed since value", e);
-        }
-
-        return feed;
+        return home.getNewsFeed(accessToken);
     }
 
     @Override

@@ -5,7 +5,6 @@ import com.rhcloud.igorbotian.rsskit.rest.EntityParser;
 import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
 import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookPostType;
 import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookProfile;
-import com.rhcloud.igorbotian.rsskit.rest.facebook.json.FacebookProfileParser;
 
 import java.util.Date;
 import java.util.Objects;
@@ -51,15 +50,13 @@ class IncompleteFacebookPost {
 
     private static class IncompleteFacebookPostParser extends EntityParser<IncompleteFacebookPost> {
 
-        private static final FacebookProfileParser FROM_PARSER = new FacebookProfileParser();
-
         @Override
         public IncompleteFacebookPost parse(JsonNode json) throws RestParseException {
             Objects.requireNonNull(json);
 
             String id = getAttribute(json, "id").asText();
             Date createdTime = new Date(1000 * getAttribute(json, "created_time").asLong());
-            FacebookProfile from = FROM_PARSER.parse(getAttribute(json, "from"));
+            FacebookProfile from = FacebookProfile.parse(getAttribute(json, "from"));
             FacebookPostType type = FacebookPostType.parse(getAttribute(json, "type").asText());
             String message = json.has("message") ? json.get("message").asText() : "";
             String caption = json.has("caption") ? json.get("caption").asText() : "";
