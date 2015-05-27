@@ -1,0 +1,13 @@
+a {
+    text-decoration: none;
+}
+
+a:visited {
+    color: blue;
+    text-decoration: none;
+}
+
+.header {
+    font-weight: bold;
+    font-size: larger;
+}

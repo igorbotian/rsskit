@@ -71,8 +71,10 @@ public class RssDescriptionExtendingServlet extends AbstractRssServlet {
             String paramUTF8 = new String(param.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
 
             for (String category : StringUtils.split(paramUTF8, ",")) {
-                if (StringUtils.isNotEmpty(category)) {
-                    categories.add(category);
+                String trimmed = category.trim();
+
+                if (StringUtils.isNotEmpty(trimmed)) {
+                    categories.add(trimmed);
                 }
             }
         }
@@ -89,12 +91,13 @@ public class RssDescriptionExtendingServlet extends AbstractRssServlet {
         assert categories != null;
         assert size > 0;
 
+        String mobileVersionHostTrimmed = mobileVersionHost != null ? mobileVersionHost.trim() : null;
         SyndFeed feed = downloadRssFeed(rssURL);
         RSSUtils.filterByCategories(feed, categories);
         RSSUtils.truncate(feed, size);
 
-        if (StringUtils.isNotEmpty(mobileVersionHost)) {
-            RSSUtils.mapLinks(feed, new HostChanger(mobileVersionHost));
+        if (StringUtils.isNotEmpty(mobileVersionHostTrimmed)) {
+            RSSUtils.mapLinks(feed, new HostChanger(mobileVersionHostTrimmed));
         }
 
         RSSUtils.extendDescription(feed, mobilizer);
