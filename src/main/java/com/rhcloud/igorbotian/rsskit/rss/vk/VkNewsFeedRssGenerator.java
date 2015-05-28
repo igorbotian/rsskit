@@ -6,18 +6,24 @@ import com.rometools.rome.feed.synd.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
 public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
 
-    private static final String PHOTO_LINK_FORMAT = "https://vk.com/photo%s_%s";
-    private static final String VIDEO_LINK_FORMAT = "https://vk.com/video%s_%s";
-    private static final String POST_LINK_FORMAT = "https://vk.com/feed?w=wall%s_%s";
-    private static final String USER_ID_LINK_FORMAT = "https://vk.com/id%d";
-    private static final String CLUB_LINK_FORMAT = "https://vk.com/club%d";
-    private static final String SCREEN_NAME_LINK_FORMAT = "https://vk.com/%s";
+    private static final String VK_COM = "https://vk.com";
+    private static final String PHOTO_LINK_FORMAT = VK_COM + "/photo%s_%s";
+    private static final String VIDEO_LINK_FORMAT = VK_COM + "/video%s_%s";
+    private static final String POST_LINK_FORMAT = VK_COM + "/feed?w=wall%s_%s";
+    private static final String USER_ID_LINK_FORMAT = VK_COM + "/id%d";
+    private static final String CLUB_LINK_FORMAT = VK_COM + "/club%d";
+    private static final String SCREEN_NAME_LINK_FORMAT = VK_COM + "/%s";
+    private static final Pattern URL_REGEX = Pattern.compile("\\b(https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])");
+    private static final int MAX_URL_LENGTH = 40;
+    private static final String HTML_MIME_TYPE = "text/html";
 
     private VkFeedFilter feedFilter = new VkFeedFilter();
 
@@ -45,7 +51,7 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
         rss.setTitle("VK");
         rss.setPublishedDate(new Date());
         rss.setDescription("VK news feed");
-        rss.setLink("http://www.vk.com");
+        rss.setLink(VK_COM);
         rss.setFeedType("rss_2.0");
 
         return rss;
@@ -64,7 +70,7 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
         entry.setTitle(entry.getAuthor());
 
         SyndContent description = new SyndContentImpl();
-        description.setType("text/html");
+        description.setType(HTML_MIME_TYPE);
         description.setValue(generateDescription(item, profiles, groups));
 
         entry.setDescription(description);
@@ -89,7 +95,7 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
                 VkFeedPhoto photo = (VkFeedPhoto) item;
                 return String.format(POST_LINK_FORMAT, photo.sourceID, photo.postID);
             default:
-                return "http://www.vk.com";
+                return VK_COM;
         }
     }
 
@@ -143,7 +149,7 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
         StringBuilder content = new StringBuilder();
 
         if(StringUtils.isNotEmpty(repost.text)) {
-            content.append(repost.text);
+            content.append(html(repost.text));
             content.append("<br/><br/>");
         }
 
@@ -230,7 +236,7 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
 
             if(StringUtils.isNotEmpty(photo.text)) {
                 content.append("<br/><br/>");
-                content.append(photo.text);
+                content.append(html(photo.text));
             }
         }
 
@@ -243,7 +249,7 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
         StringBuilder content = new StringBuilder();
 
         if(StringUtils.isNotEmpty(post.text)) {
-            content.append(StringUtils.replace(post.text, "\n", "<br/>"));
+            content.append(html(post.text));
         }
 
         String photosContent = processPhotos(post.attachments.photos);
@@ -386,7 +392,7 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
 
             if(StringUtils.isNotEmpty(video.description)) {
                 content.append("<br/><br/>");
-                content.append(video.description);
+                content.append(html(video.description));
             }
         }
 
@@ -460,7 +466,7 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
 
             if(StringUtils.isNotEmpty(link.description)) {
                 content.append("<br/>");
-                content.append(link.description);
+                content.append(html(link.description));
             }
         }
 
@@ -505,5 +511,42 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
         }
 
         return content.toString();
+    }
+
+    private String shortenLink(String url) {
+        assert url != null;
+        return url.length() < MAX_URL_LENGTH ? url : url.substring(0, MAX_URL_LENGTH) + "...";
+    }
+
+    private String html(String text) {
+        assert text != null;
+
+        String html = StringUtils.replace(text, "\n", "<br/>");
+
+        for (String link : findLinks(html)) {
+            html = StringUtils.replace(
+                    html,
+                    link, String.format(
+                            "<a href='%s'><font style='text-decoration: none'>%s</font></a>",
+                            link,
+                            shortenLink(link)
+                    )
+            );
+        }
+
+        return html;
+    }
+
+    private Set<String> findLinks(String text) {
+        assert text != null;
+
+        Set<String> links = new LinkedHashSet<>();
+        Matcher matcher = URL_REGEX.matcher(text);
+
+        while (matcher.find()) {
+            links.add(text.substring(matcher.start(0), matcher.end(0)));
+        }
+
+        return links;
     }
 }
