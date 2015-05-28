@@ -10,10 +10,7 @@ import org.apache.http.message.BasicNameValuePair;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Igor Botian <igor.botian@gmail.com>
@@ -53,7 +50,7 @@ class OAuthEndpoint extends RestGetEndpoint {
         Objects.requireNonNull(clientSecret);
         Objects.requireNonNull(code);
 
-        List<NameValuePair> params = new ArrayList<>();
+        Set<NameValuePair> params = new HashSet<>();
         params.add(new BasicNameValuePair("client_id", clientID));
         params.add(new BasicNameValuePair("client_secret", clientSecret));
         params.add(new BasicNameValuePair("code", code));

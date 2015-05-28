@@ -7,8 +7,9 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Igor Botian <igor.botian@gmail.com>
@@ -20,11 +21,18 @@ public class OAuth10RestGetEndpoint extends RestGetEndpoint {
     private Requestor requestor = new Requestor() {
 
         @Override
-        public HttpResponse request(String endpoint, List<NameValuePair> params) throws IOException {
+        public HttpResponse request(String endpoint, Set<NameValuePair> params, Set<NameValuePair> headers)
+                throws IOException {
+
             Objects.requireNonNull(endpoint);
             Objects.requireNonNull(params);
+            Objects.requireNonNull(headers);
 
-            HttpGet request = new HttpGet(URLUtils.makeURL(endpoint, params).toString());
+            HttpGet request = new HttpGet(URLUtils.makeURL(endpoint, new ArrayList<>(params)).toString());
+
+            for(NameValuePair header : headers) {
+                request.setHeader(header.getName(), header.getValue());
+            }
 
             try {
                 consumer.sign(request);

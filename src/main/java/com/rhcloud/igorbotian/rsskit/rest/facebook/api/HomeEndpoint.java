@@ -34,7 +34,7 @@ class HomeEndpoint extends FacebookEndpoint {
     public FacebookNewsFeed getNewsFeed(String accessToken) throws FacebookException {
         Objects.requireNonNull(accessToken);
 
-        List<NameValuePair> params = new ArrayList<>();
+        Set<NameValuePair> params = new HashSet<>();
         params.add(new BasicNameValuePair("access_token", accessToken));
         params.add(new BasicNameValuePair("fields", "id,type,from,message,caption,description,link,name,picture," +
                 "object_id,story,created_time"));

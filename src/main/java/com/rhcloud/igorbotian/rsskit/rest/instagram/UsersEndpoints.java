@@ -8,9 +8,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Igor Botian <igor.botian@gmail.com>
@@ -24,7 +22,7 @@ class UsersEndpoints extends RestGetEndpoint {
         Objects.requireNonNull(accessToken);
 
         try {
-            List<NameValuePair> params = new ArrayList<>();
+            Set<NameValuePair> params = new HashSet<>();
             params.add(new BasicNameValuePair("access_token", accessToken));
             params.add(new BasicNameValuePair("count", Integer.toString(MAX_ENTRIES)));
 

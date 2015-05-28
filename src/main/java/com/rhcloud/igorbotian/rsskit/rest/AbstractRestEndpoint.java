@@ -13,19 +13,19 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
 public abstract class AbstractRestEndpoint implements RestEndpoint {
 
-    private static final int CONNECTION_TIMEOUT = 30000;
-    private static final int SOCKET_TIMEOUT = 60000;
-
     protected static final ObjectMapper JSON_MAPPER = new ObjectMapper();
     protected static final HttpClient HTTP_CLIENT;
+    private static final int CONNECTION_TIMEOUT = 30000;
+    private static final int SOCKET_TIMEOUT = 60000;
 
     static {
         RequestConfig.Builder rcBuilder = RequestConfig.custom();
@@ -37,7 +37,7 @@ public abstract class AbstractRestEndpoint implements RestEndpoint {
         String proxyHost = System.getProperty("http.proxyHost");
         String proxyPort = System.getProperty("http.proxyPort");
 
-        if(StringUtils.isNotEmpty(proxyHost) && StringUtils.isNotEmpty(proxyPort)) {
+        if (StringUtils.isNotEmpty(proxyHost) && StringUtils.isNotEmpty(proxyPort)) {
             rcBuilder.setProxy(new HttpHost(proxyHost, Integer.parseInt(proxyPort)));
         }
 
@@ -48,19 +48,38 @@ public abstract class AbstractRestEndpoint implements RestEndpoint {
     }
 
     @Override
-    public JsonNode makeRequest(String endpoint, List<NameValuePair> params) throws IOException {
+    public JsonNode makeRequest(String endpoint, Set<NameValuePair> params) throws IOException {
         Objects.requireNonNull(endpoint);
         Objects.requireNonNull(params);
+
+        return makeRequest(endpoint, params, Collections.<NameValuePair>emptySet());
+    }
+
+    @Override
+    public JsonNode makeRequest(String endpoint, Set<NameValuePair> params, Set<NameValuePair> headers) throws IOException {
+        Objects.requireNonNull(endpoint);
+        Objects.requireNonNull(params);
+        Objects.requireNonNull(headers);
 
         byte[] content = makeRawRequest(endpoint, params);
         return JSON_MAPPER.readTree(content);
     }
 
-    protected byte[] makeRawRequest(String endpoint, List<NameValuePair> params) throws IOException {
+    protected byte[] makeRawRequest(String endpoint, Set<NameValuePair> params) throws IOException {
         Objects.requireNonNull(endpoint);
         Objects.requireNonNull(params);
 
-        HttpResponse response = requestor().request(endpoint, params);
+        return makeRawRequest(endpoint, params, Collections.<NameValuePair>emptySet());
+    }
+
+    protected byte[] makeRawRequest(String endpoint, Set<NameValuePair> params, Set<NameValuePair> headers)
+            throws IOException {
+
+        Objects.requireNonNull(endpoint);
+        Objects.requireNonNull(params);
+        Objects.requireNonNull(headers);
+
+        HttpResponse response = requestor().request(endpoint, params, headers);
 
         try {
             long contentLength = response.getEntity().getContentLength();
@@ -74,8 +93,16 @@ public abstract class AbstractRestEndpoint implements RestEndpoint {
 
     protected abstract Requestor requestor();
 
-    protected interface Requestor {
+    protected static abstract class Requestor {
 
-        HttpResponse request(String endpoint, List<NameValuePair> params) throws IOException;
+        public HttpResponse request(String endpoint, Set<NameValuePair> params) throws IOException {
+            Objects.requireNonNull(endpoint);
+            Objects.requireNonNull(params);
+
+            return request(endpoint, params, Collections.<NameValuePair>emptySet());
+        }
+
+        public abstract  HttpResponse request(String endpoint, Set<NameValuePair> params, Set<NameValuePair> headers)
+                throws IOException;
     }
 }

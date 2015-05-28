@@ -38,7 +38,7 @@ class MediaEndpoints extends RestGetEndpoint {
             String shortCode = parseShortCode(shortenURL);
             JsonNode response = makeRequest(
                     SHORTCODE_ENDPOINT_URL + "/" + shortCode,
-                    Collections.<NameValuePair>singletonList(new BasicNameValuePair("access_token", accessToken))
+                    Collections.<NameValuePair>singleton(new BasicNameValuePair("access_token", accessToken))
             );
 
             return parseShortCode(response);

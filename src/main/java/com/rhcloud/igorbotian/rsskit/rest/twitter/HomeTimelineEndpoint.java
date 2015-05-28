@@ -9,9 +9,9 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Igor Botian <igor.botian@gmail.com>
@@ -26,13 +26,13 @@ class HomeTimelineEndpoint extends OAuth10RestGetEndpoint {
     }
 
     public TwitterTimeline get(String sinceID) throws TwitterException {
-        List<NameValuePair> params = new ArrayList<>();
+        Set<NameValuePair> params = new HashSet<>();
         params.add(new BasicNameValuePair("count", Integer.toString(MAX_ENTRIES)));
         params.add(new BasicNameValuePair("trim_user", "false"));
         params.add(new BasicNameValuePair("exclude_replies", "true"));
         params.add(new BasicNameValuePair("include_entities", "true"));
 
-        if(sinceID != null) {
+        if (sinceID != null) {
             params.add(new BasicNameValuePair("since_id", sinceID));
         }
 

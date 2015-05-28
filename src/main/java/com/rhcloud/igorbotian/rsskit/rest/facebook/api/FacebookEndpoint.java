@@ -9,8 +9,8 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Igor Botian <igor.botyan@alcatel-lucent.com>
@@ -29,7 +29,7 @@ class FacebookEndpoint extends RestGetEndpoint {
         return DATE_FORMAT_PARAM;
     }
 
-    protected JsonNode makeRawJsonRequest(String path, List<NameValuePair> params) throws FacebookException {
+    protected JsonNode makeRawJsonRequest(String path, Set<NameValuePair> params) throws FacebookException {
         Objects.requireNonNull(path);
         Objects.requireNonNull(params);
 
@@ -42,7 +42,7 @@ class FacebookEndpoint extends RestGetEndpoint {
         }
     }
 
-    protected <T> T makeRequest(String path, List<NameValuePair> params, EntityParser<T> parser) throws FacebookException {
+    protected <T> T makeRequest(String path, Set<NameValuePair> params, EntityParser<T> parser) throws FacebookException {
         Objects.requireNonNull(path);
         Objects.requireNonNull(params);
         Objects.requireNonNull(parser);

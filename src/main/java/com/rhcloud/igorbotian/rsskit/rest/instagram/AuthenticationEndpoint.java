@@ -9,9 +9,7 @@ import org.apache.http.message.BasicNameValuePair;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Igor Botian <igor.botian@gmail.com>
@@ -45,7 +43,7 @@ class AuthenticationEndpoint extends RestPostEndpoint {
         Objects.requireNonNull(authorizationCode);
         Objects.requireNonNull(callbackURL);
 
-        List<NameValuePair> params = new ArrayList<>();
+        Set<NameValuePair> params = new HashSet<>();
         params.add(new BasicNameValuePair("client_id", clientID));
         params.add(new BasicNameValuePair("client_secret", clientSecret));
         params.add(new BasicNameValuePair("grant_type", "authorization_code"));
@@ -63,7 +61,7 @@ class AuthenticationEndpoint extends RestPostEndpoint {
     private String parseAccessToken(JsonNode response) throws InstagramException {
         assert response != null;
 
-        if(!response.has("access_token")) {
+        if (!response.has("access_token")) {
             throw new InstagramException("No access token returned by Instagram");
         }
 

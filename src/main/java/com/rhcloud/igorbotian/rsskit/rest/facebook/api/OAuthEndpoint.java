@@ -50,7 +50,7 @@ class OAuthEndpoint extends RestGetEndpoint {
         Objects.requireNonNull(code);
         Objects.requireNonNull(callbackURL);
 
-        List<NameValuePair> params = new ArrayList<>();
+        Set<NameValuePair> params = new HashSet<>();
         params.add(new BasicNameValuePair("client_id", clientID));
         params.add(new BasicNameValuePair("client_secret", clientSecret));
         params.add(new BasicNameValuePair("redirect_uri", callbackURL.toString()));

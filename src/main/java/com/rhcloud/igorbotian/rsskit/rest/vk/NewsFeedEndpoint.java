@@ -8,9 +8,9 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Igor Botian <igor.botian@gmail.com>
@@ -29,11 +29,11 @@ class NewsFeedEndpoint extends RestGetEndpoint {
     public VkFeed get(String accessToken, Long startTime) throws VkException {
         Objects.requireNonNull(accessToken);
 
-        if(startTime != null && startTime < 0) {
+        if (startTime != null && startTime < 0) {
             throw new VkException("Start time parameter should have a positive value" + startTime);
         }
 
-        List<NameValuePair> params = new ArrayList<>();
+        Set<NameValuePair> params = new HashSet<>();
         params.add(new BasicNameValuePair("access_token", accessToken));
         params.add(new BasicNameValuePair("return_banned", "0"));
         params.add(new BasicNameValuePair("count", Integer.toString(MAX_ENTRIES)));
@@ -41,7 +41,7 @@ class NewsFeedEndpoint extends RestGetEndpoint {
         params.add(new BasicNameValuePair("filters", "post,photo,photo_tag,wall_photo"));
         params.add(new BasicNameValuePair("v", apiVersion));
 
-        if(startTime != null) {
+        if (startTime != null) {
             params.add(new BasicNameValuePair("start_time", Long.toString(startTime / 1000)));
         }
 
