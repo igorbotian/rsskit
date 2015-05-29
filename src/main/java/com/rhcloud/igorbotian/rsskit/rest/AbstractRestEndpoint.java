@@ -9,10 +9,18 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
@@ -28,6 +36,26 @@ public abstract class AbstractRestEndpoint implements RestEndpoint {
     private static final int SOCKET_TIMEOUT = 60000;
 
     static {
+        SSLContext context;
+
+        try {
+            context = SSLContext.getInstance("TLS");
+
+            context.init(null, new X509TrustManager[]{new X509TrustManager() {
+                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                }
+
+                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                }
+
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[0];
+                }
+            }}, new SecureRandom());
+        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+            throw new IllegalStateException("Failed to instantiate a no-op hostname verifier", e);
+        }
+
         RequestConfig.Builder rcBuilder = RequestConfig.custom();
 
         rcBuilder.setConnectTimeout(CONNECTION_TIMEOUT);
@@ -43,6 +71,8 @@ public abstract class AbstractRestEndpoint implements RestEndpoint {
 
         HttpClientBuilder builder = HttpClientBuilder.create();
         builder.setDefaultRequestConfig(rcBuilder.build());
+        builder.setSSLHostnameVerifier(new NoopHostnameVerifier());
+        builder.setSslcontext(context);
 
         HTTP_CLIENT = builder.build();
     }
@@ -102,7 +132,7 @@ public abstract class AbstractRestEndpoint implements RestEndpoint {
             return request(endpoint, params, Collections.<NameValuePair>emptySet());
         }
 
-        public abstract  HttpResponse request(String endpoint, Set<NameValuePair> params, Set<NameValuePair> headers)
+        public abstract HttpResponse request(String endpoint, Set<NameValuePair> params, Set<NameValuePair> headers)
                 throws IOException;
     }
 }
