@@ -3,17 +3,15 @@ package com.rhcloud.igorbotian.rsskit.rest.novayagazeta.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.rhcloud.igorbotian.rsskit.rest.EntityParser;
 import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
-import com.rhcloud.igorbotian.rsskit.rest.novayagazeta.NovayaGazetaException;
+import com.rhcloud.igorbotian.rsskit.rest.novayagazeta.NovayaGazetaArticleTitle;
 import com.rhcloud.igorbotian.rsskit.rest.novayagazeta.NovayaGazetaArticlesTitles;
+import com.rhcloud.igorbotian.rsskit.rest.novayagazeta.NovayaGazetaException;
 import com.rhcloud.igorbotian.rsskit.rest.novayagazeta.json.NovayaGazetaArticlesTitlesParser;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Igor Botian <igor.botian@gmail.com>
@@ -21,6 +19,14 @@ import java.util.Set;
 class ArticlesEndpoint extends NovayaGazetaEndpoint {
 
     private static final EntityParser<NovayaGazetaArticlesTitles> PARSER = new NovayaGazetaArticlesTitlesParser();
+    private static final Comparator<NovayaGazetaArticleTitle> BY_ID_COMPARATOR = new Comparator<NovayaGazetaArticleTitle>() {
+
+        @Override
+        public int compare(NovayaGazetaArticleTitle first, NovayaGazetaArticleTitle second) {
+            return second.id.compareTo(first.id);
+        }
+    };
+
     private final String endpoint;
 
     public ArticlesEndpoint(String endpoint) {
@@ -52,7 +58,9 @@ class ArticlesEndpoint extends NovayaGazetaEndpoint {
         try {
             JsonNode response = makeRequest(endpoint, params);
             response = NovayaGazetaResponse.parse(response);
-            return PARSER.parse(response);
+            List<NovayaGazetaArticleTitle> titles = new ArrayList<>(PARSER.parse(response).items);
+            Collections.sort(titles, BY_ID_COMPARATOR);
+            return new NovayaGazetaArticlesTitles(titles);
         } catch (IOException e) {
             throw new NovayaGazetaException("Failed to retrieve a list articles", e);
         } catch (RestParseException e) {

@@ -77,14 +77,6 @@ public class NovayaGazetaRssGenerator extends RssGenerator<List<NovayaGazetaArti
             entry.setEnclosures(Collections.singletonList(image));
         }
 
-        if(StringUtils.isNotEmpty(article.subtitle)) {
-            SyndContent subtitle = new SyndContentImpl();
-            subtitle.setType(HTML_MIME_TYPE);
-            subtitle.setValue(article.subtitle);
-
-            entry.setTitleEx(subtitle);
-        }
-
         return entry;
     }
 
@@ -118,10 +110,35 @@ public class NovayaGazetaRssGenerator extends RssGenerator<List<NovayaGazetaArti
 
         if(StringUtils.isNotEmpty(article.description)) {
             text.append(String.format("<i>%s</i>", article.description));
-            text.append("<br/><br/>");
+            text.append("<br/>");
         }
 
         text.append(article.body);
+
+        if(!article.authors.isEmpty()) {
+            text.append("<br/>");
+            text.append("<i>");
+            text.append("Автор");
+
+            if(article.authors.size() > 1) {
+                text.append("ы");
+            }
+
+            text.append(": ");
+
+            int i = 0;
+
+            for(NovayaGazetaAuthor author : article.authors) {
+                if(i > 0) {
+                    text.append(", ");
+                }
+
+                text.append(author.name);
+                i++;
+            }
+
+            text.append("</i>");
+        }
 
         return text.toString();
     }
