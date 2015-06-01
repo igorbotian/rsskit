@@ -95,7 +95,7 @@ public class ChampionatRssGenerator extends RssGenerator<List<ChampionatArticle>
         StringBuilder description = new StringBuilder();
 
         if(StringUtils.isNotEmpty(article.imageURL)) {
-            description.append(String.format("<img src='%s'/>", article.imageURL));
+            description.append(String.format("<img src='http://img.championat.com/%s'/>", article.imageURL));
 
             if(StringUtils.isNotEmpty(article.imageCaption)) {
                 description.append("<br/>");

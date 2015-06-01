@@ -53,6 +53,32 @@ public class ChampionatArticleParser extends EntityParser<ChampionatArticle> {
             }
         }
 
-        return content.toString();
+        return removeTrailingBreaks(content.toString());
+    }
+
+    private String removeTrailingBreaks(String content) {
+        assert content != null;
+
+        String result = content;
+        int length;
+
+        while ((length = lengthOfTrailingBreak(result)) > 0) {
+            result = result.substring(0, result.length() - length);
+        }
+
+        return result;
+    }
+
+    private int lengthOfTrailingBreak(String content) {
+        assert content != null;
+
+        if (content.endsWith("<br/>")) {
+            return "<br/>".length();
+        } else if (content.endsWith("<br>")) {
+            return "<br>".length();
+        } else if (content.endsWith("&lt;br/&gt;")) {
+            return "&lt;br/&gt;".length();
+        }
+        return -1;
     }
 }
