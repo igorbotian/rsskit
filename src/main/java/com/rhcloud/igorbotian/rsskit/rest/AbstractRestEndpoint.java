@@ -91,7 +91,7 @@ public abstract class AbstractRestEndpoint implements RestEndpoint {
         Objects.requireNonNull(params);
         Objects.requireNonNull(headers);
 
-        byte[] content = makeRawRequest(endpoint, params);
+        byte[] content = makeRawRequest(endpoint, params, headers);
         return JSON_MAPPER.readTree(content);
     }
 
