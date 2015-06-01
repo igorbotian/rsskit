@@ -19,11 +19,11 @@ import java.util.*;
 class ArticlesEndpoint extends NovayaGazetaEndpoint {
 
     private static final EntityParser<NovayaGazetaArticlesTitles> PARSER = new NovayaGazetaArticlesTitlesParser();
-    private static final Comparator<NovayaGazetaArticleTitle> BY_ID_COMPARATOR = new Comparator<NovayaGazetaArticleTitle>() {
+    private static final Comparator<NovayaGazetaArticleTitle> BY_ID = new Comparator<NovayaGazetaArticleTitle>() {
 
         @Override
         public int compare(NovayaGazetaArticleTitle first, NovayaGazetaArticleTitle second) {
-            return second.id.compareTo(first.id);
+            return first.id.compareTo(second.id);
         }
     };
 
@@ -59,7 +59,7 @@ class ArticlesEndpoint extends NovayaGazetaEndpoint {
             JsonNode response = makeRequest(endpoint, params);
             response = NovayaGazetaResponse.parse(response);
             List<NovayaGazetaArticleTitle> titles = new ArrayList<>(PARSER.parse(response).items);
-            Collections.sort(titles, BY_ID_COMPARATOR);
+            Collections.sort(titles, BY_ID);
             return new NovayaGazetaArticlesTitles(titles);
         } catch (IOException e) {
             throw new NovayaGazetaException("Failed to retrieve a list articles", e);
