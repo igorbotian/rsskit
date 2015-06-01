@@ -28,7 +28,7 @@
 <ol>
     <li><a href="${pageContext.request.contextPath}/readability_rss.jsp">Readability RSS (full description)</a></li>
     <li><a href="${pageContext.request.contextPath}/reading_list">Reading list (based on links shared via Twitter)</a></li>
-    <li><a href="${pageContext.request.contextPath}/championat">championat.com (главные новости)</a></li>
+    <li><a href="${pageContext.request.contextPath}/championat.jsp">championat.com (футбол; главные новости)</a></li>
     <li><a href="${pageContext.request.contextPath}/novayagazeta">novayagazeta.ru (выбор редакции)</a></li>
     <li><a href="${pageContext.request.contextPath}/novayagazeta?topnews=true">novayagazeta.ru (топ новостей)</a></li>
     <li><a href="${pageContext.request.contextPath}/meduza">meduza.io</a></li>

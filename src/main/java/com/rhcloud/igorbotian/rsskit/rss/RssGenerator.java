@@ -11,6 +11,8 @@ import java.util.*;
  */
 public abstract class RssGenerator<T> {
 
+    protected static final String RSS_20 = "rss_2.0";
+    protected static final String HTML_MIME_TYPE = "text/html";
     private static final SimpleDateFormat UTC_FORMAT = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss a Z");
 
     public SyndFeed error(Exception ex) {
