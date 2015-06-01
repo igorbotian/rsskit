@@ -15,11 +15,13 @@ import java.util.Objects;
 public class FacebookEntityManagerImpl extends RsskitEntityManager implements FacebookEntityManager {
 
     private final RsskitDAO<FacebookToken> tokenDAO;
+    private final RsskitDAO<FacebookNewsFeed> newsFeedDAO;
 
     public FacebookEntityManagerImpl(RsskitDataSource source) throws SQLException {
         super(source);
 
         this.tokenDAO = new RsskitDAO<>(dataSource, databaseType, FacebookToken.class);
+        this.newsFeedDAO = new RsskitDAO<>(dataSource, databaseType, FacebookNewsFeed.class);
     }
 
     @Override
@@ -61,6 +63,41 @@ public class FacebookEntityManagerImpl extends RsskitEntityManager implements Fa
             return tokenDAO.exists(token) ? tokenDAO.get(token).getAccessToken() : null;
         } catch (SQLException e) {
             throw new FacebookException("Failed to get Facebook access token by a specified token: " + token, e);
+        }
+    }
+
+    @Override
+    public Date getSince(String token) throws FacebookException {
+        Objects.requireNonNull(token);
+
+        try {
+            return newsFeedDAO.exists(token) ? newsFeedDAO.get(token).getSince() : null;
+        } catch (SQLException e) {
+            throw new FacebookException("Failed to get Facebook news feed SINCE parameter " +
+                    "by a specified user ID: " + token, e);
+        }
+    }
+
+    @Override
+    public void setSince(String token, Date since) throws FacebookException {
+        Objects.requireNonNull(token);
+
+        try {
+            if (newsFeedDAO.exists(token)) {
+                FacebookNewsFeed feed = newsFeedDAO.get(token);
+                feed.setSince(since);
+
+                newsFeedDAO.update(feed);
+            } else {
+                FacebookNewsFeed feed = new FacebookNewsFeed();
+                feed.setRsskitToken(token);
+                feed.setSince(since);
+
+                newsFeedDAO.create(feed);
+            }
+        } catch (SQLException e) {
+            throw new FacebookException("Failed to store Facebook news feed SINCE parameter " +
+                    "for a specified user ID: " + token, e);
         }
     }
 

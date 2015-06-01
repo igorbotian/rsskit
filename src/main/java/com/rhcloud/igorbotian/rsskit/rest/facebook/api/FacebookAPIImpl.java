@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.rhcloud.igorbotian.rsskit.db.RsskitDataSource;
 import com.rhcloud.igorbotian.rsskit.db.facebook.FacebookEntityManager;
 import com.rhcloud.igorbotian.rsskit.db.facebook.FacebookEntityManagerImpl;
-import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookException;
-import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookNewsFeed;
+import com.rhcloud.igorbotian.rsskit.rest.facebook.*;
 
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
@@ -80,7 +80,21 @@ public class FacebookAPIImpl implements FacebookAPI {
             throw new FacebookException("Access token is not registered: " + token);
         }
 
-        return home.getNewsFeed(accessToken);
+        Date since = entityManager.getSince(token);
+        FacebookNewsFeed feed = home.getNewsFeed(accessToken, since);
+
+        // always returning at least one post
+        if(!feed.posts.isEmpty()) {
+            FacebookNewsFeedItem post = feed.posts.get(0);
+
+            if(post instanceof FacebookPost) {
+                entityManager.setSince(token, ((FacebookPost) post).createdTime);
+            } else {
+                entityManager.setSince(token, ((FacebookRepost) post).repost.createdTime);
+            }
+        }
+
+        return feed;
     }
 
     @Override

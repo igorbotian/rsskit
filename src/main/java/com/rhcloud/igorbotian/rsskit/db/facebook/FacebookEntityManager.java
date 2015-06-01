@@ -14,4 +14,8 @@ public interface FacebookEntityManager {
     String getAccessToken(String token) throws FacebookException;
 
     boolean isAcessTokenExpired(String token) throws FacebookException;
+
+    Date getSince(String token) throws FacebookException;
+
+    void setSince(String token, Date since) throws FacebookException;
 }

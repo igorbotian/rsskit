@@ -31,7 +31,7 @@ class HomeEndpoint extends FacebookEndpoint {
         super(api);
     }
 
-    public FacebookNewsFeed getNewsFeed(String accessToken) throws FacebookException {
+    public FacebookNewsFeed getNewsFeed(String accessToken, Date since) throws FacebookException {
         Objects.requireNonNull(accessToken);
 
         Set<NameValuePair> params = new HashSet<>();
@@ -40,6 +40,10 @@ class HomeEndpoint extends FacebookEndpoint {
                 "object_id,story,created_time"));
         params.add(dateInUNIXTimeFormat());
         params.add(new BasicNameValuePair("limit", Integer.toString(SIZE)));
+
+        if(since != null) {
+            params.add(new BasicNameValuePair("since", Long.toString(since.getTime() / 1000)));
+        }
 
         List<IncompleteFacebookPost> posts = makeRequest(ENDPOINT, params, IncompleteFacebookNewsFeed.PARSER).posts;
         posts = orderPostsByCreatedTime(REPOST_IDENTIFIER.apply(posts));
