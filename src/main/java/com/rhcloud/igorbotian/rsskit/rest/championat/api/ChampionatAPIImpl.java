@@ -4,6 +4,8 @@ import com.rhcloud.igorbotian.rsskit.rest.championat.ChampionatArticle;
 import com.rhcloud.igorbotian.rsskit.rest.championat.ChampionatException;
 import com.rhcloud.igorbotian.rsskit.rest.championat.ChampionatStream;
 import com.rhcloud.igorbotian.rsskit.rest.championat.ChampionatStreamItem;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
@@ -12,6 +14,7 @@ import java.util.*;
  */
 public class ChampionatAPIImpl implements ChampionatAPI {
 
+    private static final Logger LOGGER = LogManager.getLogger(ChampionatAPIImpl.class);
     private static final StreamEndpoint stream = new StreamEndpoint();
     private static final Comparator<ChampionatStreamItem> BY_RECENT_PUB_DATE = new Comparator<ChampionatStreamItem>() {
 
@@ -56,7 +59,11 @@ public class ChampionatAPIImpl implements ChampionatAPI {
         List<ChampionatArticle> articles = new ArrayList<>(stream.items.size());
 
         for(ChampionatStreamItem item : stream.items) {
-            articles.add(getArticle(item.id));
+            try {
+                articles.add(getArticle(item.id));
+            } catch (ChampionatException e) {
+                LOGGER.error("Failed to retrieve article content", e);
+            }
         }
 
         return articles;
