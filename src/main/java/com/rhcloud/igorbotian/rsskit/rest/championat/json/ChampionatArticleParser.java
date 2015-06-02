@@ -21,7 +21,7 @@ public class ChampionatArticleParser extends EntityParser<ChampionatArticle> {
         Date pubDate = new Date(getAttribute(json, "pub_date").asLong() * 1000);
         String content = json.has("content") ? parseContent(json.get("content")) : "";
         String externalID = getAttribute(json, "id").asText();
-        String directLink = getAttribute(json, "direct_link").asText();
+        String directLink = json.has("direct_link") ? json.get("direct_link").asText() : "";
         String title = getAttribute(json, "title").asText();
         String type = getAttribute(json, "type").asText();
         String sport = getAttribute(json, "sport").asText();

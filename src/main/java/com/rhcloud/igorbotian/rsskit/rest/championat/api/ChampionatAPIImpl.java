@@ -16,31 +16,17 @@ public class ChampionatAPIImpl implements ChampionatAPI {
 
     private static final Logger LOGGER = LogManager.getLogger(ChampionatAPIImpl.class);
     private static final StreamEndpoint stream = new StreamEndpoint();
-    private static final Comparator<ChampionatStreamItem> BY_RECENT_PUB_DATE = new Comparator<ChampionatStreamItem>() {
+    private static final Comparator<ChampionatArticle> BY_RECENT_PUB_DATE = new Comparator<ChampionatArticle>() {
 
         @Override
-        public int compare(ChampionatStreamItem first, ChampionatStreamItem second) {
+        public int compare(ChampionatArticle first, ChampionatArticle second) {
             return second.pubDate.compareTo(first.pubDate);
         }
     };
 
     @Override
-    public ChampionatStream getStream(int limit) throws ChampionatException {
-        if(limit < 1) {
-            throw new IllegalArgumentException("Limit should have a positive value: " + limit);
-        }
-
-        return getRecentItems(stream.getStream(), limit);
-    }
-
-    private ChampionatStream getRecentItems(ChampionatStream stream, int limit) {
-        assert stream != null;
-        assert limit > 0;
-
-        List<ChampionatStreamItem> items = new ArrayList<>(stream.items);
-        Collections.sort(items, BY_RECENT_PUB_DATE);
-
-        return new ChampionatStream(new LinkedHashSet<>(items.subList(0, Math.min(limit, items.size()))));
+    public ChampionatStream getStream() throws ChampionatException {
+        return stream.getStream();
     }
 
     @Override
@@ -50,15 +36,21 @@ public class ChampionatAPIImpl implements ChampionatAPI {
     }
 
     @Override
-    public List<ChampionatArticle> getArticles(int limit) throws ChampionatException {
+    public List<ChampionatArticle> getArticles(int limit, boolean breakingOnly) throws ChampionatException {
         if(limit < 1) {
             throw new IllegalArgumentException("Limit should have a positive value: " + limit);
         }
 
-        ChampionatStream stream = getStream(limit);
-        List<ChampionatArticle> articles = new ArrayList<>(stream.items.size());
+        ChampionatStream stream = getStream();
+        List<ChampionatStreamItem> items = filterOnlyNewsAndArticles(new ArrayList<>(stream.items));
 
-        for(ChampionatStreamItem item : stream.items) {
+        if(breakingOnly) {
+            items = filterBreakingOnly(items);
+        }
+
+        List<ChampionatArticle> articles = new ArrayList<>(items.size());
+
+        for(ChampionatStreamItem item : items) {
             try {
                 articles.add(getArticle(item.id));
             } catch (ChampionatException e) {
@@ -66,6 +58,36 @@ public class ChampionatAPIImpl implements ChampionatAPI {
             }
         }
 
-        return articles;
+        Collections.sort(articles, BY_RECENT_PUB_DATE);
+        int count = Math.min(limit, items.size());
+        return articles.subList(0, count);
+    }
+
+    private List<ChampionatStreamItem> filterBreakingOnly(List<ChampionatStreamItem> items) {
+        assert items != null;
+
+        List<ChampionatStreamItem> filtered = new ArrayList<>();
+
+        for(ChampionatStreamItem item : items) {
+            if(item.breaking) {
+                filtered.add(item);
+            }
+        }
+
+        return filtered;
+    }
+
+    private List<ChampionatStreamItem> filterOnlyNewsAndArticles(List<ChampionatStreamItem> items) {
+        assert items != null;
+
+        List<ChampionatStreamItem> filtered = new ArrayList<>(items.size());
+
+        for(ChampionatStreamItem item : items) {
+            if("news".equalsIgnoreCase(item.type) || "article".equals(item.type)) {
+                filtered.add(item);
+            }
+        }
+
+        return filtered;
     }
 }

@@ -6,7 +6,6 @@ import com.rhcloud.igorbotian.rsskit.rest.championat.api.ChampionatAPI;
 import com.rhcloud.igorbotian.rsskit.rest.championat.api.ChampionatAPIImpl;
 import com.rhcloud.igorbotian.rsskit.rss.RssGenerator;
 import com.rhcloud.igorbotian.rsskit.rss.RssModifier;
-import com.rhcloud.igorbotian.rsskit.rss.championat.ChampionatBreakingNewsFilter;
 import com.rhcloud.igorbotian.rsskit.rss.championat.ChampionatRssGenerator;
 import com.rhcloud.igorbotian.rsskit.rss.championat.ChampionatRssLinkMobilizer;
 import com.rometools.rome.feed.synd.SyndFeed;
@@ -33,7 +32,6 @@ public class ChampionatServlet extends AbstractRssServlet {
 
     private final ChampionatAPI api = new ChampionatAPIImpl();
     private final RssGenerator<List<ChampionatArticle>> rssGenerator = new ChampionatRssGenerator();
-    private final RssModifier breakingNewsFilter = new ChampionatBreakingNewsFilter();
     private final RssModifier linkMobilizer = new ChampionatRssLinkMobilizer();
 
     @Override
@@ -44,14 +42,11 @@ public class ChampionatServlet extends AbstractRssServlet {
         Objects.requireNonNull(response);
 
         try {
-            List<ChampionatArticle> articles = api.getArticles(parseLimit(request));
+            String breakingOnlyParam = request.getParameter(BREAKING_ONLY_PARAM);
+            boolean breakingOnly = Boolean.parseBoolean(breakingOnlyParam) || "on".equalsIgnoreCase(breakingOnlyParam);
+
+            List<ChampionatArticle> articles = api.getArticles(parseLimit(request), breakingOnly);
             SyndFeed rss = rssGenerator.generate(articles);
-            String breakingOnly = request.getParameter(BREAKING_ONLY_PARAM);
-
-            if (Boolean.parseBoolean(breakingOnly) || "on".equalsIgnoreCase(breakingOnly)) {
-                breakingNewsFilter.apply(rss);
-            }
-
             linkMobilizer.apply(rss);
             respond(rss, response);
         } catch (ChampionatException e) {
@@ -65,7 +60,7 @@ public class ChampionatServlet extends AbstractRssServlet {
 
         String limit = request.getParameter(LIMIT_PARAM);
 
-        if(StringUtils.isNotEmpty(limit)) {
+        if (StringUtils.isNotEmpty(limit)) {
             try {
                 return Integer.parseInt(limit);
             } catch (NumberFormatException e) {

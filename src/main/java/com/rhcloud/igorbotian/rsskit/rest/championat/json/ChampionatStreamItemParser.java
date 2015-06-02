@@ -19,7 +19,9 @@ public class ChampionatStreamItemParser extends EntityParser<ChampionatStreamIte
 
         String id = getAttribute(json, "_id").asText();
         Date pudDate = new Date(getAttribute(json, "pub_date").asLong() * 1000);
+        boolean breaking = "2".equals(getAttribute(getAttribute(getAttribute(json, "visible"), "ru"), "on_sport").asText());
+        String type = getAttribute(json, "type").asText();
 
-        return new ChampionatStreamItem(id, pudDate);
+        return new ChampionatStreamItem(id, pudDate, breaking, type);
     }
 }

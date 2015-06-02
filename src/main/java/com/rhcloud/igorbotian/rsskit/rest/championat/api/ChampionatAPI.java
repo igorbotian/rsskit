@@ -11,9 +11,9 @@ import java.util.List;
  */
 public interface ChampionatAPI {
 
-    ChampionatStream getStream(int limit) throws ChampionatException;
+    ChampionatStream getStream() throws ChampionatException;
 
     ChampionatArticle getArticle(String id) throws ChampionatException;
 
-    List<ChampionatArticle> getArticles(int limit) throws ChampionatException;
+    List<ChampionatArticle> getArticles(int limit, boolean breakingOnly) throws ChampionatException;
 }

@@ -8,6 +8,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -20,6 +21,14 @@ abstract class ChampionatEndpoint extends RestGetEndpoint {
     private static final String API_URL = "http://api.championat.com/v2";
     private static final String CHAMPIONAT_API_LOGIN = Configuration.getProperty("CHAMPIONAT_API_LOGIN");
     private static final String CHAMPIONAT_API_PASSWORD = Configuration.getProperty("CHAMPIONAT_API_PASSWORD");
+
+    @Override
+    public JsonNode makeRequest(String endpoint, Set<NameValuePair> params) throws IOException {
+        Objects.requireNonNull(endpoint);
+        Objects.requireNonNull(params);
+
+        return makeRequest(endpoint, params, Collections.<NameValuePair>emptySet());
+    }
 
     @Override
     public JsonNode makeRequest(String endpoint, Set<NameValuePair> params, Set<NameValuePair> otherHeaders) throws IOException {
