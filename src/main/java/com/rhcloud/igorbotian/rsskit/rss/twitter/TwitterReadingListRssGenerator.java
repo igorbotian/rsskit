@@ -45,7 +45,7 @@ public class TwitterReadingListRssGenerator extends RssGenerator<TwitterTimeline
         feed.setPublishedDate(new Date());
         feed.setTitle("Reading list");
         feed.setDescription("Twitter-based reading list");
-        feed.setFeedType("rss_2.0");
+        feed.setFeedType(RSS_20);
 
         return feed;
     }
@@ -82,7 +82,7 @@ public class TwitterReadingListRssGenerator extends RssGenerator<TwitterTimeline
         entry.setLink(url.expandedURL);
 
         SyndContent description = new SyndContentImpl();
-        description.setType("text/html");
+        description.setType(HTML_MIME_TYPE);
         description.setValue(text);
 
         entry.setDescription(description);

@@ -14,7 +14,6 @@ import java.util.regex.Pattern;
  */
 public class FacebookNewsFeedRssGenerator extends RssGenerator<FacebookNewsFeed> {
 
-    private static final String HTML_MIME_TYPE = "text/html";
     private static final String FACEBOOK_COM = "https://www.facebook.com";
     private static final Pattern URL_REGEX = Pattern.compile("\\b(https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])");
     private static final int MAX_URL_LENGTH = 40;
@@ -43,7 +42,7 @@ public class FacebookNewsFeedRssGenerator extends RssGenerator<FacebookNewsFeed>
         rss.setPublishedDate(new Date());
         rss.setDescription("Facebook News Feed");
         rss.setLink(FACEBOOK_COM);
-        rss.setFeedType("rss_2.0");
+        rss.setFeedType(RSS_20);
 
         return rss;
     }

@@ -30,7 +30,7 @@ public class InstagramSelfFeedRssGenerator extends RssGenerator<InstagramFeed> {
 
         feed.setTitle("Instagram self feed");
         feed.setLink("http://www.instagram.com");
-        feed.setFeedType("rss_2.0");
+        feed.setFeedType(RSS_20);
         feed.setDescription(feed.getTitle());
         feed.setPublishedDate(new Date());
 
@@ -76,7 +76,7 @@ public class InstagramSelfFeedRssGenerator extends RssGenerator<InstagramFeed> {
         assert mediaURL != null;
 
         SyndContent content = new SyndContentImpl();
-        content.setType("text/html");
+        content.setType(HTML_MIME_TYPE);
 
         StringBuilder builder = new StringBuilder(comment);
 

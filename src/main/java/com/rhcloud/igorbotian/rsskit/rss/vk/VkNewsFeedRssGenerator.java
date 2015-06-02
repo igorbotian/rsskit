@@ -23,7 +23,6 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
     private static final String SCREEN_NAME_LINK_FORMAT = VK_COM + "/%s";
     private static final Pattern URL_REGEX = Pattern.compile("\\b(https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])");
     private static final int MAX_URL_LENGTH = 40;
-    private static final String HTML_MIME_TYPE = "text/html";
 
     private VkFeedFilter feedFilter = new VkFeedFilter();
 
@@ -52,7 +51,7 @@ public class VkNewsFeedRssGenerator extends RssGenerator<VkFeed> {
         rss.setPublishedDate(new Date());
         rss.setDescription("VK news feed");
         rss.setLink(VK_COM);
-        rss.setFeedType("rss_2.0");
+        rss.setFeedType(RSS_20);
 
         return rss;
     }

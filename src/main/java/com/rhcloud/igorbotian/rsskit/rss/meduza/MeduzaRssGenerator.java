@@ -39,7 +39,7 @@ public class MeduzaRssGenerator extends RssGenerator<List<MeduzaDocument>> {
         feed.setTitle("Meduza.io");
         feed.setLink(MEDUZA_IO);
         feed.setDescription("");
-        feed.setFeedType("rss_2.0");
+        feed.setFeedType(RSS_20);
 
         SyndImage image = new SyndImageImpl();
         image.setTitle(feed.getTitle());

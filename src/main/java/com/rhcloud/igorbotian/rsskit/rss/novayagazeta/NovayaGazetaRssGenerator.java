@@ -14,7 +14,6 @@ import java.util.*;
 public class NovayaGazetaRssGenerator extends RssGenerator<List<NovayaGazetaArticle>>{
 
     private static final String NOVAYAGAZETA_RU = "http://www.novayagazeta.ru";
-    private static final String HTML_MIME_TYPE = "text/html";
 
     @Override
     protected SyndFeed skeleton() {
@@ -22,7 +21,7 @@ public class NovayaGazetaRssGenerator extends RssGenerator<List<NovayaGazetaArti
 
         feed.setTitle("Новая Газета");
         feed.setLink(NOVAYAGAZETA_RU);
-        feed.setFeedType("rss_2.0");
+        feed.setFeedType(RSS_20);
         feed.setDescription("Журналистские расследования о коррупции в бизнесе и во власти, онлайн-трансляции " +
                 "ключевых событий политической и культурной жизни России, специальные репортажи о стране, новости, " +
                 "фото-галереи, авторские материалы ведущих журналистов и экспертов.");
