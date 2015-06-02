@@ -13,6 +13,7 @@
 <span class="header">RSS feeds</span>
 <ol>
     <li><a href="${pageContext.request.contextPath}/facebook">Facebook news feed</a></li>
+    <li><a href="${pageContext.request.contextPath}/facebook?notifications=true">Facebook notifications</a></li>
     <li><a href="${pageContext.request.contextPath}/instagram">Instagram self feed</a></li>
     <li><a href="${pageContext.request.contextPath}/twitter">Twitter home timeline</a></li>
     <li><a href="${pageContext.request.contextPath}/vk.jsp">VK home feed</a></li>

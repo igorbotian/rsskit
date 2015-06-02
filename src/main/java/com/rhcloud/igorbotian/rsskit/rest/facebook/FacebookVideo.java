@@ -1,5 +1,7 @@
 package com.rhcloud.igorbotian.rsskit.rest.facebook;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import java.util.Date;
 import java.util.Objects;
 
@@ -24,5 +26,23 @@ public class FacebookVideo extends FacebookPost {
         this.picture = Objects.requireNonNull(picture);
         this.source = Objects.requireNonNull(source);
         this.embedHTML = Objects.requireNonNull(embedHTML);
+    }
+
+    public static FacebookVideo parse(JsonNode json, String id, Date createdDate, FacebookProfile from,
+                                      String caption, String message) {
+        Objects.requireNonNull(json);
+        Objects.requireNonNull(id);
+        Objects.requireNonNull(createdDate);
+        Objects.requireNonNull(from);
+        Objects.requireNonNull(caption);
+        Objects.requireNonNull(message);
+
+        String name = json.has("name") ? json.get("name").asText() : "";
+        String description = json.has("description") ? json.get("description").asText() : "";
+        String picture = json.has("picture") ? json.get("picture").asText() : "";
+        String source = json.has("source") ? json.get("source").asText() : "";
+        String embedHTML = json.has("embed_html") ? json.get("embed_html").asText() : "";
+
+        return new FacebookVideo(id, createdDate, from, caption, message, name, description, picture, source, embedHTML);
     }
 }

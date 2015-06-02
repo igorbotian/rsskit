@@ -1,5 +1,9 @@
 package com.rhcloud.igorbotian.rsskit.rest.facebook;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.rhcloud.igorbotian.rsskit.rest.EntityParser;
+import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
+
 import java.util.Date;
 import java.util.Objects;
 
@@ -7,6 +11,8 @@ import java.util.Objects;
  * @author Igor Botian <igor.botyan@alcatel-lucent.com>
  */
 public abstract class FacebookPost {
+
+    private static final EntityParser<FacebookPost> PARSER = new FacebookPostParser();
 
     public final String id;
     public final Date createdTime;
@@ -24,5 +30,56 @@ public abstract class FacebookPost {
         this.caption = Objects.requireNonNull(caption);
         this.message = Objects.requireNonNull(message);
         this.type = Objects.requireNonNull(type);
+    }
+
+    public static FacebookPost parse(JsonNode json) throws RestParseException {
+        Objects.requireNonNull(json);
+        return PARSER.parse(json);
+    }
+
+    private static class FacebookPostParser extends EntityParser<FacebookPost> {
+
+        @Override
+        public FacebookPost parse(JsonNode json) throws RestParseException {
+            Objects.requireNonNull(json);
+
+            String id = getAttribute(json, "id").asText();
+            Date createdTime = new Date(getAttribute(json, "created_time").asLong() * 1000);
+            FacebookProfile from = FacebookProfile.parse(getAttribute(json, "from"));
+            String caption = json.has("caption") ? json.get("caption").asText() : "";
+            String message = json.has("message") ? json.get("message").asText() : "";
+            FacebookPostType type = identifyType(json);
+
+            switch (type) {
+                case LINK:
+                    return FacebookLink.parse(json, id, createdTime, from, caption, message);
+                case OFFER:
+                    return new FacebookOffer(id, createdTime, from, caption, message);
+                case PHOTO:
+                    return FacebookPhoto.parse(json, id, createdTime, from, caption, message);
+                case STATUS:
+                    return new FacebookStatus(id, createdTime, from, caption, message);
+                case VIDEO:
+                    return FacebookVideo.parse(json, id, createdTime, from, caption, message);
+                default:
+                    throw new RestParseException("Unexpected Facebook post type: " + type);
+            }
+        }
+
+        private FacebookPostType identifyType(JsonNode json) {
+            assert json != null;
+
+            if(json.has("type")) {
+                return FacebookPostType.parse(json.get("type").asText());
+            } else if(json.has("metadata")) {
+                JsonNode metadata = json.get("metadata");
+
+                if(metadata.has("type")) {
+                    return FacebookPostType.parse(metadata.get("type").asText());
+                }
+            }
+
+            return FacebookPostType.UNKNOWN;
+        }
     }
 }

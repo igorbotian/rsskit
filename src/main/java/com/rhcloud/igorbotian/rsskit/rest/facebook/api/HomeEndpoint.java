@@ -45,7 +45,7 @@ class HomeEndpoint extends FacebookEndpoint {
             params.add(new BasicNameValuePair("since", Long.toString(since.getTime() / 1000)));
         }
 
-        List<IncompleteFacebookPost> posts = makeRequest(ENDPOINT, params, IncompleteFacebookNewsFeed.PARSER).posts;
+        List<IncompleteFacebookPost> posts = makeGetRequest(ENDPOINT, params, IncompleteFacebookNewsFeed.PARSER).posts;
         posts = orderPostsByCreatedTime(REPOST_IDENTIFIER.apply(posts));
         return makeNewsFeed(posts, accessToken);
     }

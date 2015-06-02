@@ -22,8 +22,9 @@ class ObjectEndpoint extends FacebookEndpoint {
 
         Set<NameValuePair> params = new HashSet<>();
         params.add(new BasicNameValuePair("access_token", accessToken));
+        params.add(new BasicNameValuePair("metadata", "1"));
         params.add(dateInUNIXTimeFormat());
 
-        return makeRawJsonRequest(id, params);
+        return makeRawJsonGetRequest(id, params);
     }
 }

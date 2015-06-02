@@ -1,9 +1,7 @@
 package com.rhcloud.igorbotian.rsskit.rest.facebook.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.rhcloud.igorbotian.rsskit.rest.EntityParser;
-import com.rhcloud.igorbotian.rsskit.rest.RestGetEndpoint;
-import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
+import com.rhcloud.igorbotian.rsskit.rest.*;
 import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookException;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -15,10 +13,12 @@ import java.util.Set;
 /**
  * @author Igor Botian <igor.botyan@alcatel-lucent.com>
  */
-class FacebookEndpoint extends RestGetEndpoint {
+abstract class FacebookEndpoint {
 
-    private static final String GRAPH_API_URL = "https://graph.facebook.com/v%s";
+    protected static final String GRAPH_API_URL = "https://graph.facebook.com/v%s";
     private static final NameValuePair DATE_FORMAT_PARAM = new BasicNameValuePair("date_format", "U");
+    private static final RestGetEndpoint GET = new RestGetEndpoint();
+    private static final RestPostEndpoint POST = new RestPostEndpoint();
     protected FacebookAPI api;
 
     public FacebookEndpoint(FacebookAPI api) {
@@ -29,12 +29,30 @@ class FacebookEndpoint extends RestGetEndpoint {
         return DATE_FORMAT_PARAM;
     }
 
-    protected JsonNode makeRawJsonRequest(String path, Set<NameValuePair> params) throws FacebookException {
+    protected JsonNode makeRawJsonGetRequest(String path, Set<NameValuePair> params) throws FacebookException {
         Objects.requireNonNull(path);
         Objects.requireNonNull(params);
 
+        return makeRawJsonRequest(path, params, GET);
+    }
+
+    protected JsonNode makeRawJsonPostRequest(String path, Set<NameValuePair> params) throws FacebookException {
+        Objects.requireNonNull(path);
+        Objects.requireNonNull(params);
+
+        return makeRawJsonRequest(path, params, POST);
+    }
+
+    private JsonNode makeRawJsonRequest(String path, Set<NameValuePair> params, AbstractRestEndpoint method)
+            throws FacebookException {
+
+        assert path != null;
+        assert params != null;
+        assert method != null;
+
         try {
-            JsonNode response = makeRequest(String.format(GRAPH_API_URL + "/" + path, api.version()), params);
+            String endpoint = String.format(GRAPH_API_URL + "/" + path, api.version());
+            JsonNode response = method.makeRequest(endpoint, params);
             FacebookResponse.throwExceptionIfError(response);
             return response;
         } catch (IOException e) {
@@ -42,13 +60,24 @@ class FacebookEndpoint extends RestGetEndpoint {
         }
     }
 
-    protected <T> T makeRequest(String path, Set<NameValuePair> params, EntityParser<T> parser) throws FacebookException {
+    protected <T> T makeGetRequest(String path, Set<NameValuePair> params, EntityParser<T> parser) throws FacebookException {
         Objects.requireNonNull(path);
         Objects.requireNonNull(params);
         Objects.requireNonNull(parser);
 
+        return makeRequest(path, params, parser, GET);
+    }
+
+    private <T> T makeRequest(String path, Set<NameValuePair> params, EntityParser<T> parser, RestGetEndpoint method)
+            throws FacebookException {
+
+        assert path != null;
+        assert params != null;
+        assert parser != null;
+        assert method != null;
+
         try {
-            JsonNode response = makeRawJsonRequest(path, params);
+            JsonNode response = makeRawJsonRequest(path, params, method);
             return FacebookResponse.parse(response, parser);
         } catch (RestParseException e) {
             throw new FacebookException("Failed to parse Facebook response", e);
