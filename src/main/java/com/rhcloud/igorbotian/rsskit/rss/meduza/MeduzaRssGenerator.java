@@ -14,7 +14,6 @@ import java.util.Objects;
  */
 public class MeduzaRssGenerator extends RssGenerator<List<MeduzaDocument>> {
 
-    private static final String HTML_MIME_TYPE = "text/html";
     private static final String MEDUZA_IO = "https://meduza.io";
 
     @Override
@@ -38,13 +37,13 @@ public class MeduzaRssGenerator extends RssGenerator<List<MeduzaDocument>> {
         SyndFeed feed = new SyndFeedImpl();
 
         feed.setTitle("Meduza.io");
-        feed.setLink("https://meduza.io");
+        feed.setLink(MEDUZA_IO);
         feed.setDescription("");
         feed.setFeedType("rss_2.0");
 
         SyndImage image = new SyndImageImpl();
         image.setTitle(feed.getTitle());
-        image.setUrl("https://meduza.io/images/rss-logo.png");
+        image.setUrl(MEDUZA_IO + "/images/rss-logo.png");
         feed.setImage(image);
 
         return feed;
@@ -55,7 +54,7 @@ public class MeduzaRssGenerator extends RssGenerator<List<MeduzaDocument>> {
 
         SyndEntry entry = new SyndEntryImpl();
 
-        entry.setLink(document.url);
+        entry.setLink(MEDUZA_IO + "/" + document.url);
         entry.setTitle(document.title);
         entry.setPublishedDate(document.publishedAt);
 
