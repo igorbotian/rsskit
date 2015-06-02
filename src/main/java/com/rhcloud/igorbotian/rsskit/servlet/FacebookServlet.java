@@ -42,7 +42,7 @@ public class FacebookServlet extends AbstractRssServlet {
     )));
 
     private FacebookAPI api;
-    private final RssGenerator<FacebookNewsFeed> rssGenerator = new FacebookNewsFeedRssGenerator();
+    private final RssGenerator<List<FacebookFeedItem>> rssGenerator = new FacebookNewsFeedRssGenerator();
 
     @Override
     public void init() throws ServletException {
@@ -85,7 +85,7 @@ public class FacebookServlet extends AbstractRssServlet {
         SyndFeed rss;
 
         try {
-            FacebookNewsFeed newsFeed = api.getNewsFeed(accessToken);
+            List<FacebookFeedItem> newsFeed = api.getNewsFeed(accessToken);
             rss = rssGenerator.generate(newsFeed);
         } catch (FacebookException e) {
             LOGGER.error("Failed to get Facebook notifications and generate appropriate RSS feed", e);

@@ -48,6 +48,10 @@ class IncompleteFacebookPost {
         this.objectID = objectID;
     }
 
+    public boolean isRepost() {
+        return source != null;
+    }
+
     private static class IncompleteFacebookPostParser extends EntityParser<IncompleteFacebookPost> {
 
         @Override

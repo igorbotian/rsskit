@@ -31,7 +31,7 @@ class HomeEndpoint extends FacebookEndpoint {
         super(api);
     }
 
-    public FacebookNewsFeed getNewsFeed(String accessToken, Date since) throws FacebookException {
+    public List<FacebookFeedItem> getNewsFeed(String accessToken, Date since) throws FacebookException {
         Objects.requireNonNull(accessToken);
 
         Set<NameValuePair> params = new HashSet<>();
@@ -41,7 +41,7 @@ class HomeEndpoint extends FacebookEndpoint {
         params.add(dateInUNIXTimeFormat());
         params.add(new BasicNameValuePair("limit", Integer.toString(SIZE)));
 
-        if(since != null) {
+        if (since != null) {
             params.add(new BasicNameValuePair("since", Long.toString(since.getTime() / 1000)));
         }
 
@@ -58,30 +58,31 @@ class HomeEndpoint extends FacebookEndpoint {
         return ordered;
     }
 
-    private FacebookNewsFeed makeNewsFeed(List<IncompleteFacebookPost> incompletePosts, String accessToken) {
+    private List<FacebookFeedItem> makeNewsFeed(List<IncompleteFacebookPost> incompletePosts, String accessToken) {
         assert incompletePosts != null;
         assert accessToken != null;
 
-        List<FacebookNewsFeedItem> posts = new ArrayList<>(incompletePosts.size());
+        List<FacebookFeedItem> posts = new ArrayList<>(incompletePosts.size());
 
         for (IncompleteFacebookPost post : incompletePosts) {
             try {
-                posts.add((post.source != null) ? makeRepost(post, accessToken) : makePost(post, accessToken));
+                posts.add(post.isRepost()
+                        ? makeRepost(post, accessToken)
+                        : new FacebookFeedItem(makePost(post, accessToken)));
             } catch (FacebookException ex) {
                 LOGGER.error("Failed to instantiate Facebook post/repost entity", ex);
             }
         }
 
-        return new FacebookNewsFeed(Collections.unmodifiableList(posts));
+        return Collections.unmodifiableList(posts);
     }
 
-    private FacebookRepost makeRepost(IncompleteFacebookPost post, String accessToken) throws FacebookException {
+    private FacebookFeedItem makeRepost(IncompleteFacebookPost post, String accessToken) throws FacebookException {
         assert post != null;
         assert accessToken != null;
 
-        return new FacebookRepost(
-                makePost(post.source, accessToken),
-                makePost(post, accessToken)
+        return new FacebookFeedItem(
+                makePost(post, accessToken), makePost(post.source, accessToken)
         );
     }
 

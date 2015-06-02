@@ -6,7 +6,7 @@ import java.util.Objects;
 /**
  * @author Igor Botian <igor.botyan@alcatel-lucent.com>
  */
-public abstract class FacebookPost implements FacebookNewsFeedItem {
+public abstract class FacebookPost {
 
     public final String id;
     public final Date createdTime;

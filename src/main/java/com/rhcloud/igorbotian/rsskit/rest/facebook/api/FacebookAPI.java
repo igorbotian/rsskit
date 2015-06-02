@@ -2,9 +2,10 @@ package com.rhcloud.igorbotian.rsskit.rest.facebook.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookException;
-import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookNewsFeed;
+import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookFeedItem;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -20,7 +21,7 @@ public interface FacebookAPI {
 
     boolean isAccessTokenExpired(String token) throws FacebookException;
 
-    FacebookNewsFeed getNewsFeed(String token) throws FacebookException;
+    List<FacebookFeedItem> getNewsFeed(String token) throws FacebookException;
 
     JsonNode getObject(String id, String accessToken) throws FacebookException;
 }

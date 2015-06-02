@@ -9,6 +9,7 @@ import com.rhcloud.igorbotian.rsskit.rest.facebook.*;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -71,7 +72,7 @@ public class FacebookAPIImpl implements FacebookAPI {
     }
 
     @Override
-    public FacebookNewsFeed getNewsFeed(String token) throws FacebookException {
+    public List<FacebookFeedItem> getNewsFeed(String token) throws FacebookException {
         Objects.requireNonNull(token);
 
         String accessToken = entityManager.getAccessToken(token);
@@ -81,17 +82,12 @@ public class FacebookAPIImpl implements FacebookAPI {
         }
 
         Date since = entityManager.getSince(token);
-        FacebookNewsFeed feed = home.getNewsFeed(accessToken, since);
+        List<FacebookFeedItem> feed = home.getNewsFeed(accessToken, since);
 
         // always returning at least one post
-        if(!feed.posts.isEmpty()) {
-            FacebookNewsFeedItem post = feed.posts.get(0);
-
-            if(post instanceof FacebookPost) {
-                entityManager.setSince(token, ((FacebookPost) post).createdTime);
-            } else {
-                entityManager.setSince(token, ((FacebookRepost) post).repost.createdTime);
-            }
+        if(feed.size() > 1) {
+            FacebookFeedItem post = feed.get(1);
+            entityManager.setSince(token, post.post.createdTime);
         }
 
         return feed;
