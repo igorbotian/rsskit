@@ -68,7 +68,11 @@ public class NovayaGazetaServlet extends AbstractRssServlet {
         List<NovayaGazetaArticle> articles = new ArrayList<>(titles.items.size());
 
         for(NovayaGazetaArticleTitle title : titles.items) {
-            articles.add(api.getArticle(title.id));
+            try {
+                articles.add(api.getArticle(title.id));
+            } catch (NovayaGazetaException e) {
+                LOGGER.error("Failed to download an article specified by URL: " + title.sourceURL, e);
+            }
         }
 
         return articles;

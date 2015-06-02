@@ -4,6 +4,8 @@ import com.rhcloud.igorbotian.rsskit.rest.meduza.MeduzaDocument;
 import com.rhcloud.igorbotian.rsskit.rest.meduza.MeduzaDocumentTitle;
 import com.rhcloud.igorbotian.rsskit.rest.meduza.MeduzaException;
 import com.rhcloud.igorbotian.rsskit.rest.meduza.MeduzaIndex;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +17,7 @@ import java.util.List;
  */
 public class MeduzaAPIImpl implements MeduzaAPI {
 
+    private static final Logger LOGGER = LogManager.getLogger(MeduzaAPIImpl.class);
     private static final IndexEndpoint index = new IndexEndpoint();
     private static final DocumentEndpoint documents = new DocumentEndpoint();
     private static final Comparator<MeduzaDocumentTitle> BY_DATE = new Comparator<MeduzaDocumentTitle>() {
@@ -47,7 +50,11 @@ public class MeduzaAPIImpl implements MeduzaAPI {
         Collections.sort(titles, BY_DATE);
 
         for (MeduzaDocumentTitle title : titles.subList(0, count)) {
-            documents.add(MeduzaAPIImpl.documents.get(title.url));
+            try {
+                documents.add(MeduzaAPIImpl.documents.get(title.url));
+            } catch (MeduzaException e) {
+                LOGGER.error("Failed to download an article specified by URL: " + title.url, e);
+            }
         }
 
         return documents;
