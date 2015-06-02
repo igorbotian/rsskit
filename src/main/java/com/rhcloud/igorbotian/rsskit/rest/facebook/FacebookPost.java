@@ -20,9 +20,10 @@ public abstract class FacebookPost {
     public final String caption;
     public final String message;
     public final FacebookPostType type;
+    public final FacebookPost source;
 
     public FacebookPost(String id, Date createdTime, FacebookProfile from, String caption,
-                        String message, FacebookPostType type) {
+                        String message, FacebookPostType type, FacebookPost source) {
 
         this.id = Objects.requireNonNull(id);
         this.createdTime = Objects.requireNonNull(createdTime);
@@ -30,7 +31,14 @@ public abstract class FacebookPost {
         this.caption = Objects.requireNonNull(caption);
         this.message = Objects.requireNonNull(message);
         this.type = Objects.requireNonNull(type);
+        this.source = source;
     }
+
+    public boolean isRepost() {
+        return source != null;
+    }
+
+    public abstract FacebookPost asRepostOf(FacebookPost source);
 
     public static FacebookPost parse(JsonNode json) throws RestParseException {
         Objects.requireNonNull(json);
@@ -54,11 +62,11 @@ public abstract class FacebookPost {
                 case LINK:
                     return FacebookLink.parse(json, id, createdTime, from, caption, message);
                 case OFFER:
-                    return new FacebookOffer(id, createdTime, from, caption, message);
+                    return new FacebookOffer(id, createdTime, from, caption, message, null);
                 case PHOTO:
                     return FacebookPhoto.parse(json, id, createdTime, from, caption, message);
                 case STATUS:
-                    return new FacebookStatus(id, createdTime, from, caption, message);
+                    return new FacebookStatus(id, createdTime, from, caption, message, null);
                 case VIDEO:
                     return FacebookVideo.parse(json, id, createdTime, from, caption, message);
                 default:

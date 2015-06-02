@@ -6,7 +6,6 @@ import com.rhcloud.igorbotian.rsskit.db.facebook.FacebookEntityManager;
 import com.rhcloud.igorbotian.rsskit.db.facebook.FacebookEntityManagerImpl;
 import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
 import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookException;
-import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookFeedItem;
 import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookNotification;
 import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookPost;
 import org.apache.logging.log4j.LogManager;
@@ -78,7 +77,7 @@ public class FacebookAPIImpl implements FacebookAPI {
     }
 
     @Override
-    public List<FacebookFeedItem> getNewsFeed(String token) throws FacebookException {
+    public List<FacebookPost> getNewsFeed(String token) throws FacebookException {
         Objects.requireNonNull(token);
 
         String accessToken = entityManager.getAccessToken(token);
@@ -88,12 +87,12 @@ public class FacebookAPIImpl implements FacebookAPI {
         }
 
         Date since = entityManager.getSince(token);
-        List<FacebookFeedItem> feed = home.getNewsFeed(accessToken, since);
+        List<FacebookPost> feed = home.getNewsFeed(accessToken, since);
 
         // always returning at least one post
         if (feed.size() > 1) {
-            FacebookFeedItem post = feed.get(1);
-            entityManager.setSince(token, post.post.createdTime);
+            FacebookPost post = feed.get(1);
+            entityManager.setSince(token, post.createdTime);
         }
 
         return feed;
@@ -112,7 +111,7 @@ public class FacebookAPIImpl implements FacebookAPI {
         List<IncompleteFacebookNotification> incompleteNotifications = this.notifications.get(accessToken, limit);
         List<FacebookNotification> notifications = new ArrayList<>(incompleteNotifications.size());
 
-        for(IncompleteFacebookNotification incompleteNotification : incompleteNotifications) {
+        for (IncompleteFacebookNotification incompleteNotification : incompleteNotifications) {
             try {
                 notifications.add(makeNotificationComplete(incompleteNotification, accessToken));
             } catch (FacebookException e) {
@@ -121,8 +120,8 @@ public class FacebookAPIImpl implements FacebookAPI {
             }
         }
 
-        for(FacebookNotification notification : notifications) {
-            if(notification.unread) {
+        for (FacebookNotification notification : notifications) {
+            if (notification.unread) {
                 try {
                     this.notifications.markAsRead(accessToken, notification);
                 } catch (FacebookException e) {
@@ -142,7 +141,7 @@ public class FacebookAPIImpl implements FacebookAPI {
 
         FacebookPost post = null;
 
-        if(notification.isObjectComplete()) {
+        if (notification.isObjectComplete()) {
             try {
                 post = FacebookPost.parse(notification.object);
             } catch (RestParseException e) {
@@ -150,8 +149,8 @@ public class FacebookAPIImpl implements FacebookAPI {
             }
         }
 
-        if(post == null) {
-            if(notification.isObjectIdentified()) {
+        if (post == null) {
+            if (notification.isObjectIdentified()) {
                 try {
                     post = FacebookPost.parse(objects.get(notification.getObjectID(), accessToken));
                 } catch (RestParseException e) {
@@ -172,6 +171,20 @@ public class FacebookAPIImpl implements FacebookAPI {
                 notification.unread,
                 post
         );
+    }
+
+    @Override
+    public List<FacebookPost> getPostsFromNotifications(String token, Integer limit) throws FacebookException {
+        Objects.requireNonNull(token);
+
+        List<FacebookNotification> notifications = getNotifications(token, limit);
+        List<FacebookPost> posts = new ArrayList<>(notifications.size());
+
+        for(FacebookNotification notification : notifications) {
+            posts.add(notification.object);
+        }
+
+        return posts;
     }
 
     @Override

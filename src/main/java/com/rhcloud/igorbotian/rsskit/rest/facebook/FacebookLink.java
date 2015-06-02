@@ -1,8 +1,6 @@
 package com.rhcloud.igorbotian.rsskit.rest.facebook;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.rhcloud.igorbotian.rsskit.rest.EntityParser;
-import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
 
 import java.util.Date;
 import java.util.Objects;
@@ -18,9 +16,10 @@ public class FacebookLink extends FacebookPost {
     public final String picture;
 
     public FacebookLink(String id, Date createdTime, FacebookProfile from, String caption,
-                        String message, String description, String link, String name, String picture) {
+                        String message, String description, String link, String name, String picture,
+                        FacebookPost source) {
 
-        super(id, createdTime, from, caption, Objects.equals(message, link) ? "" : message, FacebookPostType.LINK);
+        super(id, createdTime, from, caption, message, FacebookPostType.LINK, source);
 
         this.description = Objects.requireNonNull(description);
         this.link = Objects.requireNonNull(link);
@@ -42,6 +41,12 @@ public class FacebookLink extends FacebookPost {
         String name = json.has("name") ? json.get("name").asText() : "";
         String picture = json.has("picture") ? json.get("picture").asText() : "";
 
-        return new FacebookLink(id, createdDate, from, caption, message, description, link, name, picture);
+        return new FacebookLink(id, createdDate, from, caption, message, description, link, name, picture, null);
+    }
+
+    @Override
+    public FacebookLink asRepostOf(FacebookPost source) {
+        Objects.requireNonNull(source);
+        return new FacebookLink(id, createdTime, from, caption, message, description, link, name, picture, source);
     }
 }

@@ -1,8 +1,7 @@
 package com.rhcloud.igorbotian.rsskit.servlet;
 
 import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookException;
-import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookFeedItem;
-import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookNotification;
+import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookPost;
 import com.rhcloud.igorbotian.rsskit.rest.facebook.api.FacebookAPI;
 import com.rhcloud.igorbotian.rsskit.rest.facebook.api.FacebookAPIImpl;
 import com.rhcloud.igorbotian.rsskit.rss.RssGenerator;
@@ -48,9 +47,8 @@ public class FacebookServlet extends AbstractRssServlet {
             "manage_pages",
             "manage_notifications"
     )));
-
+    private final RssGenerator<List<FacebookPost>> rssGenerator = new FacebookNewsFeedRssGenerator();
     private FacebookAPI api;
-    private final RssGenerator<List<FacebookFeedItem>> rssGenerator = new FacebookNewsFeedRssGenerator();
 
     @Override
     public void init() throws ServletException {
@@ -109,8 +107,8 @@ public class FacebookServlet extends AbstractRssServlet {
         SyndFeed rss;
 
         try {
-            List<FacebookFeedItem> newsFeed = notifications
-                    ? extractFeedItems(api.getNotifications(accessToken, limit))
+            List<FacebookPost> newsFeed = notifications
+                    ? api.getPostsFromNotifications(accessToken, limit)
                     : api.getNewsFeed(accessToken);
             rss = rssGenerator.generate(newsFeed);
         } catch (FacebookException e) {
@@ -119,18 +117,6 @@ public class FacebookServlet extends AbstractRssServlet {
         }
 
         respond(rss, resp);
-    }
-
-    private List<FacebookFeedItem> extractFeedItems(List<FacebookNotification> notifications) {
-        assert notifications != null;
-
-        List<FacebookFeedItem> items = new ArrayList<>(notifications.size());
-
-        for (FacebookNotification notification : notifications) {
-            items.add(new FacebookFeedItem(notification.object));
-        }
-
-        return items;
     }
 
     private String requestAccessToken(String code, boolean notifications, HttpServletRequest req) throws IOException {

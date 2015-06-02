@@ -31,7 +31,7 @@ class HomeEndpoint extends FacebookEndpoint {
         super(api);
     }
 
-    public List<FacebookFeedItem> getNewsFeed(String accessToken, Date since) throws FacebookException {
+    public List<FacebookPost> getNewsFeed(String accessToken, Date since) throws FacebookException {
         Objects.requireNonNull(accessToken);
 
         Set<NameValuePair> params = new HashSet<>();
@@ -58,17 +58,15 @@ class HomeEndpoint extends FacebookEndpoint {
         return ordered;
     }
 
-    private List<FacebookFeedItem> makeNewsFeed(List<IncompleteFacebookPost> incompletePosts, String accessToken) {
+    private List<FacebookPost> makeNewsFeed(List<IncompleteFacebookPost> incompletePosts, String accessToken) {
         assert incompletePosts != null;
         assert accessToken != null;
 
-        List<FacebookFeedItem> posts = new ArrayList<>(incompletePosts.size());
+        List<FacebookPost> posts = new ArrayList<>(incompletePosts.size());
 
         for (IncompleteFacebookPost post : incompletePosts) {
             try {
-                posts.add(post.isRepost()
-                        ? makeRepost(post, accessToken)
-                        : new FacebookFeedItem(makePost(post, accessToken)));
+                posts.add(post.isRepost() ? makeRepost(post, accessToken) : makePost(post, accessToken));
             } catch (FacebookException ex) {
                 LOGGER.error("Failed to instantiate Facebook post/repost entity", ex);
             }
@@ -77,13 +75,14 @@ class HomeEndpoint extends FacebookEndpoint {
         return Collections.unmodifiableList(posts);
     }
 
-    private FacebookFeedItem makeRepost(IncompleteFacebookPost post, String accessToken) throws FacebookException {
+    private FacebookPost makeRepost(IncompleteFacebookPost post, String accessToken) throws FacebookException {
         assert post != null;
         assert accessToken != null;
 
-        return new FacebookFeedItem(
-                makePost(post, accessToken), makePost(post.source, accessToken)
-        );
+        FacebookPost source = makePost(post.source, accessToken);
+        FacebookPost repost = makePost(post, accessToken);
+
+        return repost.asRepostOf(source);
     }
 
     private FacebookPost makePost(IncompleteFacebookPost post, String accessToken) throws FacebookException {
@@ -93,18 +92,18 @@ class HomeEndpoint extends FacebookEndpoint {
         switch (post.type) {
             case VIDEO:
                 return new FacebookVideo(post.id, post.createdTime, post.from, post.caption, post.message,
-                        post.name, post.description, post.picture, post.videoSource, "");
+                        post.name, post.description, post.picture, post.videoSource, "", null);
             case STATUS:
-                return new FacebookStatus(post.id, post.createdTime, post.from, post.caption, post.message);
+                return new FacebookStatus(post.id, post.createdTime, post.from, post.caption, post.message, null);
             case PHOTO:
                 String image = getPhotoImage(post.objectID, accessToken);
                 return new FacebookPhoto(post.id, post.createdTime, post.from, post.caption, post.message,
-                        post.name, post.link, image, post.picture);
+                        post.name, post.link, image, post.picture, null);
             case OFFER:
-                return new FacebookOffer(post.id, post.createdTime, post.from, post.caption, post.message);
+                return new FacebookOffer(post.id, post.createdTime, post.from, post.caption, post.message, null);
             case LINK:
                 return new FacebookLink(post.id, post.createdTime, post.from, post.caption, post.message,
-                        post.description, post.link, post.name, post.picture);
+                        post.description, post.link, post.name, post.picture, null);
             default:
                 throw new FacebookException("Unexpected Facebook post type: " + post.type);
         }

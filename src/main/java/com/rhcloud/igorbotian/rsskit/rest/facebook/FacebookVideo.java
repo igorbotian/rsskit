@@ -17,9 +17,10 @@ public class FacebookVideo extends FacebookPost {
     public final String embedHTML;
 
     public FacebookVideo(String id, Date createdTime, FacebookProfile from, String caption, String message,
-                         String name, String description, String picture, String source, String embedHTML) {
+                         String name, String description, String picture, String source, String embedHTML,
+                         FacebookPost sourcePost) {
 
-        super(id, createdTime, from, caption, message, FacebookPostType.VIDEO);
+        super(id, createdTime, from, caption, message, FacebookPostType.VIDEO, sourcePost);
 
         this.name = Objects.requireNonNull(name);
         this.description = Objects.requireNonNull(description);
@@ -43,6 +44,14 @@ public class FacebookVideo extends FacebookPost {
         String source = json.has("source") ? json.get("source").asText() : "";
         String embedHTML = json.has("embed_html") ? json.get("embed_html").asText() : "";
 
-        return new FacebookVideo(id, createdDate, from, caption, message, name, description, picture, source, embedHTML);
+        return new FacebookVideo(id, createdDate, from, caption, message, name,
+                description, picture, source, embedHTML, null);
+    }
+
+    @Override
+    public FacebookVideo asRepostOf(FacebookPost source) {
+        Objects.requireNonNull(source);
+        return new FacebookVideo(id, createdTime, from, caption, message, name, description, picture, this.source,
+                embedHTML, source);
     }
 }

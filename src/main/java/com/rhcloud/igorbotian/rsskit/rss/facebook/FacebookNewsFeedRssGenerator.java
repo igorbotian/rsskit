@@ -12,20 +12,20 @@ import java.util.regex.Pattern;
 /**
  * @author Igor Botian <igor.botyan@alcatel-lucent.com>
  */
-public class FacebookNewsFeedRssGenerator extends RssGenerator<List<FacebookFeedItem>> {
+public class FacebookNewsFeedRssGenerator extends RssGenerator<List<FacebookPost>> {
 
     private static final String FACEBOOK_COM = "https://www.facebook.com";
     private static final Pattern URL_REGEX = Pattern.compile("\\b(https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])");
     private static final int MAX_URL_LENGTH = 40;
 
     @Override
-    public SyndFeed generate(List<FacebookFeedItem> newsFeed) {
+    public SyndFeed generate(List<FacebookPost> newsFeed) {
         Objects.requireNonNull(newsFeed);
 
         SyndFeed rss = skeleton();
         List<SyndEntry> entries = new ArrayList<>(newsFeed.size());
 
-        for (FacebookFeedItem post : newsFeed) {
+        for (FacebookPost post : newsFeed) {
             entries.add(generateEntry(post));
         }
 
@@ -47,12 +47,7 @@ public class FacebookNewsFeedRssGenerator extends RssGenerator<List<FacebookFeed
         return rss;
     }
 
-    private SyndEntry generateEntry(FacebookFeedItem item) {
-        assert item != null;
-        return generateEntry(item.post, item.source);
-    }
-
-    private SyndEntry generateEntry(FacebookPost post, FacebookPost source) {
+    private SyndEntry generateEntry(FacebookPost post) {
         assert post != null;
 
         SyndEntry entry = new SyndEntryImpl();
@@ -61,18 +56,18 @@ public class FacebookNewsFeedRssGenerator extends RssGenerator<List<FacebookFeed
         entry.setLink(FACEBOOK_COM + "/" + post.id);
         entry.setTitle(entry.getAuthor());
         entry.setPublishedDate(post.createdTime);
-        entry.setDescription(generateDescription(post, source));
+        entry.setDescription(generateDescription(post));
 
         return entry;
     }
 
-    private SyndContent generateDescription(FacebookPost post, FacebookPost source) {
+    private SyndContent generateDescription(FacebookPost post) {
         assert post != null;
 
         StringBuilder description = new StringBuilder();
 
-        if (source != null) {
-            description.append(repostCaption(source.from));
+        if (post.isRepost()) {
+            description.append(repostCaption(post.source.from));
             description.append("<br/><br/>");
 
             if(StringUtils.isNotEmpty(post.message)) {
@@ -81,7 +76,7 @@ public class FacebookNewsFeedRssGenerator extends RssGenerator<List<FacebookFeed
             }
         }
 
-        description.append(generateDescription(source != null ? source : post));
+        description.append(generateDescriptionText(post.isRepost() ? post.source : post));
 
         SyndContent content = new SyndContentImpl();
         content.setType(HTML_MIME_TYPE);
@@ -90,7 +85,7 @@ public class FacebookNewsFeedRssGenerator extends RssGenerator<List<FacebookFeed
         return content;
     }
 
-    private String generateDescription(FacebookPost post) {
+    private String generateDescriptionText(FacebookPost post) {
         assert post != null;
 
         StringBuilder description = new StringBuilder();
