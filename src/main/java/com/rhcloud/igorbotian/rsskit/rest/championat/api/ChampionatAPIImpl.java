@@ -60,7 +60,7 @@ public class ChampionatAPIImpl implements ChampionatAPI {
 
         Collections.sort(articles, BY_RECENT_PUB_DATE);
         int count = Math.min(limit, items.size());
-        return articles.subList(0, count);
+        return articles.isEmpty() ? articles : articles.subList(0, count);
     }
 
     private List<ChampionatStreamItem> filterBreakingOnly(List<ChampionatStreamItem> items) {
