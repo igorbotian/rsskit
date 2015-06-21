@@ -52,7 +52,7 @@ public class VkDocument {
             int size = getAttribute(json, "size").asInt();
             String ext = getAttribute(json, "ext").asText();
             String url = getAttribute(json, "url").asText();
-            String thumbnailURL = getAttribute(json, "photo_100").asText();
+            String thumbnailURL = json.has("photo_100") ? json.get("photo_100").asText() : "";
 
             return new VkDocument(id, ownerID, title, size, ext, url, thumbnailURL);
         }
