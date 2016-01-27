@@ -141,6 +141,15 @@
         <url-pattern>/facebook</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>asot</servlet-name>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.AsotServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>asot</servlet-name>
+        <url-pattern>/asot</url-pattern>
+    </servlet-mapping>
+
     <context-param>
         <param-name>log4jConfiguration</param-name>
         <param-value>/WEB-INF/log4j.xml</param-value>

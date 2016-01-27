@@ -33,6 +33,7 @@
     <li><a href="${pageContext.request.contextPath}/novayagazeta">novayagazeta.ru (выбор редакции)</a></li>
     <li><a href="${pageContext.request.contextPath}/novayagazeta?topnews=true">novayagazeta.ru (топ новостей)</a></li>
     <li><a href="${pageContext.request.contextPath}/meduza">meduza.io</a></li>
+    <li><a href="${pageContext.request.contextPath}/asot">A state of trance (CueNation.com)</a></li>
 </ol>
 </body>
 </html>

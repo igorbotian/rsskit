@@ -85,6 +85,23 @@ public class RSSUtils {
 
     //-------------------------------------------------------------------------
 
+    public static void filter(SyndFeed feed, RssEntryFilter filter) {
+        Objects.requireNonNull(feed);
+        Objects.requireNonNull(filter);
+
+        List<SyndEntry> filtered = new ArrayList<>(feed.getEntries().size());
+
+        for (SyndEntry entry : feed.getEntries()) {
+            if (filter.apply(entry)) {
+                filtered.add(entry);
+            }
+        }
+
+        feed.setEntries(filtered);
+    }
+
+    //-------------------------------------------------------------------------
+
     public static void filterByCategories(SyndFeed feed, Set<String> categories) {
         Objects.requireNonNull(feed);
         Objects.requireNonNull(categories);
