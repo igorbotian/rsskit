@@ -1,7 +1,7 @@
 package com.rhcloud.igorbotian.rsskit.rss.vk;
 
-import com.rhcloud.igorbotian.rsskit.rest.vk.VkFeed;
-import com.rhcloud.igorbotian.rsskit.rest.vk.VkFeedItem;
+import com.rhcloud.igorbotian.rsskit.rest.vk.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
@@ -30,7 +30,55 @@ class VkFeedFilter {
             result.add(item.getValue());
         }
 
+        return remoteDuplicatedPhotosFromPosts(result);
+    }
+
+    private List<VkFeedItem> remoteDuplicatedPhotosFromPosts(List<VkFeedItem> items) {
+        List<VkFeedItem> result = new ArrayList<>(items.size());
+
+        for(VkFeedItem item : items) {
+            if(item instanceof VkFeedPhoto) {
+                if(isPhotoFromPost((VkFeedPhoto) item, items)) {
+                    continue;
+                }
+            }
+
+            result.add(item);
+        }
+
         return result;
+    }
+
+    private boolean isPhotoFromPost(VkFeedPhoto photo, List<VkFeedItem> items) {
+        for(VkPhoto item : photo.photos) {
+            if(isAttachedToAnyPost(item, items)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isAttachedToAnyPost(VkPhoto photo, List<VkFeedItem> items) {
+        for(VkFeedItem item : items) {
+            if(item instanceof VkPost) {
+                if(isAttachedToPost(photo, (VkPost) item)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isAttachedToPost(VkPhoto photo, VkPost post) {
+        for(VkPhoto postPhoto : post.attachments.photos) {
+            if(StringUtils.equals(photo.url, postPhoto.url)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static class Identifier {
