@@ -150,6 +150,15 @@
         <url-pattern>/asot</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>banki</servlet-name>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.BankiRuServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>banki</servlet-name>
+        <url-pattern>/banki</url-pattern>
+    </servlet-mapping>
+
     <context-param>
         <param-name>log4jConfiguration</param-name>
         <param-value>/WEB-INF/log4j.xml</param-value>

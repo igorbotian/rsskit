@@ -34,6 +34,7 @@
     <li><a href="${pageContext.request.contextPath}/novayagazeta?topnews=true">novayagazeta.ru (топ новостей)</a></li>
     <li><a href="${pageContext.request.contextPath}/meduza">meduza.io</a></li>
     <li><a href="${pageContext.request.contextPath}/asot">A state of trance (CueNation.com)</a></li>
+    <li><a href="${pageContext.request.contextPath}/banki.jsp">banki.ru (certain banks)</a></li>
 </ol>
 </body>
 </html>
