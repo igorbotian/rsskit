@@ -39,8 +39,8 @@ public class VkPage {
             Objects.requireNonNull(json);
 
             long id = getAttribute(json, "id").asLong();
-            long groupID = getAttribute(json, "group_id").asLong();
-            long authorID = getAttribute(json, "author_id").asLong();
+            long groupID = hasAttribute(json, "group_id") ? getAttribute(json, "group_id").asLong() : 0;
+            long authorID = hasAttribute(json, "author_id") ? getAttribute(json, "author_id").asLong() : 0;
             String title = getAttribute(json, "title").asText();
             String url = getAttribute(json, "view_url").asText();
 

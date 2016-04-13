@@ -17,4 +17,11 @@ public abstract class EntityParser<T> {
 
         return JSONUtils.getAttribute(parent, attr);
     }
+
+    protected boolean hasAttribute(JsonNode parent, String attr) {
+        Objects.requireNonNull(parent);
+        Objects.requireNonNull(attr);
+
+        return JSONUtils.hasAttribute(parent, attr);
+    }
 }

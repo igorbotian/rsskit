@@ -19,4 +19,11 @@ public class JSONUtils {
 
         return parent.get(attr);
     }
+
+    public static boolean hasAttribute(JsonNode parent, String attr) {
+        Objects.requireNonNull(parent);
+        Objects.requireNonNull(attr);
+
+        return parent.has(attr);
+    }
 }
