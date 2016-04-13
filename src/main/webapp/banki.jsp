@@ -11,8 +11,11 @@
 </head>
 <body>
 <form action="${pageContext.request.contextPath}/banki" method="get">
-  Enter banks IDs or names (comma-separated):<br/>
-  <input type="text" name="banks" required/>&nbsp;&nbsp;<input type="submit" value="Submit"/><br/>
+  Enter banks names (comma-separated):<br/>
+  <input type="text" name="names" required/><br/><br/>
+  Enter banks IDs (comma-separated, optional):<br/>
+  <input type="text" name="ids"/><br/><br/>
+  <input type="submit" value="Submit"/>
 </form>
 </body>
 </html>

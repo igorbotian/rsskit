@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collections;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -26,7 +26,8 @@ public class BankiRuServlet extends AbstractRssServlet {
 
     private static final Logger LOGGER = LogManager.getLogger(BankiRuServlet.class);
     private static final String BANKI_RU_RSS_URL = "http://www.banki.ru/xml/news.rss";
-    private static final String BANKS_PARAM = "banks";
+    private static final String BANKS_IDS_PARAM = "ids";
+    private static final String BANKS_NAMES_PARAM = "names";
 
     @Override
     protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
@@ -40,7 +41,8 @@ public class BankiRuServlet extends AbstractRssServlet {
 
         try {
             final BankiRuRssEntryExtractor entryExtractor = new BankiRuRssEntryExtractor(url);
-            final Set<String> banksNamesOrIds = extractBanksNamesOrIds(req.getParameter(BANKS_PARAM));
+            final Set<String> banksNames = split(req.getParameter(BANKS_NAMES_PARAM), ",");
+            final Set<String> banksIds = split(req.getParameter(BANKS_IDS_PARAM), ",");
 
             RSSUtils.filter(rss, new RssEntryFilter() {
 
@@ -48,10 +50,25 @@ public class BankiRuServlet extends AbstractRssServlet {
                 public boolean apply(SyndEntry entry) {
                     String link = entry.getLink();
 
-                    return entryExtractor.hasBankNameOrId(link)
-                            && (banksNamesOrIds.contains(entryExtractor.getBankId(link))
-                            || banksNamesOrIds.contains(entryExtractor.getBankName(link)));
+                    if(entryExtractor.hasBankNameOrId(link)
+                            && (banksIds.contains(entryExtractor.getBankId(link))
+                            || banksNames.contains(entryExtractor.getBankName(link)))) {
+                        return true;
+                    }
 
+                    String text = entry.getDescription().getValue();
+
+                    if(StringUtils.isNotEmpty(text)) {
+                        text = text.toLowerCase();
+
+                        for (String bankName : banksNames) {
+                            if (text.contains(bankName)) {
+                                return true;
+                            }
+                        }
+                    }
+
+                    return false;
                 }
             });
         } catch (Exception e) {
@@ -61,13 +78,16 @@ public class BankiRuServlet extends AbstractRssServlet {
         respond(rss, resp);
     }
 
-    private Set<String> extractBanksNamesOrIds(String param) {
-        Set<String> namesOrIds = new HashSet<>();
+    private Set<String> split(String param, String separator) {
+        String paramUTF8 = new String(param.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+        Set<String> result = new HashSet<>();
 
-        if(StringUtils.isNotEmpty(param)) {
-            Collections.addAll(namesOrIds, StringUtils.split(param.trim(), ","));
+        if(StringUtils.isNotEmpty(paramUTF8)) {
+            for(String nameOrId : StringUtils.split(paramUTF8.trim(), separator)) {
+                result.add(nameOrId.toLowerCase());
+            }
         }
 
-        return namesOrIds;
+        return result;
     }
 }
