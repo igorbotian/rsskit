@@ -42,15 +42,6 @@
         <url-pattern>/rss</url-pattern>
     </servlet-mapping>
 
-    <!--<servlet>
-        <servlet-name>freake</servlet-name>
-        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.FreakeRssServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>freake</servlet-name>
-        <url-pattern>/freake</url-pattern>
-    </servlet-mapping>-->
-
     <servlet>
         <servlet-name>championat</servlet-name>
         <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.ChampionatServlet</servlet-class>
@@ -103,24 +94,6 @@
     <servlet-mapping>
         <servlet-name>logs</servlet-name>
         <url-pattern>/logs</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>meduza</servlet-name>
-        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.MeduzaServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>meduza</servlet-name>
-        <url-pattern>/meduza</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>novayagazeta</servlet-name>
-        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.NovayaGazetaServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>novayagazeta</servlet-name>
-        <url-pattern>/novayagazeta</url-pattern>
     </servlet-mapping>
 
     <servlet>

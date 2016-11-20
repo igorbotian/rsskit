@@ -29,9 +29,6 @@
 <ol>
     <li><a href="${pageContext.request.contextPath}/reading_list">Reading list (based on links shared via Twitter)</a></li>
     <li><a href="${pageContext.request.contextPath}/championat.jsp">championat.com (футбол; главные новости)</a></li>
-    <li><a href="${pageContext.request.contextPath}/novayagazeta">novayagazeta.ru (выбор редакции)</a></li>
-    <li><a href="${pageContext.request.contextPath}/novayagazeta?topnews=true">novayagazeta.ru (топ новостей)</a></li>
-    <li><a href="${pageContext.request.contextPath}/meduza">meduza.io</a></li>
     <li><a href="${pageContext.request.contextPath}/asot">A state of trance (CueNation.com)</a></li>
     <li><a href="${pageContext.request.contextPath}/banki.jsp">banki.ru (certain banks)</a></li>
     <li><a href="${pageContext.request.contextPath}/zenit">FC Zenit calendar (WebCal)</a></li>
