@@ -159,6 +159,15 @@
         <url-pattern>/banki</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>zenit</servlet-name>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.ZenitWebCalServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>zenit</servlet-name>
+        <url-pattern>/zenit</url-pattern>
+    </servlet-mapping>
+
     <context-param>
         <param-name>log4jConfiguration</param-name>
         <param-value>/WEB-INF/log4j.xml</param-value>

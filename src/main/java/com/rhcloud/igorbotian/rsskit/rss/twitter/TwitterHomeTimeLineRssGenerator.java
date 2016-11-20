@@ -17,7 +17,7 @@ import java.util.Objects;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public class TwitterHomeTimelineRssGenerator extends RssGenerator<TwitterTimeline> {
+public class TwitterHomeTimeLineRssGenerator extends RssGenerator<TwitterTimeline> {
 
     private static final String AUTHOR_FORMAT = "%s (%s)";
     private static final String LINK_FORMAT = "https://twitter.com/%s/status/%s";
