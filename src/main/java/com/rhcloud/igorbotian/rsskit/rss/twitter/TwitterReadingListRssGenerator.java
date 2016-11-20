@@ -32,7 +32,7 @@ public class TwitterReadingListRssGenerator extends RssGenerator<TwitterTimeline
 
         SyndFeed feed = skeleton();
         feed.setEntries(generateEntries(timeline));
-        RSSUtils.extendDescription(feed, Mobilizers.instapaper());
+        RSSUtils.extendDescription(feed, Mobilizers.mercury());
 
         return feed;
     }

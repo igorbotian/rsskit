@@ -1,6 +1,6 @@
 package com.rhcloud.igorbotian.rsskit.servlet;
 
-import com.rhcloud.igorbotian.rsskit.rss.readability.ReadabilityRssModifier;
+import com.rhcloud.igorbotian.rsskit.rss.mercury.MercuryRssModifier;
 import com.rometools.rome.feed.synd.SyndFeed;
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,10 +14,10 @@ import java.util.Objects;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public class ReadabilityRssServlet extends AbstractRssServlet {
+public class MercuryRssServlet extends AbstractRssServlet {
 
     private static final String URL_PARAM = "url";
-    private static final ReadabilityRssModifier rssModifier = new ReadabilityRssModifier();
+    private static final MercuryRssModifier rssModifier = new MercuryRssModifier();
 
     @Override
     protected void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

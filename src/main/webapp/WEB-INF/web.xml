@@ -25,21 +25,12 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>readability</servlet-name>
-        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.ReadabilityServlet</servlet-class>
+        <servlet-name>mercury</servlet-name>
+        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.MercuryServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>readability</servlet-name>
-        <url-pattern>/readability</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>readabilityrss</servlet-name>
-        <servlet-class>com.rhcloud.igorbotian.rsskit.servlet.ReadabilityRssServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>readabilityrss</servlet-name>
-        <url-pattern>/readabilityrss</url-pattern>
+        <servlet-name>mercury</servlet-name>
+        <url-pattern>/mercury</url-pattern>
     </servlet-mapping>
 
     <servlet>

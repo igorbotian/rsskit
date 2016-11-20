@@ -6,7 +6,7 @@ package com.rhcloud.igorbotian.rsskit.mobilizer;
 public final class Mobilizers {
 
     private static final Mobilizer instapaper = new InstapaperMobilizer();
-    private static final Mobilizer readability = new ReadabilityMobilizer();
+    private static final Mobilizer mercury = new MercuryMobilizer();
 
     private Mobilizers() {
         //
@@ -16,7 +16,7 @@ public final class Mobilizers {
         return instapaper;
     }
 
-    public static Mobilizer readability() {
-        return readability;
+    public static Mobilizer mercury() {
+        return mercury;
     }
 }

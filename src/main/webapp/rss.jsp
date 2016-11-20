@@ -17,15 +17,15 @@
     <input name="categories" type="text"/><br/><br/>
     Maximum number of feed entries:<br/>
     <select name="size">
-        <option>5</option>
-        <option selected>10</option>
+        <option selected>5</option>
+        <option>10</option>
         <option>25</option>
         <option>50</option>
     </select>
     <br/><br/>
     Reading service:<br/>
-    <input type="radio" name="service" value="instapaper" checked title="Instapaper"/>&nbsp;Instapaper<br/>
-    <input type="radio" name="service" value="readability" title="Readability"/>&nbsp;Readability
+    <input type="radio" name="service" value="mercury" title="Mercury" checked/>&nbsp;Mercury
+    <input type="radio" name="service" value="instapaper" title="Instapaper"/>&nbsp;Instapaper<br/>
     <br/><br/>
     Mobile version host:<br/>
     <input name="mobile_version_host" type="text"/>

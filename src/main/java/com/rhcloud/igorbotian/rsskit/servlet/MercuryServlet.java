@@ -5,9 +5,9 @@ import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizers;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public class ReadabilityServlet extends MobilizerServlet {
+public class MercuryServlet extends MobilizerServlet {
 
-    public ReadabilityServlet() {
-        super(Mobilizers.readability());
+    public MercuryServlet() {
+        super(Mobilizers.mercury());
     }
 }

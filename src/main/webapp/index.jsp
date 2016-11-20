@@ -22,12 +22,11 @@
 <ol>
     <li><a href="${pageContext.request.contextPath}/proxy.jsp">Proxy</a></li>
     <li><a href="${pageContext.request.contextPath}/instapaper.jsp">Reading view (Instapaper)</a></li>
-    <li><a href="${pageContext.request.contextPath}/readability.jsp">Reading view (Readability)</a></li>
+    <li><a href="${pageContext.request.contextPath}/mercury.jsp">Reading view (Mercury)</a></li>
     <li><a href="${pageContext.request.contextPath}/rss.jsp">RSS full description</a></li>
 </ol>
 <span class="header">Custom RSS feeds</span><br/>
 <ol>
-    <li><a href="${pageContext.request.contextPath}/readability_rss.jsp">Readability RSS (full description)</a></li>
     <li><a href="${pageContext.request.contextPath}/reading_list">Reading list (based on links shared via Twitter)</a></li>
     <li><a href="${pageContext.request.contextPath}/championat.jsp">championat.com (футбол; главные новости)</a></li>
     <li><a href="${pageContext.request.contextPath}/novayagazeta">novayagazeta.ru (выбор редакции)</a></li>

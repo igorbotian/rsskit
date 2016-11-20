@@ -42,8 +42,8 @@ public class RssDescriptionExtendingServlet extends AbstractRssServlet {
         String url = request.getParameter(URL_PARAM);
 
         if (StringUtils.isNotEmpty(url)) {
-            Mobilizer mobilizer = "readability".equals(request.getParameter(SERVICE_PARAM))
-                            ? Mobilizers.readability() : Mobilizers.instapaper();
+            Mobilizer mobilizer = "mercury".equals(request.getParameter(SERVICE_PARAM))
+                            ? Mobilizers.mercury() : Mobilizers.instapaper();
             Set<String> categories = parseCategories(request.getParameter(CATEGORIES_PARAM));
             Integer size = parseSize(request.getParameter(SIZE_PARAM));
             String mobileVersionHost = request.getParameter(MOBILE_VERSION_HOST_PARAM);

@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="${pageContext.request.contextPath}/style.css">
 </head>
 <body>
-<form action="${pageContext.request.contextPath}/readability" method="get">
+<form action="${pageContext.request.contextPath}/mercury" method="get">
   Enter an URL below:<br/>
   <input type="text" name="url" required/>&nbsp;&nbsp;<input type="submit" value="Submit"/><br/>
 </form>

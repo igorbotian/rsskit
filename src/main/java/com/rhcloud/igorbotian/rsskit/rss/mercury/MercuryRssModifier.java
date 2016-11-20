@@ -1,4 +1,4 @@
-package com.rhcloud.igorbotian.rsskit.rss.readability;
+package com.rhcloud.igorbotian.rsskit.rss.mercury;
 
 import com.rhcloud.igorbotian.rsskit.mobilizer.Mobilizers;
 import com.rhcloud.igorbotian.rsskit.rss.*;
@@ -15,9 +15,9 @@ import java.util.Objects;
 /**
  * @author Igor Botian <igor.botian@gmail.com>
  */
-public class ReadabilityRssModifier implements RssModifier {
+public class MercuryRssModifier implements RssModifier {
 
-    private static final LinkMapper linkMapper = new ReadabilityLinkMapper();
+    private static final LinkMapper linkMapper = new MercuryLinkMapper();
     private static final int DEFAULT_MAX_ENTRIES = 10;
 
     @Override
@@ -26,10 +26,10 @@ public class ReadabilityRssModifier implements RssModifier {
 
         RSSUtils.truncate(feed, DEFAULT_MAX_ENTRIES);
         RSSUtils.mapLinks(feed, linkMapper);
-        RSSUtils.extendDescription(feed, Mobilizers.readability());
+        RSSUtils.extendDescription(feed, Mobilizers.mercury());
     }
 
-    private static class ReadabilityLinkMapper implements LinkMapper {
+    private static class MercuryLinkMapper implements LinkMapper {
 
         @Override
         public URL map(URL link) throws URISyntaxException, MalformedURLException {
