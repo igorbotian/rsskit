@@ -1,7 +1,7 @@
 package com.rhcloud.igorbotian.rsskit.rest.championat;
 
 /**
- * @author Igor Botian <igor.botyan@alcatel-lucent.com>
+ * @author Igor Botian
  */
 public class ChampionatException extends Exception {
 

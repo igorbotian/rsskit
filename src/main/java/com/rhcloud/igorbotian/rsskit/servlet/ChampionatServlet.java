@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * @author Igor Botian <igor.botyan@alcatel-lucent.com>
+ * @author Igor Botian
  */
 public class ChampionatServlet extends AbstractRssServlet {
 

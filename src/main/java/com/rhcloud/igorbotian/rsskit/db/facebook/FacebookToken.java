@@ -6,7 +6,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.util.Date;
 
 /**
- * @author Igor Botian <igor.botyan@alcatel-lucent.com>
+ * @author Igor Botian
  */
 @DatabaseTable(tableName = "facebook_token")
 class FacebookToken {

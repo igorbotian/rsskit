@@ -15,7 +15,7 @@ import java.net.URL;
 import java.util.*;
 
 /**
- * @author Igor Botian <igor.botyan@alcatel-lucent.com>
+ * @author Igor Botian
  */
 class OAuthEndpoint extends RestGetEndpoint {
 

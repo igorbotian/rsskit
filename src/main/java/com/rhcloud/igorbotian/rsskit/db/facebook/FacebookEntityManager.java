@@ -5,7 +5,7 @@ import com.rhcloud.igorbotian.rsskit.rest.facebook.FacebookException;
 import java.util.Date;
 
 /**
- * @author Igor Botian <igor.botyan@alcatel-lucent.com>
+ * @author Igor Botian
  */
 public interface FacebookEntityManager {
 

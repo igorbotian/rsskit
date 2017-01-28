@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.*;
 
 /**
- * @author Igor Botian <igor.botyan@alcatel-lucent.com>
+ * @author Igor Botian
  */
 public class ChampionatRssGenerator extends RssGenerator<List<ChampionatArticle>> {
 

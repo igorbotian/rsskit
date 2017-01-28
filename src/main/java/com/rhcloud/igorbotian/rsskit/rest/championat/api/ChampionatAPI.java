@@ -7,7 +7,7 @@ import com.rhcloud.igorbotian.rsskit.rest.championat.ChampionatStream;
 import java.util.List;
 
 /**
- * @author Igor Botian <igor.botyan@alcatel-lucent.com>
+ * @author Igor Botian
  */
 public interface ChampionatAPI {
 

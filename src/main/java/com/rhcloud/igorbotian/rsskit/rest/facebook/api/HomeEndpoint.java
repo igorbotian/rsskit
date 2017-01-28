@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.*;
 
 /**
- * @author Igor Botian <igor.botyan@alcatel-lucent.com>
+ * @author Igor Botian
  */
 class HomeEndpoint extends FacebookEndpoint {
 

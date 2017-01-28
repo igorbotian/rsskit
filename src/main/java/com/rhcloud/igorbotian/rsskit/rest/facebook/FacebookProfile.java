@@ -7,7 +7,7 @@ import com.rhcloud.igorbotian.rsskit.rest.RestParseException;
 import java.util.Objects;
 
 /**
- * @author Igor Botian <igor.botyan@alcatel-lucent.com>
+ * @author Igor Botian
  */
 public class FacebookProfile {
 

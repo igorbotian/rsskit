@@ -1,7 +1,7 @@
 package com.rhcloud.igorbotian.rsskit.rest.facebook;
 
 /**
- * @author Igor Botian <igor.botyan@alcatel-lucent.com>
+ * @author Igor Botian
  */
 public class FacebookException extends Exception {
 
