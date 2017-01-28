@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * @author Igor Botian <igor.botyan@alcatel-lucent.com>
+ * @author Igor Botian
  */
 public class RSSUtils {
 
@@ -137,4 +137,29 @@ public class RSSUtils {
     }
 
     //-------------------------------------------------------------------------
+
+    public static void filterByAuthors(SyndFeed feed, Set<String> authors) {
+        Objects.requireNonNull(feed);
+        Objects.requireNonNull(authors);
+
+        if (authors.isEmpty()) {
+            return;
+        }
+
+        List<SyndEntry> filtered = new ArrayList<>(feed.getEntries().size());
+
+        for (SyndEntry entry : feed.getEntries()) {
+            if (hasSpecifiedAuthor(entry, authors)) {
+                filtered.add(entry);
+            }
+        }
+
+        feed.setEntries(filtered);
+    }
+
+    private static boolean hasSpecifiedAuthor(SyndEntry entry, Set<String> authors) {
+        assert entry != null;
+        assert authors != null;
+        return authors.contains(entry.getAuthor());
+    }
 }

@@ -12,9 +12,11 @@
 <body>
 <form action="${pageContext.request.contextPath}/rss" method="get">
     Enter an RSS feed URL below:<br/>
-    <input type="text" name="url" required/>&nbsp;&nbsp;<input type="submit" value="Submit"/><br/><br/>
+    <input type="text" name="url" required/><br/><br/>
     Categories (comma-separated):<br/>
     <input name="categories" type="text"/><br/><br/>
+    Authors (comma-separated):<br/>
+    <input name="authors" type="text"/><br/><br/>
     Maximum number of feed entries:<br/>
     <select name="size">
         <option selected>5</option>
@@ -26,9 +28,10 @@
     Reading service:<br/>
     <input type="radio" name="service" value="mercury" title="Mercury" checked/>&nbsp;Mercury
     <input type="radio" name="service" value="instapaper" title="Instapaper"/>&nbsp;Instapaper<br/>
-    <br/><br/>
+    <br/>
     Mobile version host:<br/>
-    <input name="mobile_version_host" type="text"/>
+    <input name="mobile_version_host" type="text"/><br/><br/>
+    <input type="submit" value="Submit"/>
 </form>
 </body>
 </html>

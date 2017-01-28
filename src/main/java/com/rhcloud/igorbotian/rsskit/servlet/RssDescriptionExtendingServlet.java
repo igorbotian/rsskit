@@ -30,6 +30,7 @@ public class RssDescriptionExtendingServlet extends AbstractRssServlet {
     private static final String URL_PARAM = "url";
     private static final String SERVICE_PARAM = "service";
     private static final String CATEGORIES_PARAM = "categories";
+    private static final String AUTHORS_PARAM = "authors";
     private static final String SIZE_PARAM = "size";
     private static final String MOBILE_VERSION_HOST_PARAM = "mobile_version_host";
     private static final int DEFAULT_MAX_ENTRIES = 10;
@@ -44,10 +45,11 @@ public class RssDescriptionExtendingServlet extends AbstractRssServlet {
         if (StringUtils.isNotEmpty(url)) {
             Mobilizer mobilizer = "mercury".equals(request.getParameter(SERVICE_PARAM))
                             ? Mobilizers.mercury() : Mobilizers.instapaper();
-            Set<String> categories = parseCategories(request.getParameter(CATEGORIES_PARAM));
+            Set<String> categories = splitByComma(request.getParameter(CATEGORIES_PARAM));
+            Set<String> authors = splitByComma(request.getParameter(AUTHORS_PARAM));
             Integer size = parseSize(request.getParameter(SIZE_PARAM));
             String mobileVersionHost = request.getParameter(MOBILE_VERSION_HOST_PARAM);
-            SyndFeed feed = getExtendedRSS(new URL(url), mobilizer, categories, size, mobileVersionHost);
+            SyndFeed feed = getExtendedRSS(new URL(url), mobilizer, categories, authors, size, mobileVersionHost);
             respond(feed, response);
         }
     }
@@ -64,7 +66,7 @@ public class RssDescriptionExtendingServlet extends AbstractRssServlet {
         return DEFAULT_MAX_ENTRIES;
     }
 
-    private Set<String> parseCategories(String param) {
+    private Set<String> splitByComma(String param) {
         Set<String> categories = new HashSet<>();
 
         if (param != null) {
@@ -82,18 +84,20 @@ public class RssDescriptionExtendingServlet extends AbstractRssServlet {
         return categories;
     }
 
-    private SyndFeed getExtendedRSS(URL rssURL, Mobilizer mobilizer, Set<String> categories, int size,
-                                    String mobileVersionHost)
+    private SyndFeed getExtendedRSS(URL rssURL, Mobilizer mobilizer, Set<String> categories,
+                                    Set<String> authors, int size, String mobileVersionHost)
             throws IOException {
 
         assert rssURL != null;
         assert mobilizer != null;
         assert categories != null;
+        assert authors != null;
         assert size > 0;
 
         String mobileVersionHostTrimmed = mobileVersionHost != null ? mobileVersionHost.trim() : null;
         SyndFeed feed = downloadRssFeed(rssURL);
         RSSUtils.filterByCategories(feed, categories);
+        RSSUtils.filterByAuthors(feed, authors);
         RSSUtils.truncate(feed, size);
 
         if (StringUtils.isNotEmpty(mobileVersionHostTrimmed)) {
